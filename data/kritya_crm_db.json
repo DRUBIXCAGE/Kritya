@@ -426,7 +426,7 @@
       "authEmailSent": false,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:14:33.741Z",
-      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "updatedAt": "2026-09-11T12:16:41.293Z",
       "footprint": {
         "id": "fp_lead_99hl6z7",
         "leadId": "lead_99hl6z7",
@@ -528,7 +528,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:14:33.732Z",
-      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "updatedAt": "2026-09-11T12:16:41.293Z",
       "footprint": {
         "id": "fp_lead_xqil2py",
         "leadId": "lead_xqil2py",
@@ -636,7 +636,7 @@
       "authEmailSent": false,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:00:29.335Z",
-      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "updatedAt": "2026-09-11T12:16:41.293Z",
       "footprint": {
         "id": "fp_lead_gfijvlo",
         "leadId": "lead_gfijvlo",
@@ -1403,6 +1403,84 @@
   ],
   "activityLogs": [
     {
+      "entityType": "LEAD",
+      "entityId": "lead_gfijvlo",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "David Miller (Travel Booking Agent)",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_1cvyqcs",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T12:16:41.293Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "David Miller (Travel Booking Agent)",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_qf6uibt",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T12:16:41.293Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_99hl6z7",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "Sarah Chen (Senior Flight Specialist)",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_wtymi56",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T12:16:41.293Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_99hl6z7",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ASSIGNED",
+      "fromState": "David Miller (Travel Booking Agent)",
+      "toState": "Sarah Chen (Senior Flight Specialist)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "assignedToUsername": "sarah.chen",
+        "assignedById": "usr_sales_mgr",
+        "assignedByName": "Marcus Brooks (Sales Director & Manager)",
+        "assignedByRole": "SALES_MANAGER"
+      },
+      "id": "act_dzhk70e",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T12:16:41.267Z"
+    },
+    {
       "entityType": "USER",
       "entityId": "usr_admin_gb8wh",
       "actorId": "usr_superadmin",
@@ -2084,6 +2162,52 @@
     }
   ],
   "auditLogs": [
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "LEADS_BULK_ASSIGNED",
+      "resource": "Batch:3_Leads",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "assignedCount": 3,
+        "targetAgentId": "usr_sales_agent2",
+        "targetAgentName": "David Miller (Travel Booking Agent)",
+        "targetAgentUsername": "david.miller",
+        "leadIds": [
+          "lead_99hl6z7",
+          "lead_xqil2py",
+          "lead_gfijvlo"
+        ],
+        "bookingNumbers": [
+          1009,
+          1008,
+          1007
+        ]
+      },
+      "id": "aud_2irsm14",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T12:16:41.293Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "LEAD_ASSIGNED",
+      "resource": "Lead:lead_99hl6z7",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "leadId": "lead_99hl6z7",
+        "bookingNumber": 1009,
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "previousAgent": "David Miller (Travel Booking Agent)",
+        "assignedBy": "Marcus Brooks (Sales Director & Manager)"
+      },
+      "id": "aud_vxj39l0",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T12:16:41.267Z"
+    },
     {
       "actorId": "usr_superadmin",
       "actorEmail": "super.admin@travelocase.com",
@@ -2817,5 +2941,5 @@
   ],
   "roundRobinIndex": 4,
   "lastBookingNumber": 1009,
-  "lastPersistedAt": "2026-09-11T10:46:51.469Z"
+  "lastPersistedAt": "2026-09-11T12:16:41.293Z"
 }

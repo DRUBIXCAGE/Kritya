@@ -587,8 +587,8 @@ class EnterpriseCRMStore {
       },
     });
 
-    this.saveToFile();
-    return true;
+    this.saveToDatabase();
+    return { success: true };
   }
 
   // ----------------------------------------------------
