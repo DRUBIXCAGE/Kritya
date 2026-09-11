@@ -1,0 +1,2821 @@
+{
+  "users": [
+    {
+      "id": "usr_superadmin",
+      "tenantId": "tenant_travelocase",
+      "email": "super.admin@travelocase.com",
+      "name": "Alex Thorne (Super Admin)",
+      "role": "SUPER_ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "username": "super.admin"
+    },
+    {
+      "id": "usr_admin",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "email": "admin.rachel@travelocase.com",
+      "name": "Rachel Vance (Operations Admin)",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-10T00:00:00Z",
+      "username": "admin.rachel"
+    },
+    {
+      "id": "usr_sales_mgr",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "marcus.brooks@travelocase.com",
+      "name": "Marcus Brooks (Sales Director & Manager)",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-15T00:00:00Z",
+      "username": "marcus.brooks"
+    },
+    {
+      "id": "usr_sales_agent1",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "sarah.chen@travelocase.com",
+      "name": "Sarah Chen (Senior Flight Specialist)",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-20T00:00:00Z",
+      "username": "sarah.chen"
+    },
+    {
+      "id": "usr_sales_agent2",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "david.miller@travelocase.com",
+      "name": "David Miller (Travel Booking Agent)",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-02-01T00:00:00Z",
+      "username": "david.miller"
+    },
+    {
+      "id": "usr_charging_mgr",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_charging",
+      "email": "elena.rostova@travelocase.com",
+      "name": "Elena Rostova (Head of Ticketing & Charging)",
+      "role": "CHARGING_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-18T00:00:00Z",
+      "username": "elena.rostova"
+    },
+    {
+      "id": "usr_charging_op",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_charging",
+      "email": "lucas.silva@travelocase.com",
+      "name": "Lucas Silva (Ticketing & Card Charge Ops)",
+      "role": "CHARGING_OPERATOR",
+      "avatarUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-02-10T00:00:00Z",
+      "username": "lucas.silva"
+    },
+    {
+      "id": "usr_cs_mgr",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_cs",
+      "email": "chloe.dupont@travelocase.com",
+      "name": "Chloe Dupont (VP Customer Success)",
+      "role": "CS_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-01-22T00:00:00Z",
+      "username": "chloe.dupont"
+    },
+    {
+      "id": "usr_cs_agent",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_cs",
+      "email": "sam.patel@travelocase.com",
+      "name": "Sam Patel (Concierge & Onboarding Specialist)",
+      "role": "CS_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-02-15T00:00:00Z",
+      "username": "sam.patel"
+    },
+    {
+      "id": "usr_admin_oveza",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "email": "victoria.v@travelocase.com",
+      "name": "Victoria Vance",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.775Z",
+      "username": "victoria.v"
+    },
+    {
+      "id": "usr_sales_manager_1z3sy",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "julian.s@travelocase.com",
+      "name": "Julian Sterling",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.785Z",
+      "username": "julian.s"
+    },
+    {
+      "id": "usr_sales_agent_py58e",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "oliver.t@travelocase.com",
+      "name": "Oliver Thorne",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.794Z",
+      "username": "oliver.t"
+    },
+    {
+      "id": "usr_charging_manager_mnveh",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_charging",
+      "email": "claire.b@travelocase.com",
+      "name": "Claire Beauchamp",
+      "role": "CHARGING_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.802Z",
+      "username": "claire.b"
+    },
+    {
+      "id": "usr_cs_agent_d2iph",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_cs",
+      "email": "liam.h@travelocase.com",
+      "name": "Liam Henderson",
+      "role": "CS_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.812Z",
+      "username": "liam.h"
+    },
+    {
+      "id": "usr_sales_agent_rjwzv",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "sophie.m@travelocase.com",
+      "name": "Sophie Martin",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:14:26.834Z",
+      "username": "sophie.m"
+    },
+    {
+      "id": "usr_sales_agent_y5pzw",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "test.no.user@travelocase.com",
+      "name": "Nameless Agent",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:12.686Z",
+      "username": "test.no.user"
+    },
+    {
+      "id": "usr_sales_manager_0c4dx",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "test.mgr.2690.corp@travelocase.com",
+      "name": "Executive Test Manager",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:12.700Z",
+      "username": "test.mgr.2690.corp"
+    },
+    {
+      "id": "usr_admin_5g2qt",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "email": "test.admin.2704.ops@travelocase.com",
+      "name": "Regional Operations Admin",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:12.718Z",
+      "username": "test.admin.2704.ops"
+    },
+    {
+      "id": "usr_cs_manager_ppoe4",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_cs",
+      "email": "mgr.nousername.2735@travelocase.com",
+      "name": "Incomplete Manager 2",
+      "role": "CS_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:12.743Z",
+      "username": "mgr.nousername.2735"
+    },
+    {
+      "id": "usr_sales_manager_len71",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "email": "test.mgr.2938.corp@travelocase.com",
+      "name": "Executive Test Manager",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:32.945Z",
+      "username": "test.mgr.2938.corp"
+    },
+    {
+      "id": "usr_admin_qe2vc",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "email": "test.admin.2947.ops@travelocase.com",
+      "name": "Regional Operations Admin",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:32.955Z",
+      "username": "test.admin.2947.ops"
+    },
+    {
+      "id": "usr_cs_manager_cmrd9",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_cs",
+      "email": "mgr.nousername.2964@travelocase.com",
+      "name": "Incomplete Manager 2",
+      "role": "CS_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:20:32.972Z",
+      "username": "mgr.nousername.2964"
+    },
+    {
+      "id": "usr_sales_agent_xpgob",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.agent.5491",
+      "email": "test.agent.5491@travelocase.com",
+      "name": "Automated Test Agent",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:21:05.515Z"
+    },
+    {
+      "id": "usr_sales_manager_yvwag",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.mgr.5535",
+      "email": "test.mgr.5535.corp@travelocase.com",
+      "name": "Executive Test Manager",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:21:05.547Z"
+    },
+    {
+      "id": "usr_admin_pkpqp",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "username": "test.admin.5554",
+      "email": "test.admin.5554.ops@travelocase.com",
+      "name": "Regional Operations Admin",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:21:05.568Z"
+    },
+    {
+      "id": "usr_sales_agent_9ryd8",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.agent.2064",
+      "email": "test.agent.2064@travelocase.com",
+      "name": "Automated Test Agent",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:28:02.076Z"
+    },
+    {
+      "id": "usr_sales_manager_brocj",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.mgr.2088",
+      "email": "test.mgr.2088.corp@travelocase.com",
+      "name": "Executive Test Manager",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:28:02.096Z"
+    },
+    {
+      "id": "usr_admin_8l5wv",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "username": "test.admin.2099",
+      "email": "test.admin.2099.ops@travelocase.com",
+      "name": "Regional Operations Admin",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:28:02.106Z"
+    },
+    {
+      "id": "usr_sales_agent_ejs2r",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.agent.1430",
+      "email": "test.agent.1430@travelocase.com",
+      "name": "Automated Test Agent",
+      "role": "SALES_AGENT",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:46:51.440Z"
+    },
+    {
+      "id": "usr_sales_manager_srn6d",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_sales",
+      "username": "test.mgr.1451",
+      "email": "test.mgr.1451.corp@travelocase.com",
+      "name": "Executive Test Manager",
+      "role": "SALES_MANAGER",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:46:51.459Z"
+    },
+    {
+      "id": "usr_admin_gb8wh",
+      "tenantId": "tenant_travelocase",
+      "departmentId": "dept_admin",
+      "username": "test.admin.1462",
+      "email": "test.admin.1462.ops@travelocase.com",
+      "name": "Regional Operations Admin",
+      "role": "ADMIN",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+      "isActive": true,
+      "createdAt": "2026-09-11T10:46:51.468Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead_99hl6z7",
+      "bookingNumber": 1009,
+      "bookingId": "#1009",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent2",
+      "assignedToName": "David Miller (Travel Booking Agent)",
+      "name": "Duchess Eleanor of Aquitaine",
+      "email": "eleanor@aquitaine-estates.fr",
+      "phone": "+1 (555) 019-3344",
+      "company": "Corporate Client",
+      "status": "NEW",
+      "dealValue": 28000,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1009 ingested with passenger roster and card vault record.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "LHR (London Heathrow)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-20",
+        "returnDate": "2026-10-30",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "TC-1009",
+        "passengers": [
+          {
+            "id": "pax_86fd",
+            "fullName": "Duchess Eleanor of Aquitaine",
+            "passportNumber": "US50382459",
+            "passportExpiry": "2031-10-15",
+            "nationality": "United States (USA)",
+            "dob": "1985-06-15",
+            "type": "ADULT",
+            "seatPreference": "2A",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-125-1585230482"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "DUCHESS ELEANOR OF AQUITAINE",
+        "cardNumber": "4532725941948036",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-11T10:14:33.741Z",
+      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "footprint": {
+        "id": "fp_lead_99hl6z7",
+        "leadId": "lead_99hl6z7",
+        "ipAddress": "198.51.100.88",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T10:09:33.741Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/JFK (New York)-LHR (London Heathrow)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-11T10:12:33.741Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-11T10:14:33.741Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          }
+        ],
+        "createdAt": "2026-09-11T10:14:33.741Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_99hl6z7",
+        "leadId": "lead_99hl6z7",
+        "email": "eleanor@aquitaine-estates.fr",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "aquitaine-estates.fr",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.aquitaine-estates.fr ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@aquitaine-estates.fr",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-11T10:14:33.741Z"
+        },
+        "verifiedAt": "2026-09-11T10:14:33.741Z"
+      }
+    },
+    {
+      "id": "lead_xqil2py",
+      "bookingNumber": 1008,
+      "bookingId": "#1008",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent2",
+      "assignedToName": "David Miller (Travel Booking Agent)",
+      "name": "Sir Arthur Wellesley",
+      "email": "arthur.w@wellington-holdings.co.uk",
+      "phone": "+44 20 7946 0999",
+      "company": "Wellington & Co",
+      "status": "AUTHENTICATION_SENT",
+      "dealValue": 19500,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1008 ingested with passenger roster and card vault record.",
+      "bookingDetails": {
+        "origin": "LHR (London)",
+        "destination": "DXB (Dubai)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-01",
+        "returnDate": "2026-11-10",
+        "airline": "Emirates",
+        "flightNumber": "EK-002",
+        "cabinClass": "FIRST",
+        "passengers": [
+          {
+            "id": "pax_arthur",
+            "fullName": "Sir Arthur Wellesley",
+            "passportNumber": "GB11992288",
+            "dob": "1970-05-01",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1008"
+      },
+      "cardDetails": {
+        "cardholderName": "SIR ARTHUR WELLESLEY",
+        "cardNumber": "4532147656621018",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": true,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-11T10:14:33.732Z",
+      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "footprint": {
+        "id": "fp_lead_xqil2py",
+        "leadId": "lead_xqil2py",
+        "ipAddress": "198.51.100.17",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T10:09:33.732Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/LHR (London)-DXB (Dubai)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-11T10:12:33.732Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-11T10:14:33.732Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          }
+        ],
+        "createdAt": "2026-09-11T10:14:33.732Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_xqil2py",
+        "leadId": "lead_xqil2py",
+        "email": "arthur.w@wellington-holdings.co.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "wellington-holdings.co.uk",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.wellington-holdings.co.uk ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@wellington-holdings.co.uk",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-11T10:14:33.732Z"
+        },
+        "verifiedAt": "2026-09-11T10:14:33.732Z"
+      }
+    },
+    {
+      "id": "lead_gfijvlo",
+      "bookingNumber": 1007,
+      "bookingId": "#1007",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent2",
+      "assignedToName": "David Miller (Travel Booking Agent)",
+      "name": "Duchess Eleanor of Aquitaine",
+      "email": "eleanor@aquitaine-estates.fr",
+      "phone": "+1 (555) 019-3344",
+      "company": "Corporate Client",
+      "status": "NEW",
+      "dealValue": 28000,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1007 ingested with passenger roster and card vault record.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "LHR (London Heathrow)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-20",
+        "returnDate": "2026-10-30",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "TC-1007",
+        "passengers": [
+          {
+            "id": "pax_dy9w",
+            "fullName": "Duchess Eleanor of Aquitaine",
+            "passportNumber": "US98374516",
+            "passportExpiry": "2031-10-15",
+            "nationality": "United States (USA)",
+            "dob": "1985-06-15",
+            "type": "ADULT",
+            "seatPreference": "2A",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-125-8509314386"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "DUCHESS ELEANOR OF AQUITAINE",
+        "cardNumber": "4532380688493448",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-11T10:00:29.335Z",
+      "updatedAt": "2026-09-11T10:46:40.362Z",
+      "footprint": {
+        "id": "fp_lead_gfijvlo",
+        "leadId": "lead_gfijvlo",
+        "ipAddress": "198.51.100.146",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T09:55:29.335Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/JFK (New York)-LHR (London Heathrow)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-11T09:58:29.335Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-11T10:00:29.335Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          }
+        ],
+        "createdAt": "2026-09-11T10:00:29.335Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_gfijvlo",
+        "leadId": "lead_gfijvlo",
+        "email": "eleanor@aquitaine-estates.fr",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "aquitaine-estates.fr",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.aquitaine-estates.fr ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@aquitaine-estates.fr",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-11T10:00:29.335Z"
+        },
+        "verifiedAt": "2026-09-11T10:00:29.335Z"
+      }
+    },
+    {
+      "id": "lead_dar1t6t",
+      "bookingNumber": 1006,
+      "bookingId": "#1006",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+      "name": "Sir Arthur Wellesley",
+      "email": "arthur.w@wellington-holdings.co.uk",
+      "phone": "+44 20 7946 0999",
+      "company": "Wellington & Co",
+      "status": "AUTHENTICATION_SENT",
+      "dealValue": 19500,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1006 ingested with passenger roster and card vault record.",
+      "bookingDetails": {
+        "origin": "LHR (London)",
+        "destination": "DXB (Dubai)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-01",
+        "returnDate": "2026-11-10",
+        "airline": "Emirates",
+        "flightNumber": "EK-002",
+        "cabinClass": "FIRST",
+        "passengers": [
+          {
+            "id": "pax_arthur",
+            "fullName": "Sir Arthur Wellesley",
+            "passportNumber": "GB11992288",
+            "dob": "1970-05-01",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1006"
+      },
+      "cardDetails": {
+        "cardholderName": "SIR ARTHUR WELLESLEY",
+        "cardNumber": "4532293383151548",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": true,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-11T10:00:29.315Z",
+      "updatedAt": "2026-09-11T10:00:30.220Z",
+      "footprint": {
+        "id": "fp_lead_dar1t6t",
+        "leadId": "lead_dar1t6t",
+        "ipAddress": "198.51.100.145",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T09:55:29.315Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/LHR (London)-DXB (Dubai)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-11T09:58:29.315Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-11T10:00:29.315Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          },
+          {
+            "timestamp": "2026-09-11T10:02:36.016Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_dar1t6t/pci-vault",
+            "metadata": {
+              "viewerName": "Marcus Brooks (Sales Director & Manager)",
+              "viewerRole": "SALES_MANAGER",
+              "viewerEmail": "marcus.brooks@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "cardLast4": "1548"
+            }
+          }
+        ],
+        "createdAt": "2026-09-11T10:00:29.315Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_dar1t6t",
+        "leadId": "lead_dar1t6t",
+        "email": "arthur.w@wellington-holdings.co.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "wellington-holdings.co.uk",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.wellington-holdings.co.uk ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@wellington-holdings.co.uk",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-11T10:00:29.314Z"
+        },
+        "verifiedAt": "2026-09-11T10:00:29.315Z"
+      }
+    },
+    {
+      "id": "lead_flight_01",
+      "bookingNumber": 1001,
+      "bookingId": "#1001",
+      "tenantId": "tenant_acme",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen",
+      "name": "Lord Harrison Sterling",
+      "email": "harrison.sterling@sterling-holdings.co.uk",
+      "phone": "+44 20 7946 0192",
+      "company": "Sterling Holdings International",
+      "status": "QUALIFIED",
+      "dealValue": 14800,
+      "currency": "USD",
+      "notes": "Executive business class reservation for 2 passengers. Authentication email sent, waiting for manager clearance to inspect card.",
+      "authEmailSent": true,
+      "authCallConfirmed": true,
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "LHR (London Heathrow)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-18",
+        "returnDate": "2026-10-29",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "NX-BA8912",
+        "passengers": [
+          {
+            "id": "pax_01",
+            "fullName": "Lord Harrison Sterling",
+            "passportNumber": "GB94821094",
+            "passportExpiry": "2031-06-15",
+            "nationality": "British (GBR)",
+            "dob": "1978-04-14",
+            "gender": "MALE",
+            "type": "ADULT",
+            "seatPreference": "2A (Window Club Suite)",
+            "mealPreference": "Halal / Kosher Diabetic",
+            "specialAssistance": "None (VIP Priority Boarding)",
+            "eTicketNumber": "ETKT-125-9482019401"
+          },
+          {
+            "id": "pax_02",
+            "fullName": "Lady Victoria Sterling",
+            "passportNumber": "GB94821095",
+            "passportExpiry": "2030-11-20",
+            "nationality": "British (GBR)",
+            "dob": "1982-11-09",
+            "gender": "FEMALE",
+            "type": "ADULT",
+            "seatPreference": "2B (Aisle Club Suite)",
+            "mealPreference": "Vegetarian Lacto-Ovo",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-125-9482019402"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "HARRISON STERLING",
+        "cardNumber": "4532890129484242",
+        "expiryMonth": "08",
+        "expiryYear": "2028",
+        "cvv": "891",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "createdAt": "2026-09-11T09:30:00Z",
+      "updatedAt": "2026-09-11T09:35:00Z",
+      "footprint": {
+        "id": "fp_01",
+        "leadId": "lead_flight_01",
+        "ipAddress": "198.51.100.42",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36",
+        "referrer": "https://www.google.com/search?q=luxury+business+class+flights+london+new+york",
+        "country": "United Kingdom",
+        "city": "London",
+        "utmSource": "google_search",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_transatlantic_q3",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T09:15:20Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/JFK-LHR",
+            "metadata": {
+              "cabin": "BUSINESS"
+            }
+          },
+          {
+            "timestamp": "2026-09-11T09:19:10Z",
+            "event": "PASSENGER_FORM_FILL",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 185
+          },
+          {
+            "timestamp": "2026-09-11T09:29:45Z",
+            "event": "CARD_DETAILS_INPUT",
+            "url": "/checkout/payment",
+            "metadata": {
+              "cardType": "VISA"
+            }
+          }
+        ],
+        "createdAt": "2026-09-11T09:30:00Z"
+      },
+      "emailVerification": {
+        "id": "ev_01",
+        "leadId": "lead_flight_01",
+        "email": "harrison.sterling@sterling-holdings.co.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 98,
+        "verifiedAt": "2026-09-11T09:30:02Z"
+      }
+    },
+    {
+      "id": "lead_flight_02",
+      "bookingNumber": 1002,
+      "bookingId": "#1002",
+      "tenantId": "tenant_acme",
+      "assignedToId": "usr_sales_agent2",
+      "assignedToName": "David Miller",
+      "name": "Dr. Kenji Takahashi",
+      "email": "k.takahashi@tokyo-biotech.jp",
+      "phone": "+81 3 5555 0199",
+      "company": "Tokyo BioTech Labs",
+      "status": "AUTHENTICATION_SENT",
+      "dealValue": 22400,
+      "currency": "USD",
+      "notes": "First Class Roundtrip SFO to Tokyo Haneda. Authentication email sent to passenger.",
+      "authEmailSent": true,
+      "authCallConfirmed": false,
+      "bookingDetails": {
+        "origin": "SFO (San Francisco)",
+        "destination": "HND (Tokyo Haneda)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-05",
+        "returnDate": "2026-11-20",
+        "airline": "All Nippon Airways (ANA)",
+        "flightNumber": "NH-107",
+        "cabinClass": "FIRST",
+        "pnrCode": "NX-NH4401",
+        "passengers": [
+          {
+            "id": "pax_03",
+            "fullName": "Dr. Kenji Takahashi",
+            "passportNumber": "JP88291044",
+            "passportExpiry": "2032-04-10",
+            "nationality": "Japanese (JPN)",
+            "dob": "1972-09-23",
+            "gender": "MALE",
+            "type": "ADULT",
+            "seatPreference": "1A (ANA First Suite)",
+            "mealPreference": "Japanese Kaiseki Special",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-205-8829104401"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "KENJI TAKAHASHI",
+        "cardNumber": "378282246310005",
+        "expiryMonth": "12",
+        "expiryYear": "2027",
+        "cvv": "4921",
+        "cardType": "AMEX",
+        "isAccessGrantedToAgent": false
+      },
+      "createdAt": "2026-09-10T11:20:00Z",
+      "updatedAt": "2026-09-11T09:00:00Z",
+      "footprint": {
+        "id": "fp_02",
+        "leadId": "lead_flight_02",
+        "ipAddress": "133.242.18.99",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127.0.0.0 Safari/537.36",
+        "referrer": "https://www.ana.co.jp/en/us/",
+        "country": "Japan",
+        "city": "Tokyo",
+        "utmSource": "ana_partner_portal",
+        "utmMedium": "referral",
+        "utmCampaign": "first_class_transpacific",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-09T11:05:00Z",
+            "event": "PAGE_VIEW",
+            "url": "/first-class-suites",
+            "dwellTimeSeconds": 85
+          },
+          {
+            "timestamp": "2026-09-09T11:18:22Z",
+            "event": "BOOKING_SUBMITTED",
+            "url": "/reserve-flights"
+          }
+        ],
+        "createdAt": "2026-09-09T11:20:00Z"
+      },
+      "emailVerification": {
+        "id": "ev_02",
+        "leadId": "lead_flight_02",
+        "email": "k.takahashi@tokyo-biotech.jp",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 96,
+        "verifiedAt": "2026-09-09T11:20:05Z"
+      }
+    },
+    {
+      "id": "lead_flight_03",
+      "bookingNumber": 1003,
+      "bookingId": "#1003",
+      "tenantId": "tenant_acme",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen",
+      "name": "Elena Rostova",
+      "email": "elena.r@zurich-finance.ch",
+      "phone": "+41 22 555 8812",
+      "company": "Zurich Global Capital",
+      "status": "CHARGING",
+      "dealValue": 18900,
+      "currency": "USD",
+      "notes": "Marked SALE / FINAL. All passenger and card details verified. Enqueued in Ticketing & Charging desk.",
+      "authEmailSent": true,
+      "authCallConfirmed": true,
+      "bookingDetails": {
+        "origin": "ORD (Chicago O'Hare)",
+        "destination": "CDG (Paris Charles de Gaulle)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-10",
+        "returnDate": "2026-10-22",
+        "airline": "Air France",
+        "flightNumber": "AF-137",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "NX-AF7723",
+        "passengers": [
+          {
+            "id": "pax_04",
+            "fullName": "Elena Rostova",
+            "passportNumber": "CH99482103",
+            "passportExpiry": "2033-08-12",
+            "nationality": "Swiss (CHE)",
+            "dob": "1985-02-18",
+            "gender": "FEMALE",
+            "type": "ADULT",
+            "seatPreference": "3K (Window)",
+            "mealPreference": "Low Sodium / Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-057-9948210301"
+          },
+          {
+            "id": "pax_05",
+            "fullName": "Marc Dumont",
+            "passportNumber": "FR10294819",
+            "passportExpiry": "2029-05-19",
+            "nationality": "French (FRA)",
+            "dob": "1980-07-30",
+            "gender": "MALE",
+            "type": "ADULT",
+            "seatPreference": "3J (Aisle)",
+            "mealPreference": "French Gourmet Standard",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-057-1029481902"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "ELENA ROSTOVA",
+        "cardNumber": "5424180199483311",
+        "expiryMonth": "09",
+        "expiryYear": "2029",
+        "cvv": "349",
+        "cardType": "MASTERCARD",
+        "isAccessGrantedToAgent": true,
+        "grantedByManagerName": "Marcus Brooks (Sales Director)",
+        "grantedAt": "2026-09-10T14:30:00Z"
+      },
+      "createdAt": "2026-09-08T14:10:00Z",
+      "updatedAt": "2026-09-11T07:45:00Z",
+      "footprint": {
+        "id": "fp_03",
+        "leadId": "lead_flight_03",
+        "ipAddress": "194.230.145.12",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36",
+        "referrer": "https://www.kayak.com/flights/ORD-CDG",
+        "country": "Switzerland",
+        "city": "Zurich",
+        "utmSource": "kayak",
+        "utmMedium": "meta_search",
+        "utmCampaign": "fall_paris_deals",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-08T14:02:11Z",
+            "event": "ROUTE_SELECT",
+            "url": "/flights/ORD-CDG"
+          },
+          {
+            "timestamp": "2026-09-08T14:08:44Z",
+            "event": "CARD_PAYMENT_INITIATED",
+            "url": "/checkout"
+          }
+        ],
+        "createdAt": "2026-09-08T14:10:00Z"
+      },
+      "emailVerification": {
+        "id": "ev_03",
+        "leadId": "lead_flight_03",
+        "email": "elena.r@zurich-finance.ch",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 97,
+        "verifiedAt": "2026-09-08T14:10:02Z"
+      }
+    },
+    {
+      "id": "lead_flight_04",
+      "bookingNumber": 1004,
+      "bookingId": "#1004",
+      "tenantId": "tenant_acme",
+      "assignedToId": "usr_sales_agent2",
+      "assignedToName": "David Miller",
+      "name": "Marcus Aurelius Vance",
+      "email": "m.vance@rome-defense.it",
+      "phone": "+39 06 698 12345",
+      "company": "Rome Defense Systems",
+      "status": "NEW",
+      "dealValue": 8400,
+      "currency": "USD",
+      "notes": "New inquiry for LAX to Rome FCO business class.",
+      "bookingDetails": {
+        "origin": "LAX (Los Angeles)",
+        "destination": "FCO (Rome Fiumicino)",
+        "tripType": "ONE_WAY",
+        "departureDate": "2026-11-12",
+        "airline": "ITA Airways",
+        "flightNumber": "AZ-621",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "NX-AZ9901",
+        "passengers": [
+          {
+            "id": "pax_06",
+            "fullName": "Marcus Aurelius Vance",
+            "passportNumber": "IT77492100",
+            "passportExpiry": "2031-10-05",
+            "nationality": "Italian (ITA)",
+            "dob": "1983-05-12",
+            "gender": "MALE",
+            "type": "ADULT",
+            "seatPreference": "4D (Aisle)",
+            "mealPreference": "Gluten-Free / Italian Cuisine",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-055-7749210001"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "MARCUS A VANCE",
+        "cardNumber": "4111111111114242",
+        "expiryMonth": "05",
+        "expiryYear": "2027",
+        "cvv": "123",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "createdAt": "2026-09-11T10:40:00Z",
+      "updatedAt": "2026-09-11T10:40:00Z",
+      "footprint": {
+        "id": "fp_04",
+        "leadId": "lead_flight_04",
+        "ipAddress": "35.185.200.18",
+        "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15",
+        "referrer": "https://google.com",
+        "country": "Italy",
+        "city": "Rome",
+        "utmSource": "google_inbound",
+        "utmMedium": "cpc",
+        "utmCampaign": "eu_us_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-11T10:35:10Z",
+            "event": "PAGE_VIEW",
+            "url": "/flights/LAX-FCO"
+          }
+        ],
+        "createdAt": "2026-09-11T10:40:00Z"
+      },
+      "emailVerification": {
+        "id": "ev_04",
+        "leadId": "lead_flight_04",
+        "email": "m.vance@rome-defense.it",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 94,
+        "verifiedAt": "2026-09-11T10:40:03Z"
+      }
+    },
+    {
+      "id": "lead_flight_05",
+      "bookingNumber": 1005,
+      "bookingId": "#1005",
+      "tenantId": "tenant_acme",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen",
+      "name": "Beatrice Montgomery",
+      "email": "bmontgomery@stratos-aero.com",
+      "phone": "+1 (206) 555-8812",
+      "company": "Stratos Aerospace",
+      "status": "SUCCESS",
+      "dealValue": 36000,
+      "currency": "USD",
+      "notes": "Payment validated and captured. Flight e-tickets issued and VIP onboarding ticket dispatched to CS concierge.",
+      "bookingDetails": {
+        "origin": "SEA (Seattle)",
+        "destination": "SIN (Singapore Changi)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-01",
+        "returnDate": "2026-10-15",
+        "airline": "Singapore Airlines",
+        "flightNumber": "SQ-27",
+        "cabinClass": "FIRST",
+        "pnrCode": "NX-SQ1099",
+        "passengers": [
+          {
+            "id": "pax_07",
+            "fullName": "Beatrice Montgomery",
+            "passportNumber": "US94821033",
+            "passportExpiry": "2034-01-14",
+            "nationality": "American (USA)",
+            "dob": "1975-08-19",
+            "gender": "FEMALE",
+            "type": "ADULT",
+            "seatPreference": "1F (First Class Suite)",
+            "mealPreference": "Book the Cook - Lobster Thermidor",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-618-9482103301"
+          },
+          {
+            "id": "pax_08",
+            "fullName": "Charles Montgomery",
+            "passportNumber": "US94821034",
+            "passportExpiry": "2032-09-30",
+            "nationality": "American (USA)",
+            "dob": "1971-03-22",
+            "gender": "MALE",
+            "type": "ADULT",
+            "seatPreference": "1K (First Class Suite)",
+            "mealPreference": "Book the Cook - Wagyu Sirloin",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-618-9482103402"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "BEATRICE MONTGOMERY",
+        "cardNumber": "4000056655665556",
+        "expiryMonth": "11",
+        "expiryYear": "2028",
+        "cvv": "782",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": true
+      },
+      "createdAt": "2026-09-05T09:00:00Z",
+      "updatedAt": "2026-09-10T16:20:00Z",
+      "footprint": {
+        "id": "fp_05",
+        "leadId": "lead_flight_05",
+        "ipAddress": "64.104.44.18",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36",
+        "referrer": "https://singaporeair.com",
+        "country": "United States",
+        "city": "Seattle, WA",
+        "utmSource": "bloomberg",
+        "utmMedium": "display_banner",
+        "utmCampaign": "q3_first_class_asia",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-05T08:45:00Z",
+            "event": "SEARCH_ROUTES",
+            "url": "/flights/SEA-SIN"
+          },
+          {
+            "timestamp": "2026-09-05T08:58:30Z",
+            "event": "CHECKOUT_COMPLETE",
+            "url": "/order-confirmed"
+          }
+        ],
+        "createdAt": "2026-09-05T09:00:00Z"
+      },
+      "emailVerification": {
+        "id": "ev_05",
+        "leadId": "lead_flight_05",
+        "email": "bmontgomery@stratos-aero.com",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 99,
+        "verifiedAt": "2026-09-05T09:00:05Z"
+      }
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_89412",
+      "tenantId": "tenant_acme",
+      "leadId": "lead_flight_05",
+      "leadName": "Beatrice Montgomery (SEA -> SIN Singapore Airlines)",
+      "customerId": "cust_stratos_01",
+      "processedById": "usr_charging_op",
+      "processedByName": "Lucas Silva",
+      "amount": 36000,
+      "currency": "USD",
+      "status": "SUCCESS",
+      "paymentMethod": "CORPORATE_VISA_COMMERCIAL",
+      "gatewayTxnId": "GW_AIRLINE_SETTLED_994102",
+      "verificationChecklist": {
+        "identityVerified": true,
+        "fundsAvailable": true,
+        "fraudRiskScore": 2,
+        "avsMatch": true,
+        "cvvMatch": true,
+        "complianceCleared": true
+      },
+      "createdAt": "2026-09-10T16:00:00Z",
+      "updatedAt": "2026-09-10T16:20:00Z"
+    },
+    {
+      "id": "txn_89413",
+      "tenantId": "tenant_acme",
+      "leadId": "lead_flight_03",
+      "leadName": "Elena Rostova (ORD -> CDG Air France Business)",
+      "amount": 18900,
+      "currency": "USD",
+      "status": "PROCESSING",
+      "paymentMethod": "MASTERCARD_WORLD_ELITE",
+      "gatewayTxnId": "GW_AF_3DSECURE_8819",
+      "verificationChecklist": {
+        "identityVerified": true,
+        "fundsAvailable": true,
+        "fraudRiskScore": 6,
+        "avsMatch": true,
+        "cvvMatch": true,
+        "complianceCleared": true
+      },
+      "createdAt": "2026-09-11T09:00:00Z",
+      "updatedAt": "2026-09-11T09:05:00Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust_stratos_01",
+      "tenantId": "tenant_acme",
+      "leadId": "lead_flight_05",
+      "name": "Beatrice Montgomery",
+      "email": "bmontgomery@stratos-aero.com",
+      "phone": "+1 (206) 555-8812",
+      "company": "Stratos Aerospace",
+      "tier": "VIP_FIRST_CLASS_GLOBAL",
+      "healthScore": 100,
+      "onboardingStatus": "IN_PROGRESS",
+      "createdAt": "2026-09-10T16:20:00Z",
+      "updatedAt": "2026-09-11T02:00:00Z"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "tkt_onb_701",
+      "tenantId": "tenant_acme",
+      "customerId": "cust_stratos_01",
+      "customerName": "Stratos Aerospace (Beatrice Montgomery)",
+      "leadId": "lead_flight_05",
+      "assignedToId": "usr_cs_agent",
+      "assignedToName": "Sam Patel",
+      "title": "VIP Flight Concierge, Chauffeur & Lounge Access Provisioning",
+      "description": "Automated ticket dispatched on $36,000 flight settlement for SEA -> SIN First Class (SQ-27). Coordinate airport private terminal escort, seat allocations 1F/1K, and dietary champagne preferences.",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "type": "ONBOARDING",
+      "slaDeadline": "2026-09-11T13:30:29.267Z",
+      "isSlaBreached": false,
+      "createdAt": "2026-09-10T16:20:05Z",
+      "updatedAt": "2026-09-11T03:00:00Z"
+    }
+  ],
+  "activityLogs": [
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_gb8wh",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Regional Operations Admin",
+        "newUserUsername": "test.admin.1462",
+        "newUserEmail": "test.admin.1462.ops@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_u889s1o",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:51.469Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_srn6d",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Executive Test Manager",
+        "newUserUsername": "test.mgr.1451",
+        "newUserEmail": "test.mgr.1451.corp@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_n37w613",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:51.459Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_ejs2r",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Automated Test Agent",
+        "newUserUsername": "test.agent.1430",
+        "newUserEmail": "test.agent.1430@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Marcus Brooks (Sales Director & Manager)",
+        "createdByRole": "SALES_MANAGER"
+      },
+      "id": "act_g13z8ia",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:51.440Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_gfijvlo",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "David Miller (Travel Booking Agent)",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_gl3zy5p",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:40.362Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "Oliver Thorne",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_gq01i8r",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:40.362Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_99hl6z7",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "LEAD_BULK_ASSIGNED",
+      "fromState": "Sarah Chen (Senior Flight Specialist)",
+      "toState": "David Miller (Travel Booking Agent)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent2",
+        "assignedToName": "David Miller (Travel Booking Agent)",
+        "assignedToUsername": "david.miller",
+        "batchCount": 3
+      },
+      "id": "act_onhzyr5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:40.362Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_99hl6z7",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ASSIGNED",
+      "fromState": "Sophie Martin",
+      "toState": "Sarah Chen (Senior Flight Specialist)",
+      "metadata": {
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "assignedToUsername": "sarah.chen",
+        "assignedById": "usr_sales_mgr",
+        "assignedByName": "Marcus Brooks (Sales Director & Manager)",
+        "assignedByRole": "SALES_MANAGER"
+      },
+      "id": "act_yv4cryb",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:46:40.341Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_8l5wv",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Regional Operations Admin",
+        "newUserUsername": "test.admin.2099",
+        "newUserEmail": "test.admin.2099.ops@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_xw3c3r5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:28:02.106Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_brocj",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Executive Test Manager",
+        "newUserUsername": "test.mgr.2088",
+        "newUserEmail": "test.mgr.2088.corp@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_rn0au0d",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:28:02.096Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_9ryd8",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Automated Test Agent",
+        "newUserUsername": "test.agent.2064",
+        "newUserEmail": "test.agent.2064@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Marcus Brooks (Sales Director & Manager)",
+        "createdByRole": "SALES_MANAGER"
+      },
+      "id": "act_esa6wot",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:28:02.076Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_pkpqp",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Regional Operations Admin",
+        "newUserUsername": "test.admin.5554",
+        "newUserEmail": "test.admin.5554.ops@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_wzjrq38",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:21:05.568Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_yvwag",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Executive Test Manager",
+        "newUserUsername": "test.mgr.5535",
+        "newUserEmail": "test.mgr.5535.corp@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_gxukruw",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:21:05.547Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_xpgob",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Automated Test Agent",
+        "newUserUsername": "test.agent.5491",
+        "newUserEmail": "test.agent.5491@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Marcus Brooks (Sales Director & Manager)",
+        "createdByRole": "SALES_MANAGER"
+      },
+      "id": "act_6vw7jav",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:21:05.515Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_cs_manager_cmrd9",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Incomplete Manager 2",
+        "newUserEmail": "mgr.nousername.2964@travelocase.com",
+        "newUserRole": "CS_MANAGER",
+        "departmentId": "dept_cs",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_ox64xfy",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:32.972Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_qe2vc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Regional Operations Admin",
+        "newUserEmail": "test.admin.2947.ops@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_u3nsoo5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:32.955Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_len71",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Executive Test Manager",
+        "newUserEmail": "test.mgr.2938.corp@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_6fcd4l0",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:32.945Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_cs_manager_ppoe4",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Incomplete Manager 2",
+        "newUserEmail": "mgr.nousername.2735@travelocase.com",
+        "newUserRole": "CS_MANAGER",
+        "departmentId": "dept_cs",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_dxh1ogm",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:12.743Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_5g2qt",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Regional Operations Admin",
+        "newUserEmail": "test.admin.2704.ops@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_hueez0d",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:12.718Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_0c4dx",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Executive Test Manager",
+        "newUserEmail": "test.mgr.2690.corp@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_jnj4z1r",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:12.700Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_y5pzw",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Nameless Agent",
+        "newUserEmail": "test.no.user@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Marcus Brooks (Sales Director & Manager)",
+        "createdByRole": "SALES_MANAGER"
+      },
+      "id": "act_90po6wz",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:20:12.686Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "TRAVEL_EMAIL_DISPATCHED",
+      "metadata": {
+        "from": "ticketing@travelocase.com",
+        "templateTitle": "Flight Authorization & Card Verification Request",
+        "recipient": "arthur.w@wellington-holdings.co.uk",
+        "subject": "[Booking ID: #1008] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Wellesley",
+        "isCustomized": true
+      },
+      "id": "act_rwctqn5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:34.493Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_99hl6z7",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> LHR (London Heathrow)",
+        "airline": "British Airways",
+        "authenticityScore": 100,
+        "assignedTo": "Sophie Martin"
+      },
+      "id": "act_dhup0az",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:33.741Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "LHR (London) -> DXB (Dubai)",
+        "airline": "Emirates",
+        "authenticityScore": 100,
+        "assignedTo": "Oliver Thorne"
+      },
+      "id": "act_fy4jhzj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:33.732Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_rjwzv",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Sophie Martin",
+        "newUserEmail": "sophie.m@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Marcus Brooks (Sales Director & Manager)",
+        "createdByRole": "SALES_MANAGER"
+      },
+      "id": "act_ste3f7e",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.835Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_cs_agent_d2iph",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Liam Henderson",
+        "newUserEmail": "liam.h@travelocase.com",
+        "newUserRole": "CS_AGENT",
+        "departmentId": "dept_cs",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_iw0fcru",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.812Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_charging_manager_mnveh",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Claire Beauchamp",
+        "newUserEmail": "claire.b@travelocase.com",
+        "newUserRole": "CHARGING_MANAGER",
+        "departmentId": "dept_charging",
+        "createdByName": "Rachel Vance (Operations Admin)",
+        "createdByRole": "ADMIN"
+      },
+      "id": "act_ykbl43l",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.802Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_agent_py58e",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Oliver Thorne",
+        "newUserEmail": "oliver.t@travelocase.com",
+        "newUserRole": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_0kqq5yf",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.794Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_sales_manager_1z3sy",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Julian Sterling",
+        "newUserEmail": "julian.s@travelocase.com",
+        "newUserRole": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_n0kp7r9",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.785Z"
+    },
+    {
+      "entityType": "USER",
+      "entityId": "usr_admin_oveza",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "USER_CREATED",
+      "toState": "ACTIVE",
+      "metadata": {
+        "newUserName": "Victoria Vance",
+        "newUserEmail": "victoria.v@travelocase.com",
+        "newUserRole": "ADMIN",
+        "departmentId": "dept_admin",
+        "createdByName": "Alex Thorne (Super Admin)",
+        "createdByRole": "SUPER_ADMIN"
+      },
+      "id": "act_9xg7hia",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:14:26.775Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "SALES_MANAGER",
+        "cardLast4": "1548",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_kwx7kyj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:02:36.017Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "TRAVEL_EMAIL_DISPATCHED",
+      "metadata": {
+        "from": "ticketing@travelocase.com",
+        "templateTitle": "Flight Authorization & Card Verification Request",
+        "recipient": "arthur.w@wellington-holdings.co.uk",
+        "subject": "[Booking ID: #1006] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Wellesley",
+        "isCustomized": true
+      },
+      "id": "act_xf457ay",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:00:30.220Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_gfijvlo",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> LHR (London Heathrow)",
+        "airline": "British Airways",
+        "authenticityScore": 100,
+        "assignedTo": "David Miller (Travel Booking Agent)"
+      },
+      "id": "act_ebjaoq6",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:00:29.335Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "LHR (London) -> DXB (Dubai)",
+        "airline": "Emirates",
+        "authenticityScore": 100,
+        "assignedTo": "Sarah Chen (Senior Flight Specialist)"
+      },
+      "id": "act_6rojquj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-11T10:00:29.315Z"
+    },
+    {
+      "id": "act_001",
+      "tenantId": "tenant_acme",
+      "entityType": "LEAD",
+      "entityId": "lead_flight_05",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "SEA -> SIN",
+        "airline": "Singapore Airlines",
+        "amount": 36000
+      },
+      "createdAt": "2026-09-05T09:00:00Z"
+    },
+    {
+      "id": "act_002",
+      "tenantId": "tenant_acme",
+      "entityType": "LEAD",
+      "entityId": "lead_flight_05",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen",
+      "actorRole": "SALES_AGENT",
+      "action": "TRANSITION_TO_SALE",
+      "fromState": "QUALIFIED",
+      "toState": "SALE",
+      "metadata": {
+        "route": "SEA -> SIN",
+        "dealValue": 36000
+      },
+      "createdAt": "2026-09-10T15:30:00Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_gb8wh",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_gb8wh",
+        "name": "Regional Operations Admin",
+        "username": "test.admin.1462",
+        "email": "test.admin.1462.ops@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_dgl4bvm",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:46:51.469Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_srn6d",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_srn6d",
+        "name": "Executive Test Manager",
+        "username": "test.mgr.1451",
+        "email": "test.mgr.1451.corp@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_3j7hmrg",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:46:51.459Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_ejs2r",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_ejs2r",
+        "name": "Automated Test Agent",
+        "username": "test.agent.1430",
+        "email": "test.agent.1430@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Marcus Brooks (Sales Director & Manager)",
+        "creatorRole": "SALES_MANAGER"
+      },
+      "id": "aud_bocrhy1",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:46:51.440Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "LEADS_BULK_ASSIGNED",
+      "resource": "Batch:3_Leads",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "assignedCount": 3,
+        "targetAgentId": "usr_sales_agent2",
+        "targetAgentName": "David Miller (Travel Booking Agent)",
+        "targetAgentUsername": "david.miller",
+        "leadIds": [
+          "lead_99hl6z7",
+          "lead_xqil2py",
+          "lead_gfijvlo"
+        ],
+        "bookingNumbers": [
+          1009,
+          1008,
+          1007
+        ]
+      },
+      "id": "aud_y0uusqf",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:46:40.362Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "LEAD_ASSIGNED",
+      "resource": "Lead:lead_99hl6z7",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "leadId": "lead_99hl6z7",
+        "bookingNumber": 1009,
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "previousAgent": "Sophie Martin",
+        "assignedBy": "Marcus Brooks (Sales Director & Manager)"
+      },
+      "id": "aud_nkve0lh",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:46:40.341Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_8l5wv",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_8l5wv",
+        "name": "Regional Operations Admin",
+        "username": "test.admin.2099",
+        "email": "test.admin.2099.ops@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_f2wlplp",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:28:02.106Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_brocj",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_brocj",
+        "name": "Executive Test Manager",
+        "username": "test.mgr.2088",
+        "email": "test.mgr.2088.corp@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_7h1oee1",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:28:02.096Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_9ryd8",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_9ryd8",
+        "name": "Automated Test Agent",
+        "username": "test.agent.2064",
+        "email": "test.agent.2064@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Marcus Brooks (Sales Director & Manager)",
+        "creatorRole": "SALES_MANAGER"
+      },
+      "id": "aud_czkrrbf",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:28:02.076Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_pkpqp",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_pkpqp",
+        "name": "Regional Operations Admin",
+        "username": "test.admin.5554",
+        "email": "test.admin.5554.ops@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_nywdps9",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:21:05.568Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_yvwag",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_yvwag",
+        "name": "Executive Test Manager",
+        "username": "test.mgr.5535",
+        "email": "test.mgr.5535.corp@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_9v7jdhf",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:21:05.547Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_xpgob",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_xpgob",
+        "name": "Automated Test Agent",
+        "username": "test.agent.5491",
+        "email": "test.agent.5491@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Marcus Brooks (Sales Director & Manager)",
+        "creatorRole": "SALES_MANAGER"
+      },
+      "id": "aud_34qkqzm",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:21:05.515Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_cs_manager_cmrd9",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_cs_manager_cmrd9",
+        "name": "Incomplete Manager 2",
+        "email": "mgr.nousername.2964@travelocase.com",
+        "role": "CS_MANAGER",
+        "departmentId": "dept_cs",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_i06a4xk",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:32.972Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_qe2vc",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_qe2vc",
+        "name": "Regional Operations Admin",
+        "email": "test.admin.2947.ops@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_nu22lmr",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:32.955Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_len71",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_len71",
+        "name": "Executive Test Manager",
+        "email": "test.mgr.2938.corp@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_watv7c3",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:32.945Z"
+    },
+    {
+      "actorId": "usr_sales_agent1",
+      "actorEmail": "sarah.chen@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:SALES_AGENT",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "SALES_AGENT",
+        "targetRole": "SALES_AGENT",
+        "reason": "Individual Agent / Operator roles cannot create new users."
+      },
+      "id": "aud_6w2vxh4",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:12.779Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_cs_manager_ppoe4",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_cs_manager_ppoe4",
+        "name": "Incomplete Manager 2",
+        "email": "mgr.nousername.2735@travelocase.com",
+        "role": "CS_MANAGER",
+        "departmentId": "dept_cs",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_rxl7pou",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:12.743Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_5g2qt",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_5g2qt",
+        "name": "Regional Operations Admin",
+        "email": "test.admin.2704.ops@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_92ovjwl",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:12.718Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_0c4dx",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_0c4dx",
+        "name": "Executive Test Manager",
+        "email": "test.mgr.2690.corp@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_b111wkw",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:12.700Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_y5pzw",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_y5pzw",
+        "name": "Nameless Agent",
+        "email": "test.no.user@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Marcus Brooks (Sales Director & Manager)",
+        "creatorRole": "SALES_MANAGER"
+      },
+      "id": "aud_uoob0m4",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:20:12.686Z"
+    },
+    {
+      "actorId": "usr_sales_agent1",
+      "actorEmail": "sarah.chen@travelocase.com",
+      "action": "TRAVEL_CONFIRMATION_EMAIL_DISPATCHED",
+      "resource": "Lead:lead_xqil2py",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "from": "ticketing@travelocase.com",
+        "templateId": "flight_auth_01",
+        "recipient": "arthur.w@wellington-holdings.co.uk",
+        "subject": "[Booking ID: #1008] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Wellesley"
+      },
+      "id": "aud_qik741u",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:34.493Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_99hl6z7",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "eleanor@aquitaine-estates.fr",
+        "route": "JFK (New York) -> LHR (London Heathrow)"
+      },
+      "id": "aud_q24ilod",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:33.741Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_xqil2py",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "arthur.w@wellington-holdings.co.uk",
+        "route": "LHR (London) -> DXB (Dubai)"
+      },
+      "id": "aud_c6x10lk",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:33.732Z"
+    },
+    {
+      "actorId": "usr_sales_agent1",
+      "actorEmail": "sarah.chen@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:SALES_AGENT",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "SALES_AGENT",
+        "targetRole": "SALES_AGENT",
+        "reason": "Individual Agent / Operator roles cannot create new users."
+      },
+      "id": "aud_wmlv6il",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.858Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:CHARGING_MANAGER",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "SALES_MANAGER",
+        "targetRole": "CHARGING_MANAGER",
+        "reason": "Department Managers can only create Agents/Operators for their department, not Admins or other Managers."
+      },
+      "id": "aud_jrsezeq",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.851Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:ADMIN",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "SALES_MANAGER",
+        "targetRole": "ADMIN",
+        "reason": "Department Managers can only create Agents/Operators for their department, not Admins or other Managers."
+      },
+      "id": "aud_h7gru12",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.844Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_rjwzv",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_rjwzv",
+        "name": "Sophie Martin",
+        "email": "sophie.m@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Marcus Brooks (Sales Director & Manager)",
+        "creatorRole": "SALES_MANAGER"
+      },
+      "id": "aud_k70czp7",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.835Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:ADMIN",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "ADMIN",
+        "targetRole": "ADMIN",
+        "reason": "Admins cannot create Super Admins or other Admins. Only Department Managers and Agents can be created."
+      },
+      "id": "aud_659g174",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.827Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATION_DENIED",
+      "resource": "Role:SUPER_ADMIN",
+      "ipAddress": "127.0.0.1",
+      "status": "DENIED",
+      "payload": {
+        "actorRole": "ADMIN",
+        "targetRole": "SUPER_ADMIN",
+        "reason": "Admins cannot create Super Admins or other Admins. Only Department Managers and Agents can be created."
+      },
+      "id": "aud_n7dy8re",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.820Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_cs_agent_d2iph",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_cs_agent_d2iph",
+        "name": "Liam Henderson",
+        "email": "liam.h@travelocase.com",
+        "role": "CS_AGENT",
+        "departmentId": "dept_cs",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_jb701u7",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.812Z"
+    },
+    {
+      "actorId": "usr_admin",
+      "actorEmail": "admin.rachel@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_charging_manager_mnveh",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_charging_manager_mnveh",
+        "name": "Claire Beauchamp",
+        "email": "claire.b@travelocase.com",
+        "role": "CHARGING_MANAGER",
+        "departmentId": "dept_charging",
+        "creatorName": "Rachel Vance (Operations Admin)",
+        "creatorRole": "ADMIN"
+      },
+      "id": "aud_n6pfp9i",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.802Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_agent_py58e",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_agent_py58e",
+        "name": "Oliver Thorne",
+        "email": "oliver.t@travelocase.com",
+        "role": "SALES_AGENT",
+        "departmentId": "dept_sales",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_6g2e4ql",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.794Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_sales_manager_1z3sy",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_sales_manager_1z3sy",
+        "name": "Julian Sterling",
+        "email": "julian.s@travelocase.com",
+        "role": "SALES_MANAGER",
+        "departmentId": "dept_sales",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_lvd2cpk",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.785Z"
+    },
+    {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "USER_CREATED",
+      "resource": "User:usr_admin_oveza",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "userId": "usr_admin_oveza",
+        "name": "Victoria Vance",
+        "email": "victoria.v@travelocase.com",
+        "role": "ADMIN",
+        "departmentId": "dept_admin",
+        "creatorName": "Alex Thorne (Super Admin)",
+        "creatorRole": "SUPER_ADMIN"
+      },
+      "id": "aud_bxqmaf1",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:14:26.775Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_dar1t6t:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Marcus Brooks (Sales Director & Manager)",
+        "actorRole": "SALES_MANAGER",
+        "leadId": "lead_dar1t6t",
+        "cardLast4": "1548",
+        "timestamp": "2026-09-11T10:02:36.016Z"
+      },
+      "id": "aud_r6rzbtw",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:02:36.017Z"
+    },
+    {
+      "actorId": "usr_sales_agent1",
+      "actorEmail": "sarah.chen@travelocase.com",
+      "action": "TRAVEL_CONFIRMATION_EMAIL_DISPATCHED",
+      "resource": "Lead:lead_dar1t6t",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "from": "ticketing@travelocase.com",
+        "templateId": "flight_auth_01",
+        "recipient": "arthur.w@wellington-holdings.co.uk",
+        "subject": "[Booking ID: #1006] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Wellesley"
+      },
+      "id": "aud_cas2pzk",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:00:30.220Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_gfijvlo",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "eleanor@aquitaine-estates.fr",
+        "route": "JFK (New York) -> LHR (London Heathrow)"
+      },
+      "id": "aud_4f363di",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:00:29.335Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_dar1t6t",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "arthur.w@wellington-holdings.co.uk",
+        "route": "LHR (London) -> DXB (Dubai)"
+      },
+      "id": "aud_djev1pq",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-11T10:00:29.316Z"
+    },
+    {
+      "id": "aud_01",
+      "tenantId": "tenant_travelocase",
+      "actorEmail": "sarah.chen@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_flight_03",
+      "ipAddress": "198.51.100.22",
+      "status": "SUCCESS",
+      "payload": {
+        "actor": "Sarah Chen",
+        "role": "SALES_AGENT",
+        "cardLast4": "3311",
+        "reason": "Manager clearance granted for ticketing"
+      },
+      "timestamp": "2026-09-10T15:00:00Z"
+    },
+    {
+      "id": "aud_02",
+      "tenantId": "tenant_travelocase",
+      "actorEmail": "lucas.silva@travelocase.com",
+      "action": "TRANSACTION_CHARGE_CAPTURED",
+      "resource": "Transaction:txn_89412",
+      "ipAddress": "10.0.4.19",
+      "status": "SUCCESS",
+      "payload": {
+        "amount": 36000,
+        "currency": "USD",
+        "gateway": "AIRLINE_COMMERCIAL_SETTLE"
+      },
+      "timestamp": "2026-09-10T16:20:00Z"
+    }
+  ],
+  "roundRobinIndex": 4,
+  "lastBookingNumber": 1009,
+  "lastPersistedAt": "2026-09-11T10:46:51.469Z"
+}
