@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { User, Lead, Transaction, Customer, Ticket, AuditLog, ActivityLog, LeadStatus, TicketStatus } from "@/types";
 import { Navbar } from "@/components/layout/Navbar";
 import { SalesView } from "@/components/dashboard/SalesView";
@@ -12,8 +13,10 @@ import { LeadWorkspaceModal } from "@/components/leads/LeadWorkspaceModal";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [activeView, setActiveView] = useState<string>("sales");
 
   // Domain states
@@ -62,8 +65,16 @@ export default function DashboardPage() {
       }
       if (usersRes.success && Array.isArray(usersRes.users)) {
         setUsers(usersRes.users);
-        if (!currentUser && usersRes.users.length > 0) {
-          setCurrentUser(usersRes.users[0]);
+        const sessionStr = typeof window !== "undefined" ? localStorage.getItem("kritya_auth_user") : null;
+        if (sessionStr) {
+          try {
+            const parsed = JSON.parse(sessionStr);
+            const found = usersRes.users.find((u: User) => u.id === parsed.id);
+            if (found) {
+              setCurrentUser(found);
+              localStorage.setItem("kritya_auth_user", JSON.stringify(found));
+            }
+          } catch {}
         }
       }
     } catch (err) {
@@ -71,10 +82,45 @@ export default function DashboardPage() {
     }
   }, [currentUser, selectedLeadId]);
 
+  // Session verification on mount - redirect to /login if unauthenticated
+  useEffect(() => {
+    const sessionStr = localStorage.getItem("kritya_auth_user");
+    if (!sessionStr) {
+      router.replace("/login");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(sessionStr);
+      if (parsed && parsed.id) {
+        setCurrentUser(parsed);
+        setIsAuthChecking(false);
+      } else {
+        router.replace("/login");
+      }
+    } catch {
+      router.replace("/login");
+    }
+  }, [router]);
+
   // Initial load
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("kritya_auth_user");
+    document.cookie = "kritya_user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    setCurrentUser(null);
+    router.replace("/login");
+  };
+
+  // User switcher handler
+  const handleSelectUser = (user: User) => {
+    setCurrentUser(user);
+    localStorage.setItem("kritya_auth_user", JSON.stringify(user));
+    document.cookie = `kritya_user_id=${user.id}; path=/; max-age=604800; SameSite=Lax`;
+  };
 
   // Role-based view protection
   useEffect(() => {
@@ -226,10 +272,17 @@ export default function DashboardPage() {
     }
   };
 
-  if (!currentUser) {
+  if (isAuthChecking || !currentUser) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 text-slate-500 font-mono text-xs">
-        Initializing Enterprise CRM Engine...
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 animate-pulse">
+            <span className="text-white font-bold text-lg font-sans">K</span>
+          </div>
+          <span className="text-xs font-semibold text-slate-600 font-mono tracking-wider animate-pulse">
+            Verifying Workspace Session...
+          </span>
+        </div>
       </div>
     );
   }
@@ -243,7 +296,8 @@ export default function DashboardPage() {
       <Navbar
         currentUser={currentUser}
         users={users}
-        onSelectUser={(u) => setCurrentUser(u)}
+        onSelectUser={handleSelectUser}
+        onLogout={handleLogout}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
         onOpenCreateUserModal={() => setIsCreateUserModalOpen(true)}
         activeView={activeView}

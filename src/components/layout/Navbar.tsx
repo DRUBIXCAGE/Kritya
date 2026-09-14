@@ -20,6 +20,7 @@ import {
   Search,
   Lock,
   UserPlus,
+  LogOut,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -28,6 +29,7 @@ interface NavbarProps {
   onSelectUser: (user: User) => void;
   onOpenIngestModal: () => void;
   onOpenCreateUserModal?: () => void;
+  onLogout?: () => void;
   activeView: string;
   setActiveView: (view: string) => void;
   onSearchBookingId?: (bookingId: string) => void;
@@ -41,6 +43,7 @@ export function Navbar({
   onSelectUser,
   onOpenIngestModal,
   onOpenCreateUserModal,
+  onLogout,
   activeView,
   setActiveView,
   onSearchBookingId,
@@ -274,6 +277,19 @@ export function Navbar({
                 ▼
               </div>
             </div>
+
+            {/* Sign Out Action */}
+            {onLogout && (
+              <button
+                type="button"
+                onClick={onLogout}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition active:scale-95 shrink-0"
+                title="Sign out of Kritya CRM"
+              >
+                <LogOut className="h-3.5 w-3.5 text-slate-500 hover:text-rose-600" />
+                <span className="hidden md:inline">Sign Out</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
