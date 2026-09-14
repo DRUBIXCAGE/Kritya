@@ -113,28 +113,13 @@ export function LeadDetailSplitPane({
     }
   }, [activeTab, canViewFootprint, canViewAuditLogs]);
 
-  if (!lead) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-500 bg-slate-950/40 border-l border-slate-800">
-        <Plane className="h-12 w-12 stroke-[1.2] mb-3 text-slate-700" />
-        <h3 className="text-sm font-semibold text-slate-400">No Booking Selected</h3>
-        <p className="text-xs text-slate-600 mt-1 max-w-xs">
-          Select any flight booking record to inspect passengers, routes, masked payment card details, and dispatch travel confirmations.
-        </p>
-      </div>
-    );
-  }
-
-  const booking = lead.bookingDetails;
-  const card = lead.cardDetails;
-  const last4 = card?.cardNumber ? card.cardNumber.slice(-4) : "4242";
-
   // 3-Minute Card Visibility Countdown Timer State
   const [remainingCardSeconds, setRemainingCardSeconds] = useState<number | null>(null);
 
   // Sync remaining seconds when lead/card changes
   useEffect(() => {
-    if (!card?.isAccessGrantedToAgent) {
+    const card = lead?.cardDetails;
+    if (!lead || !card?.isAccessGrantedToAgent) {
       setRemainingCardSeconds(null);
       setIsCardUnmasked(false);
       return;
@@ -162,23 +147,25 @@ export function LeadDetailSplitPane({
         body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
       }).catch(() => {});
     }
-  }, [card?.isAccessGrantedToAgent, card?.accessExpiresAt, card?.grantedAt, lead.id, currentUser.id]);
+  }, [lead?.cardDetails?.isAccessGrantedToAgent, lead?.cardDetails?.accessExpiresAt, lead?.cardDetails?.grantedAt, lead?.id, currentUser.id]);
 
   // Active countdown timer ticker (1-second tick)
   useEffect(() => {
-    if (remainingCardSeconds === null || remainingCardSeconds <= 0) return;
+    if (!lead || remainingCardSeconds === null || remainingCardSeconds <= 0) return;
 
     const timer = setInterval(() => {
       setRemainingCardSeconds((prev) => {
         if (prev === null || prev <= 1) {
           setIsCardUnmasked(false);
-          fetch(`/api/leads/${lead.id}/card`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
-          })
-            .then(() => onRefresh())
-            .catch(() => {});
+          if (lead?.id) {
+            fetch(`/api/leads/${lead.id}/card`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+            })
+              .then(() => onRefresh())
+              .catch(() => {});
+          }
           return 0;
         }
         return prev - 1;
@@ -186,7 +173,23 @@ export function LeadDetailSplitPane({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [remainingCardSeconds, lead.id, currentUser.id, onRefresh]);
+  }, [remainingCardSeconds, lead?.id, currentUser.id, onRefresh]);
+
+  if (!lead) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-500 bg-slate-950/40 border-l border-slate-800">
+        <Plane className="h-12 w-12 stroke-[1.2] mb-3 text-slate-700" />
+        <h3 className="text-sm font-semibold text-slate-400">No Booking Selected</h3>
+        <p className="text-xs text-slate-600 mt-1 max-w-xs">
+          Select any flight booking record to inspect passengers, routes, masked payment card details, and dispatch travel confirmations.
+        </p>
+      </div>
+    );
+  }
+
+  const booking = lead.bookingDetails;
+  const card = lead.cardDetails;
+  const last4 = card?.cardNumber ? card.cardNumber.slice(-4) : "4242";
 
   const isCardExpired = (!card?.isAccessGrantedToAgent && !!card?.grantedAt) || (card?.isAccessGrantedToAgent && remainingCardSeconds === 0);
   const isCardActive = !!card?.isAccessGrantedToAgent && (remainingCardSeconds === null || remainingCardSeconds > 0);

@@ -229,28 +229,13 @@ export function LeadWorkspaceModal({
     }
   }, [lead, selectedTemplateId, currentUser.name]);
 
-  if (!isOpen || !lead) return null;
-
-  const booking = lead.bookingDetails;
-  const card = lead.cardDetails;
-  const last4 = card?.cardNumber ? card.cardNumber.slice(-4) : "4242";
-
-  // RBAC & Permission Rules
-  const isSalesAgent = currentUser.role === "SALES_AGENT";
-  const isManagerOrAdmin =
-    currentUser.role === "SALES_MANAGER" ||
-    currentUser.role === "ADMIN" ||
-    currentUser.role === "SUPER_ADMIN";
-  const isChargingRole =
-    currentUser.role === "CHARGING_MANAGER" ||
-    currentUser.role === "CHARGING_OPERATOR";
-
   // 3-Minute Card Visibility Countdown Timer State
   const [remainingCardSeconds, setRemainingCardSeconds] = useState<number | null>(null);
 
   // Sync remaining seconds when lead/card changes
   useEffect(() => {
-    if (!card?.isAccessGrantedToAgent) {
+    const card = lead?.cardDetails;
+    if (!lead || !card?.isAccessGrantedToAgent) {
       setRemainingCardSeconds(null);
       setIsCardUnmasked(false);
       return;
@@ -278,24 +263,26 @@ export function LeadWorkspaceModal({
         body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
       }).catch(() => {});
     }
-  }, [card?.isAccessGrantedToAgent, card?.accessExpiresAt, card?.grantedAt, lead.id, currentUser.id]);
+  }, [lead?.cardDetails?.isAccessGrantedToAgent, lead?.cardDetails?.accessExpiresAt, lead?.cardDetails?.grantedAt, lead?.id, currentUser.id]);
 
   // Active countdown timer ticker (1-second tick)
   useEffect(() => {
-    if (remainingCardSeconds === null || remainingCardSeconds <= 0) return;
+    if (!lead || remainingCardSeconds === null || remainingCardSeconds <= 0) return;
 
     const timer = setInterval(() => {
       setRemainingCardSeconds((prev) => {
         if (prev === null || prev <= 1) {
           setIsCardUnmasked(false);
           // Call server to expire and log to fingerprinting
-          fetch(`/api/leads/${lead.id}/card`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
-          })
-            .then(() => onRefresh())
-            .catch(() => {});
+          if (lead?.id) {
+            fetch(`/api/leads/${lead.id}/card`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+            })
+              .then(() => onRefresh())
+              .catch(() => {});
+          }
           return 0;
         }
         return prev - 1;
@@ -303,7 +290,23 @@ export function LeadWorkspaceModal({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [remainingCardSeconds, lead.id, currentUser.id, onRefresh]);
+  }, [remainingCardSeconds, lead?.id, currentUser.id, onRefresh]);
+
+  if (!isOpen || !lead) return null;
+
+  const booking = lead.bookingDetails;
+  const card = lead.cardDetails;
+  const last4 = card?.cardNumber ? card.cardNumber.slice(-4) : "4242";
+
+  // RBAC & Permission Rules
+  const isSalesAgent = currentUser.role === "SALES_AGENT";
+  const isManagerOrAdmin =
+    currentUser.role === "SALES_MANAGER" ||
+    currentUser.role === "ADMIN" ||
+    currentUser.role === "SUPER_ADMIN";
+  const isChargingRole =
+    currentUser.role === "CHARGING_MANAGER" ||
+    currentUser.role === "CHARGING_OPERATOR";
 
   const isCardExpired = (!card?.isAccessGrantedToAgent && !!card?.grantedAt) || (card?.isAccessGrantedToAgent && remainingCardSeconds === 0);
   const isCardActive = !!card?.isAccessGrantedToAgent && (remainingCardSeconds === null || remainingCardSeconds > 0);
