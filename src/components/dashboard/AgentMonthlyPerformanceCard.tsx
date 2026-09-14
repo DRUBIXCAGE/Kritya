@@ -17,6 +17,8 @@ import {
   PhoneCall,
   UserCheck,
   ChevronDown,
+  ChevronUp,
+  EyeOff,
   Sparkles,
   Zap,
 } from "lucide-react";
@@ -25,12 +27,14 @@ interface AgentMonthlyPerformanceCardProps {
   leads: Lead[];
   currentUser: User;
   users?: User[];
+  onHide?: () => void;
 }
 
 export function AgentMonthlyPerformanceCard({
   leads,
   currentUser,
   users = [],
+  onHide,
 }: AgentMonthlyPerformanceCardProps) {
   const isSalesAgent = currentUser.role === "SALES_AGENT";
   const isManagerOrAdmin = !isSalesAgent;
@@ -219,6 +223,20 @@ export function AgentMonthlyPerformanceCard({
             </select>
             <ChevronDown className="h-3.5 w-3.5 text-indigo-600 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
+
+          {/* Hide Dashboard Button */}
+          {onHide && (
+            <button
+              type="button"
+              onClick={onHide}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition shrink-0 active:scale-95 shadow-xs"
+              title="Hide summarized performance dashboard"
+            >
+              <ChevronUp className="h-3.5 w-3.5 text-slate-600" />
+              <span className="hidden sm:inline">Hide Dashboard</span>
+              <span className="sm:hidden">Hide</span>
+            </button>
+          )}
         </div>
       </div>
 

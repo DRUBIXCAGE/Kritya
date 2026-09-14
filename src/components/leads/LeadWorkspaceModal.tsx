@@ -245,20 +245,83 @@ export function LeadWorkspaceModal({
     currentUser.role === "CHARGING_MANAGER" ||
     currentUser.role === "CHARGING_OPERATOR";
 
-  const canAgentViewCard = card?.isAccessGrantedToAgent || false;
+  // 3-Minute Card Visibility Countdown Timer State
+  const [remainingCardSeconds, setRemainingCardSeconds] = useState<number | null>(null);
+
+  // Sync remaining seconds when lead/card changes
+  useEffect(() => {
+    if (!card?.isAccessGrantedToAgent) {
+      setRemainingCardSeconds(null);
+      setIsCardUnmasked(false);
+      return;
+    }
+
+    const calculateRemaining = () => {
+      if (card.accessExpiresAt) {
+        return Math.max(0, Math.floor((new Date(card.accessExpiresAt).getTime() - Date.now()) / 1000));
+      }
+      if (card.grantedAt) {
+        const expires = new Date(card.grantedAt).getTime() + 3 * 60 * 1000;
+        return Math.max(0, Math.floor((expires - Date.now()) / 1000));
+      }
+      return 180;
+    };
+
+    const initialRemaining = calculateRemaining();
+    setRemainingCardSeconds(initialRemaining);
+
+    if (initialRemaining <= 0) {
+      setIsCardUnmasked(false);
+      fetch(`/api/leads/${lead.id}/card`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+      }).catch(() => {});
+    }
+  }, [card?.isAccessGrantedToAgent, card?.accessExpiresAt, card?.grantedAt, lead.id, currentUser.id]);
+
+  // Active countdown timer ticker (1-second tick)
+  useEffect(() => {
+    if (remainingCardSeconds === null || remainingCardSeconds <= 0) return;
+
+    const timer = setInterval(() => {
+      setRemainingCardSeconds((prev) => {
+        if (prev === null || prev <= 1) {
+          setIsCardUnmasked(false);
+          // Call server to expire and log to fingerprinting
+          fetch(`/api/leads/${lead.id}/card`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+          })
+            .then(() => onRefresh())
+            .catch(() => {});
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [remainingCardSeconds, lead.id, currentUser.id, onRefresh]);
+
+  const isCardExpired = (!card?.isAccessGrantedToAgent && !!card?.grantedAt) || (card?.isAccessGrantedToAgent && remainingCardSeconds === 0);
+  const isCardActive = !!card?.isAccessGrantedToAgent && (remainingCardSeconds === null || remainingCardSeconds > 0);
+
+  const canAgentViewCard = isCardActive;
   const isAuthorizedToUnmask = isManagerOrAdmin || isChargingRole || canAgentViewCard;
 
   // STRICT RBAC: Agents CANNOT view Digital Footprint or Audit Trail
   const canViewFootprint = !isSalesAgent && !!ROLE_PERMISSIONS[currentUser.role]?.canViewDigitalFootprint;
   const canViewAuditLogs = !isSalesAgent && !!ROLE_PERMISSIONS[currentUser.role]?.canViewAuditLogs;
 
-  // Reveal Card & Log to Digital Footprint
+  // Reveal Card & Log to Digital Footprint / Fingerprinting
   const handleRevealCard = async () => {
     if (!isAuthorizedToUnmask) return;
 
     if (!isCardUnmasked) {
       try {
-        await fetch(`/api/leads/${lead.id}/card`, {
+        const res = await fetch(`/api/leads/${lead.id}/card`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -266,15 +329,38 @@ export function LeadWorkspaceModal({
             actorId: currentUser.id,
           }),
         });
+        const data = await res.json();
+        if (!data.success && data.error) {
+          alert(data.error);
+          setIsCardUnmasked(false);
+          await onRefresh();
+          return;
+        }
         await onRefresh();
       } catch (err) {
         console.error("Failed to log card view:", err);
       }
+      setIsCardUnmasked(true);
+    } else {
+      // Concealing card -> log to fingerprinting
+      try {
+        await fetch(`/api/leads/${lead.id}/card`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "CONCEAL",
+            actorId: currentUser.id,
+          }),
+        });
+        await onRefresh();
+      } catch (err) {
+        console.error("Failed to log card conceal:", err);
+      }
+      setIsCardUnmasked(false);
     }
-    setIsCardUnmasked(!isCardUnmasked);
   };
 
-  // Manager Grants Card Clearance to Agent
+  // Manager Grants Card Clearance to Agent (3-Minute Window, Logged in Fingerprinting)
   const handleGrantCardClearance = async () => {
     setIsGrantingCard(true);
     try {
@@ -287,6 +373,7 @@ export function LeadWorkspaceModal({
         }),
       });
       if (res.ok) {
+        setRemainingCardSeconds(180);
         await onRefresh();
       }
     } catch (err) {
@@ -1610,6 +1697,39 @@ export function LeadWorkspaceModal({
                 </span>
               </div>
 
+              {/* 3-Minute Active Visibility Countdown Widget */}
+              {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
+                <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-300 text-xs flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span className="font-semibold text-emerald-900">
+                      {isSalesAgent ? "Card Access Active (3-Min Window)" : `Clearance Active for ${lead.assignedToName || "Agent"}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-xs px-2.5 py-1 rounded bg-white text-emerald-800 border border-emerald-300 shadow-2xs">
+                    <Clock className="h-3.5 w-3.5 text-emerald-600 animate-spin" />
+                    <span>{Math.floor(remainingCardSeconds / 60)}:{(remainingCardSeconds % 60).toString().padStart(2, "0")}</span>
+                    <span className="text-[10px] text-emerald-600 font-normal">remaining</span>
+                  </div>
+                </div>
+              )}
+
+              {/* 3-Minute Access Expired Banner */}
+              {isCardExpired && (
+                <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs flex items-center justify-between text-rose-800 shadow-xs">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <Clock className="h-4 w-4 text-rose-600 shrink-0" />
+                    <span>Card access expired (3-minute authorization elapsed)</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 font-bold">
+                    Re-mask Enforced
+                  </span>
+                </div>
+              )}
+
               {/* Masked Card Visual Card */}
               <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-950 border border-slate-700 text-xs space-y-3 text-white shadow-md">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
@@ -1652,10 +1772,10 @@ export function LeadWorkspaceModal({
                     className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow transition active:scale-95"
                   >
                     {isCardUnmasked ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    <span>{isCardUnmasked ? "Hide Unmasked Card" : "Reveal Unmasked Card (Logged)"}</span>
+                    <span>{isCardUnmasked ? "Hide Unmasked Card (Logged)" : "Reveal Unmasked Card (Logged to Footprint)"}</span>
                   </button>
                   <p className="text-[10px] text-slate-500 text-center font-mono">
-                    ⚠️ Viewing card details is logged into the digital footprint with actor ({currentUser.name}) and timestamp.
+                    ⚠️ Viewing and concealing card details are permanently logged into the digital footprint with actor ({currentUser.name}) and timestamp.
                   </p>
                 </div>
               ) : (
@@ -1665,13 +1785,13 @@ export function LeadWorkspaceModal({
                     <span>Card Partially Hidden for Sales Agent</span>
                   </div>
                   <p className="text-[11px] text-slate-700 leading-relaxed">
-                    Card numbers and CVV are masked. Send authentication email to the customer, confirm on call, then request <strong>Sales Manager</strong> clearance.
+                    Card numbers and CVV are masked. Send authentication email to the customer, confirm on call, then request <strong>Sales Manager</strong> clearance for a 3-minute view window.
                   </p>
                 </div>
               )}
 
               {/* Manager Grant Authority Panel */}
-              {isManagerOrAdmin && !card?.isAccessGrantedToAgent && (
+              {isManagerOrAdmin && (!card?.isAccessGrantedToAgent || remainingCardSeconds === 0) && (
                 <div className="p-3 rounded-lg bg-indigo-50 border border-indigo-200 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-indigo-900 flex items-center gap-1.5">
@@ -1681,7 +1801,7 @@ export function LeadWorkspaceModal({
                     <span className="text-[10px] font-mono text-indigo-700 font-semibold">Manager Role</span>
                   </div>
                   <p className="text-[11px] text-slate-700">
-                    Grant card access to assigned agent (<strong>{lead.assignedToName || "Sales Agent"}</strong>).
+                    Grant <strong>3-minute temporary card access</strong> to assigned agent (<strong>{lead.assignedToName || "Sales Agent"}</strong>). All views and expirations will be logged in fingerprinting.
                   </p>
                   <button
                     disabled={isGrantingCard}
@@ -1689,15 +1809,15 @@ export function LeadWorkspaceModal({
                     className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow transition active:scale-95 flex items-center justify-center gap-1.5"
                   >
                     <CheckCircle className="h-3.5 w-3.5" />
-                    <span>{isGrantingCard ? "Authorizing..." : "Grant Card Access to Agent"}</span>
+                    <span>{isGrantingCard ? "Authorizing 3-Min Access..." : (isCardExpired ? "Renew 3-Minute Clearance for Agent" : "Grant 3-Minute Card Access to Agent")}</span>
                   </button>
                 </div>
               )}
 
-              {card?.isAccessGrantedToAgent && (
+              {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
                 <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-center text-xs font-mono text-emerald-800 font-semibold flex items-center justify-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>Manager Clearance Granted by {card.grantedByManagerName || "Sales Director"}</span>
+                  <span>3-Minute Manager Clearance Granted by {card.grantedByManagerName || "Sales Director"}</span>
                 </div>
               )}
             </div>
@@ -1708,41 +1828,56 @@ export function LeadWorkspaceModal({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
                     <Globe className="h-4 w-4 text-purple-600" />
-                    Digital Footprint & Telemetry (Manager/Admin Only)
+                    Digital Footprint & Fingerprinting Telemetry (Manager/Admin Only)
                   </span>
                   <span className="text-[10px] font-mono text-slate-500">{lead.footprint.ipAddress}</span>
                 </div>
 
                 <div className="space-y-2 relative before:absolute before:inset-0 before:left-2.5 before:w-0.5 before:bg-slate-200">
                   {lead.footprint.clickstream.map((evt, idx) => {
-                    const isCardEvent = evt.event === "CARD_DETAILS_VIEWED";
+                    const isCardEvent = evt.event.startsWith("CARD_");
+                    const isCardGrant = evt.event === "CARD_ACCESS_GRANTED_BY_MANAGER";
+                    const isCardView = evt.event === "CARD_DETAILS_VIEWED";
+                    const isCardExpiredEvt = evt.event === "CARD_ACCESS_EXPIRED";
+                    const isCardConceal = evt.event === "CARD_DETAILS_CONCEALED";
+
+                    let dotColor = "bg-indigo-500";
+                    let cardBg = "bg-slate-50 border-slate-200";
+                    let titleColor = "text-indigo-700";
+
+                    if (isCardGrant) {
+                      dotColor = "bg-emerald-500";
+                      cardBg = "bg-emerald-50/80 border-emerald-300";
+                      titleColor = "text-emerald-800";
+                    } else if (isCardView) {
+                      dotColor = "bg-amber-500 animate-pulse";
+                      cardBg = "bg-amber-50/80 border-amber-300";
+                      titleColor = "text-amber-800";
+                    } else if (isCardExpiredEvt) {
+                      dotColor = "bg-rose-500";
+                      cardBg = "bg-rose-50/80 border-rose-300";
+                      titleColor = "text-rose-800";
+                    } else if (isCardConceal) {
+                      dotColor = "bg-slate-500";
+                      cardBg = "bg-slate-100 border-slate-300";
+                      titleColor = "text-slate-800";
+                    }
+
                     return (
                       <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
                         <div
-                          className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-white ${
-                            isCardEvent ? "bg-amber-500 animate-pulse" : "bg-indigo-500"
-                          }`}
+                          className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-white ${dotColor}`}
                         />
-                        <div
-                          className={`flex-1 p-2 rounded border ${
-                            isCardEvent
-                              ? "bg-amber-50 border-amber-300"
-                              : "bg-slate-50 border-slate-200"
-                          }`}
-                        >
+                        <div className={`flex-1 p-2 rounded border ${cardBg}`}>
                           <div className="flex items-center justify-between">
-                            <span
-                              className={`font-mono font-bold text-[11px] ${
-                                isCardEvent ? "text-amber-800" : "text-indigo-700"
-                              }`}
-                            >
+                            <span className={`font-mono font-bold text-[11px] ${titleColor}`}>
                               {evt.event}
                             </span>
                             <span className="text-[10px] font-mono text-slate-500">{formatRelativeTime(evt.timestamp)}</span>
                           </div>
                           <div className="text-[10px] font-mono text-slate-700 mt-0.5">{evt.url}</div>
                           {evt.metadata && (
-                            <div className="text-[10px] font-mono text-slate-600 mt-1 pt-1 border-t border-slate-200">
+                            <div className="text-[10px] font-mono text-slate-600 mt-1 pt-1 border-t border-slate-200/80">
                               {JSON.stringify(evt.metadata)}
                             </div>
                           )}

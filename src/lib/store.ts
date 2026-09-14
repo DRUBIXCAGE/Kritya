@@ -476,6 +476,7 @@ class EnterpriseCRMStore {
     options?: { bookingId?: string; search?: string }
   ): Lead[] {
     this.leads.forEach((l) => {
+      this.enforceCardAccessExpiry(l);
       const isConfirmedOrCompleted = ["SALE", "CHARGING", "SUCCESS"].includes(l.status);
       if (isConfirmedOrCompleted) {
         if (!l.salePrice) l.salePrice = l.dealValue || l.ticketPrice || 0;
@@ -564,6 +565,7 @@ class EnterpriseCRMStore {
       return { forbidden: true };
     }
 
+    this.enforceCardAccessExpiry(lead);
     return { lead };
   }
 
@@ -600,33 +602,112 @@ class EnterpriseCRMStore {
     return { success: true, lead };
   }
 
-  // Card View Audit Tracking (Logged directly into Digital Footprint)
+  // Helper: Enforce 3-minute card access expiration for agents
+  enforceCardAccessExpiry(lead: Lead): boolean {
+    if (!lead.cardDetails || !lead.cardDetails.isAccessGrantedToAgent) {
+      return false;
+    }
+
+    let isExpired = false;
+    if (lead.cardDetails.accessExpiresAt) {
+      if (new Date() >= new Date(lead.cardDetails.accessExpiresAt)) {
+        isExpired = true;
+      }
+    } else if (lead.cardDetails.grantedAt) {
+      const grantedTime = new Date(lead.cardDetails.grantedAt).getTime();
+      if (Date.now() >= grantedTime + 3 * 60 * 1000) {
+        isExpired = true;
+      }
+    }
+
+    if (isExpired) {
+      this.expireCardAccess(lead.id, "3-minute clearance window elapsed");
+      return true;
+    }
+
+    return false;
+  }
+
+  // Card View Audit Tracking (Logged directly into Digital Footprint / Fingerprinting)
   logCardView(
     leadId: string,
     actor: User,
-    ipAddress?: string
+    ipAddress?: string,
+    userAgent?: string
   ): { success: boolean; error?: string } {
     const lead = this.leads.find((l) => l.id === leadId);
     if (!lead) return { success: false, error: "Lead not found" };
 
+    // If viewer is sales agent, strictly enforce the 3-minute access window
+    if (actor.role === "SALES_AGENT") {
+      const hasExpired = this.enforceCardAccessExpiry(lead);
+      if (hasExpired || !lead.cardDetails?.isAccessGrantedToAgent) {
+        // Log unauthorized/expired attempt to digital footprint clickstream
+        if (!lead.footprint) {
+          lead.footprint = {
+            id: `fp-${Date.now()}`,
+            leadId: lead.id,
+            ipAddress: ipAddress || "127.0.0.1",
+            userAgent: userAgent || "Enterprise CRM Web Client",
+            clickstream: [],
+            createdAt: new Date().toISOString(),
+          };
+        }
+        lead.footprint.clickstream.push({
+          timestamp: new Date().toISOString(),
+          event: "CARD_ACCESS_DENIED_EXPIRED",
+          url: `/leads/${lead.id}/pci-vault`,
+          metadata: {
+            actorName: actor.name,
+            actorRole: actor.role,
+            actorEmail: actor.email,
+            reason: "3-minute clearance window has elapsed",
+            ipAddress: ipAddress || "127.0.0.1",
+            userAgent: userAgent || "Browser Client",
+          },
+        });
+        this.saveToDatabase();
+        return {
+          success: false,
+          error: "Card access expired. The 3-minute clearance window has elapsed. Request manager clearance to view again.",
+        };
+      }
+    }
+
     const timestamp = new Date().toISOString();
     const last4 = lead.cardDetails?.cardNumber?.slice(-4) || "4242";
 
-    // 1. Append directly to Digital Footprint Clickstream
-    if (lead.footprint) {
-      lead.footprint.clickstream.push({
-        timestamp,
-        event: "CARD_DETAILS_VIEWED",
-        url: `/leads/${lead.id}/pci-vault`,
-        metadata: {
-          viewerName: actor.name,
-          viewerRole: actor.role,
-          viewerEmail: actor.email,
-          ipAddress: ipAddress || "127.0.0.1",
-          cardLast4: last4,
-        },
-      });
+    let remainingSeconds: number | undefined = undefined;
+    if (lead.cardDetails?.accessExpiresAt) {
+      remainingSeconds = Math.max(0, Math.floor((new Date(lead.cardDetails.accessExpiresAt).getTime() - Date.now()) / 1000));
     }
+
+    // 1. Append directly to Digital Footprint Clickstream (Fingerprinting)
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: timestamp,
+      };
+    }
+
+    lead.footprint.clickstream.push({
+      timestamp,
+      event: "CARD_DETAILS_VIEWED",
+      url: `/leads/${lead.id}/pci-vault`,
+      metadata: {
+        viewerName: actor.name,
+        viewerRole: actor.role,
+        viewerEmail: actor.email,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Browser Client",
+        cardLast4: last4,
+        remainingSeconds,
+      },
+    });
 
     // 2. Append to Lead Activity Log
     this.logActivity({
@@ -640,6 +721,7 @@ class EnterpriseCRMStore {
         viewerRole: actor.role,
         cardLast4: last4,
         ipAddress: ipAddress || "127.0.0.1",
+        remainingSeconds,
       },
     });
 
@@ -656,7 +738,50 @@ class EnterpriseCRMStore {
         actorRole: actor.role,
         leadId: lead.id,
         cardLast4: last4,
+        remainingSeconds,
         timestamp,
+      },
+    });
+
+    this.saveToDatabase();
+    return { success: true };
+  }
+
+  // Card Concealed Event (Logged to Digital Footprint / Fingerprinting)
+  logCardConcealed(
+    leadId: string,
+    actor: User,
+    ipAddress?: string,
+    userAgent?: string
+  ): { success: boolean; error?: string } {
+    const lead = this.leads.find((l) => l.id === leadId);
+    if (!lead) return { success: false, error: "Lead not found" };
+
+    const timestamp = new Date().toISOString();
+    const last4 = lead.cardDetails?.cardNumber?.slice(-4) || "4242";
+
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: timestamp,
+      };
+    }
+
+    lead.footprint.clickstream.push({
+      timestamp,
+      event: "CARD_DETAILS_CONCEALED",
+      url: `/leads/${lead.id}/pci-vault`,
+      metadata: {
+        actorName: actor.name,
+        actorRole: actor.role,
+        actorEmail: actor.email,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Browser Client",
+        cardLast4: last4,
       },
     });
 
@@ -1017,10 +1142,12 @@ class EnterpriseCRMStore {
     return { success: true, lead };
   }
 
-  // Manager Grant Protocol for Card View
+  // Manager Grant Protocol for Card View (3-Minute Access Window, Logged in Fingerprinting)
   grantCardAccess(
     leadId: string,
-    manager: User
+    manager: User,
+    ipAddress?: string,
+    userAgent?: string
   ): { success: boolean; lead?: Lead; error?: string } {
     const lead = this.leads.find((l) => l.id === leadId);
     if (!lead) return { success: false, error: "Lead not found" };
@@ -1040,12 +1167,50 @@ class EnterpriseCRMStore {
       return { success: false, error: "No card details attached to this booking." };
     }
 
+    const grantedAt = new Date().toISOString();
+    const accessDurationMinutes = 3;
+    const accessExpiresAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+    const last4 = lead.cardDetails.cardNumber?.slice(-4) || "4242";
+
     lead.cardDetails.isAccessGrantedToAgent = true;
     lead.cardDetails.grantedByManagerId = manager.id;
     lead.cardDetails.grantedByManagerName = manager.name;
-    lead.cardDetails.grantedAt = new Date().toISOString();
-    lead.updatedAt = new Date().toISOString();
+    lead.cardDetails.grantedAt = grantedAt;
+    lead.cardDetails.accessExpiresAt = accessExpiresAt;
+    lead.cardDetails.accessDurationMinutes = accessDurationMinutes;
+    lead.updatedAt = grantedAt;
 
+    // 1. Log directly into Digital Footprint Clickstream (Fingerprinting)
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: grantedAt,
+      };
+    }
+
+    lead.footprint.clickstream.push({
+      timestamp: grantedAt,
+      event: "CARD_ACCESS_GRANTED_BY_MANAGER",
+      url: `/leads/${lead.id}/pci-vault/grant`,
+      metadata: {
+        grantedBy: manager.name,
+        grantedByEmail: manager.email,
+        grantedByRole: manager.role,
+        assignedAgent: lead.assignedToName || "Assigned Agent",
+        assignedAgentId: lead.assignedToId,
+        accessWindowMinutes: 3,
+        accessExpiresAt: accessExpiresAt,
+        cardLast4: last4,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Browser Client",
+      },
+    });
+
+    // 2. Activity Log
     this.logActivity({
       entityType: "LEAD",
       entityId: lead.id,
@@ -1056,24 +1221,118 @@ class EnterpriseCRMStore {
       metadata: {
         grantedBy: manager.name,
         assignedAgent: lead.assignedToName,
+        accessWindowMinutes: 3,
+        accessExpiresAt: accessExpiresAt,
       },
     });
 
+    // 3. System Audit Log
     this.logAudit({
       actorId: manager.id,
       actorEmail: manager.email,
       action: "MANAGER_CARD_CLEARANCE_GRANTED",
       resource: `Lead:${lead.id}`,
-      ipAddress: "127.0.0.1",
+      ipAddress: ipAddress || "127.0.0.1",
       status: "SUCCESS",
-      payload: { manager: manager.name, agent: lead.assignedToName },
+      payload: {
+        manager: manager.name,
+        agent: lead.assignedToName,
+        durationMinutes: 3,
+        accessExpiresAt,
+      },
     });
 
     broadcastEvent({
       type: "LEAD_TRANSITION",
       tenantId: lead.tenantId,
       actor: { id: manager.id, name: manager.name, role: manager.role },
-      payload: { leadId: lead.id, action: "CARD_CLEARANCE_GRANTED" },
+      payload: {
+        leadId: lead.id,
+        action: "CARD_CLEARANCE_GRANTED",
+        accessExpiresAt,
+        accessDurationMinutes: 3,
+      },
+    });
+
+    this.saveToDatabase();
+    return { success: true, lead };
+  }
+
+  // Auto/Manual Expire Card Access Protocol
+  expireCardAccess(
+    leadId: string,
+    reason = "3-minute clearance window elapsed"
+  ): { success: boolean; lead?: Lead; error?: string } {
+    const lead = this.leads.find((l) => l.id === leadId);
+    if (!lead) return { success: false, error: "Lead not found" };
+
+    if (!lead.cardDetails) {
+      return { success: false, error: "No card details attached to this booking." };
+    }
+
+    if (!lead.cardDetails.isAccessGrantedToAgent) {
+      return { success: true, lead };
+    }
+
+    const timestamp = new Date().toISOString();
+    const last4 = lead.cardDetails.cardNumber?.slice(-4) || "4242";
+
+    lead.cardDetails.isAccessGrantedToAgent = false;
+    lead.updatedAt = timestamp;
+
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: timestamp,
+      };
+    }
+
+    // Log directly into Digital Footprint Clickstream (Fingerprinting)
+    lead.footprint.clickstream.push({
+      timestamp,
+      event: "CARD_ACCESS_EXPIRED",
+      url: `/leads/${lead.id}/pci-vault/expired`,
+      metadata: {
+        reason,
+        autoRevokedAt: timestamp,
+        cardLast4: last4,
+        assignedAgent: lead.assignedToName || "Agent",
+      },
+    });
+
+    this.logActivity({
+      entityType: "LEAD",
+      entityId: lead.id,
+      actorId: "SYSTEM",
+      actorName: "Security Sentinel",
+      actorRole: "ADMIN",
+      action: "CARD_ACCESS_EXPIRED",
+      metadata: {
+        reason,
+        cardLast4: last4,
+        assignedAgent: lead.assignedToName,
+      },
+    });
+
+    this.logAudit({
+      actorId: "SYSTEM",
+      actorEmail: "security@kritya.crm",
+      action: "CARD_ACCESS_AUTO_REVOKED",
+      resource: `Lead:${lead.id}`,
+      ipAddress: "127.0.0.1",
+      status: "SUCCESS",
+      payload: { reason, leadId: lead.id, cardLast4: last4 },
+    });
+
+    broadcastEvent({
+      type: "LEAD_TRANSITION",
+      tenantId: lead.tenantId,
+      actor: { id: "SYSTEM", name: "Security Sentinel", role: "ADMIN" },
+      payload: { leadId: lead.id, action: "CARD_ACCESS_EXPIRED" },
     });
 
     this.saveToDatabase();

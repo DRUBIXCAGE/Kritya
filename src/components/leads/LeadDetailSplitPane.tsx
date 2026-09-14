@@ -129,7 +129,69 @@ export function LeadDetailSplitPane({
   const card = lead.cardDetails;
   const last4 = card?.cardNumber ? card.cardNumber.slice(-4) : "4242";
 
-  const canAgentViewCard = card?.isAccessGrantedToAgent || false;
+  // 3-Minute Card Visibility Countdown Timer State
+  const [remainingCardSeconds, setRemainingCardSeconds] = useState<number | null>(null);
+
+  // Sync remaining seconds when lead/card changes
+  useEffect(() => {
+    if (!card?.isAccessGrantedToAgent) {
+      setRemainingCardSeconds(null);
+      setIsCardUnmasked(false);
+      return;
+    }
+
+    const calculateRemaining = () => {
+      if (card.accessExpiresAt) {
+        return Math.max(0, Math.floor((new Date(card.accessExpiresAt).getTime() - Date.now()) / 1000));
+      }
+      if (card.grantedAt) {
+        const expires = new Date(card.grantedAt).getTime() + 3 * 60 * 1000;
+        return Math.max(0, Math.floor((expires - Date.now()) / 1000));
+      }
+      return 180;
+    };
+
+    const initialRemaining = calculateRemaining();
+    setRemainingCardSeconds(initialRemaining);
+
+    if (initialRemaining <= 0) {
+      setIsCardUnmasked(false);
+      fetch(`/api/leads/${lead.id}/card`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+      }).catch(() => {});
+    }
+  }, [card?.isAccessGrantedToAgent, card?.accessExpiresAt, card?.grantedAt, lead.id, currentUser.id]);
+
+  // Active countdown timer ticker (1-second tick)
+  useEffect(() => {
+    if (remainingCardSeconds === null || remainingCardSeconds <= 0) return;
+
+    const timer = setInterval(() => {
+      setRemainingCardSeconds((prev) => {
+        if (prev === null || prev <= 1) {
+          setIsCardUnmasked(false);
+          fetch(`/api/leads/${lead.id}/card`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "EXPIRE", actorId: currentUser.id }),
+          })
+            .then(() => onRefresh())
+            .catch(() => {});
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [remainingCardSeconds, lead.id, currentUser.id, onRefresh]);
+
+  const isCardExpired = (!card?.isAccessGrantedToAgent && !!card?.grantedAt) || (card?.isAccessGrantedToAgent && remainingCardSeconds === 0);
+  const isCardActive = !!card?.isAccessGrantedToAgent && (remainingCardSeconds === null || remainingCardSeconds > 0);
+
+  const canAgentViewCard = isCardActive;
   const isAuthorizedToUnmask = isManagerOrAdmin || isChargingRole || canAgentViewCard;
 
   const handleStateChange = async (target: LeadStatus) => {
@@ -147,7 +209,7 @@ export function LeadDetailSplitPane({
     if (!isCardUnmasked) {
       // Log card view to digital footprint
       try {
-        await fetch(`/api/leads/${lead.id}/card`, {
+        const res = await fetch(`/api/leads/${lead.id}/card`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -155,12 +217,35 @@ export function LeadDetailSplitPane({
             actorId: currentUser.id,
           }),
         });
+        const data = await res.json();
+        if (!data.success && data.error) {
+          alert(data.error);
+          setIsCardUnmasked(false);
+          await onRefresh();
+          return;
+        }
         await onRefresh();
       } catch (err) {
         console.error("Failed to log card view:", err);
       }
+      setIsCardUnmasked(true);
+    } else {
+      // Conceal card -> log to fingerprinting
+      try {
+        await fetch(`/api/leads/${lead.id}/card`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "CONCEAL",
+            actorId: currentUser.id,
+          }),
+        });
+        await onRefresh();
+      } catch (err) {
+        console.error("Failed to log card conceal:", err);
+      }
+      setIsCardUnmasked(false);
     }
-    setIsCardUnmasked(!isCardUnmasked);
   };
 
   const handleGrantCardClearance = async () => {
@@ -175,6 +260,7 @@ export function LeadDetailSplitPane({
         }),
       });
       if (res.ok) {
+        setRemainingCardSeconds(180);
         await onRefresh();
       }
     } catch (err) {
@@ -577,6 +663,39 @@ export function LeadDetailSplitPane({
               </span>
             </div>
 
+            {/* 3-Minute Active Visibility Countdown Widget */}
+            {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
+              <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-500/50 text-xs flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="font-semibold text-emerald-200">
+                    {isSalesAgent ? "Card Access Active (3-Min Window)" : `Clearance Active for ${lead.assignedToName || "Agent"}`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 font-mono font-bold text-xs px-2.5 py-1 rounded bg-slate-900 text-emerald-300 border border-emerald-500/40">
+                  <Clock className="h-3.5 w-3.5 text-emerald-400 animate-spin" />
+                  <span>{Math.floor(remainingCardSeconds / 60)}:{(remainingCardSeconds % 60).toString().padStart(2, "0")}</span>
+                  <span className="text-[10px] text-emerald-400 font-normal">remaining</span>
+                </div>
+              </div>
+            )}
+
+            {/* 3-Minute Access Expired Notice */}
+            {isCardExpired && (
+              <div className="p-2.5 rounded-lg bg-rose-950/60 border border-rose-500/40 text-xs flex items-center justify-between text-rose-300 shadow-xs">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <Clock className="h-4 w-4 text-rose-400 shrink-0" />
+                  <span>Card access expired (3-minute authorization elapsed)</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-900/60 text-rose-200 border border-rose-500/40 font-bold">
+                  Re-mask Enforced
+                </span>
+              </div>
+            )}
+
             {/* Masked Card Visual Card */}
             <div className="p-4 rounded-xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950/40 border border-slate-800 text-xs space-y-3">
               <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
@@ -619,10 +738,10 @@ export function LeadDetailSplitPane({
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition active:scale-95"
                 >
                   {isCardUnmasked ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  <span>{isCardUnmasked ? "Hide Unmasked Card" : "Reveal Unmasked Card (Logged to Footprint)"}</span>
+                  <span>{isCardUnmasked ? "Hide Unmasked Card (Logged)" : "Reveal Unmasked Card (Logged to Footprint)"}</span>
                 </button>
                 <p className="text-[10px] text-slate-400 text-center font-mono">
-                  ⚠️ Viewing card details is logged into the digital footprint with actor name ({currentUser.name}) and timestamp.
+                  ⚠️ Viewing and concealing card details are permanently logged into the digital footprint with actor name ({currentUser.name}) and timestamp.
                 </p>
               </div>
             ) : (
@@ -632,13 +751,13 @@ export function LeadDetailSplitPane({
                   <span>Card Masked for Sales Agent</span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Send authentication email to client, verify on call, then request <strong>Sales Manager</strong> clearance to unmask payment information.
+                  Send authentication email to client, verify on call, then request <strong>Sales Manager</strong> clearance for a 3-minute temporary view window.
                 </p>
               </div>
             )}
 
             {/* Manager Grant Authority Panel */}
-            {isManagerOrAdmin && !card?.isAccessGrantedToAgent && (
+            {isManagerOrAdmin && (!card?.isAccessGrantedToAgent || remainingCardSeconds === 0) && (
               <div className="p-3 rounded-lg bg-indigo-950/40 border border-indigo-500/40 space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-indigo-200 flex items-center gap-1.5">
@@ -648,7 +767,7 @@ export function LeadDetailSplitPane({
                   <span className="text-[10px] font-mono text-indigo-300">Manager Role</span>
                 </div>
                 <p className="text-[11px] text-slate-300">
-                  Allow assigned agent (<strong>{lead.assignedToName || "Agent"}</strong>) to view card details.
+                  Grant <strong>3-minute temporary card access</strong> to assigned agent (<strong>{lead.assignedToName || "Agent"}</strong>). All views and expirations will be logged in fingerprinting.
                 </p>
                 <button
                   disabled={isGrantingCard}
@@ -656,7 +775,7 @@ export function LeadDetailSplitPane({
                   className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition active:scale-95 flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle className="h-3.5 w-3.5" />
-                  <span>{isGrantingCard ? "Authorizing..." : "Grant Card Access to Agent"}</span>
+                  <span>{isGrantingCard ? "Authorizing 3-Min Access..." : (isCardExpired ? "Renew 3-Minute Clearance for Agent" : "Grant 3-Minute Card Access to Agent")}</span>
                 </button>
               </div>
             )}
@@ -690,34 +809,49 @@ export function LeadDetailSplitPane({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-purple-200 flex items-center gap-1.5">
                 <Globe className="h-4 w-4 text-purple-400" />
-                Ingress Telemetry & Footprint
+                Ingress Telemetry & Fingerprinting (Manager/Admin Only)
               </span>
               <span className="text-[10px] font-mono text-slate-400">{lead.footprint.ipAddress}</span>
             </div>
 
             <div className="space-y-2 relative before:absolute before:inset-0 before:left-2.5 before:w-0.5 before:bg-slate-800">
               {lead.footprint.clickstream.map((evt, idx) => {
-                const isCardEvent = evt.event === "CARD_DETAILS_VIEWED";
+                const isCardEvent = evt.event.startsWith("CARD_");
+                const isCardGrant = evt.event === "CARD_ACCESS_GRANTED_BY_MANAGER";
+                const isCardView = evt.event === "CARD_DETAILS_VIEWED";
+                const isCardExpiredEvt = evt.event === "CARD_ACCESS_EXPIRED";
+                const isCardConceal = evt.event === "CARD_DETAILS_CONCEALED";
+
+                let dotColor = "bg-indigo-500";
+                let cardBg = "bg-slate-950 border-slate-800/80";
+                let titleColor = "text-indigo-300";
+
+                if (isCardGrant) {
+                  dotColor = "bg-emerald-400";
+                  cardBg = "bg-emerald-950/40 border-emerald-500/40";
+                  titleColor = "text-emerald-300";
+                } else if (isCardView) {
+                  dotColor = "bg-amber-400 animate-pulse";
+                  cardBg = "bg-amber-950/40 border-amber-500/40";
+                  titleColor = "text-amber-300";
+                } else if (isCardExpiredEvt) {
+                  dotColor = "bg-rose-400";
+                  cardBg = "bg-rose-950/40 border-rose-500/40";
+                  titleColor = "text-rose-300";
+                } else if (isCardConceal) {
+                  dotColor = "bg-slate-400";
+                  cardBg = "bg-slate-900 border-slate-700";
+                  titleColor = "text-slate-300";
+                }
+
                 return (
                   <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
                     <div
-                      className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-slate-900 ${
-                        isCardEvent ? "bg-amber-400 animate-pulse" : "bg-indigo-500"
-                      }`}
+                      className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-slate-900 ${dotColor}`}
                     />
-                    <div
-                      className={`flex-1 p-2 rounded border ${
-                        isCardEvent
-                          ? "bg-amber-950/40 border-amber-500/40"
-                          : "bg-slate-950 border-slate-800/80"
-                      }`}
-                    >
+                    <div className={`flex-1 p-2 rounded border ${cardBg}`}>
                       <div className="flex items-center justify-between">
-                        <span
-                          className={`font-mono font-bold text-[11px] ${
-                            isCardEvent ? "text-amber-300" : "text-indigo-300"
-                          }`}
-                        >
+                        <span className={`font-mono font-bold text-[11px] ${titleColor}`}>
                           {evt.event}
                         </span>
                         <span className="text-[10px] font-mono text-slate-400">{formatRelativeTime(evt.timestamp)}</span>

@@ -27,6 +27,10 @@ import {
   UserCheck,
   CheckSquare,
   Square,
+  ChevronUp,
+  ChevronDown,
+  BarChart3,
+  EyeOff,
 } from "lucide-react";
 
 import { AgentMonthlyPerformanceCard } from "./AgentMonthlyPerformanceCard";
@@ -57,6 +61,25 @@ export function SalesView({
 }: SalesViewProps) {
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Show/Hide Summarized Performance Dashboard state (persisted in localStorage)
+  const [showSummaryDashboard, setShowSummaryDashboard] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kritya_show_summary_dashboard");
+      return saved !== null ? saved === "true" : true;
+    }
+    return true;
+  });
+
+  const handleToggleSummaryDashboard = (explicitVal?: boolean) => {
+    setShowSummaryDashboard((prev) => {
+      const nextVal = typeof explicitVal === "boolean" ? explicitVal : !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("kritya_show_summary_dashboard", String(nextVal));
+      }
+      return nextVal;
+    });
+  };
 
   // Lead Multi-Select & Assignment State
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
@@ -273,15 +296,44 @@ export function SalesView({
   return (
     <div className="flex-1 min-h-0 flex flex-col min-w-0 bg-slate-50 xl:overflow-hidden">
       {/* Top Section: Individual Sales and Performance Details on a Monthly Basis */}
-      <AgentMonthlyPerformanceCard
-        leads={leads}
-        currentUser={currentUser}
-        users={users}
-      />
+      {showSummaryDashboard && (
+        <AgentMonthlyPerformanceCard
+          leads={leads}
+          currentUser={currentUser}
+          users={users}
+          onHide={() => handleToggleSummaryDashboard(false)}
+        />
+      )}
 
       {/* Primary Toolbar: Search + Stage Filter Buttons */}
       <div className="p-3 border-b border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-white">
-        <div className="flex items-center gap-2 flex-1 max-w-md w-full">
+        <div className="flex items-center gap-2 flex-1 max-w-lg w-full">
+          {/* Toggle Summarized Dashboard Button */}
+          <button
+            type="button"
+            onClick={() => handleToggleSummaryDashboard()}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 active:scale-95 border ${
+              showSummaryDashboard
+                ? "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
+                : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-300 shadow-xs"
+            }`}
+            title={showSummaryDashboard ? "Hide performance summary dashboard" : "Show performance summary dashboard"}
+          >
+            {showSummaryDashboard ? (
+              <>
+                <ChevronUp className="h-3.5 w-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Hide Dashboard</span>
+                <span className="sm:hidden">Hide</span>
+              </>
+            ) : (
+              <>
+                <BarChart3 className="h-3.5 w-3.5 text-indigo-600" />
+                <span className="hidden sm:inline">Show Dashboard</span>
+                <span className="sm:hidden">Dashboard</span>
+              </>
+            )}
+          </button>
+
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input

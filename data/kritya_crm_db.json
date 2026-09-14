@@ -457,6 +457,19 @@
             "timestamp": "2026-09-14T06:31:42.502Z",
             "event": "CARD_DETAILS_SUBMITTED",
             "url": "/checkout/payment"
+          },
+          {
+            "timestamp": "2026-09-14T10:13:16.153Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_jk6xjtc/pci-vault",
+            "metadata": {
+              "viewerName": "Marcus Brooks (Sales Director & Manager)",
+              "viewerRole": "SALES_MANAGER",
+              "viewerEmail": "marcus.brooks@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Browser Client",
+              "cardLast4": "8382"
+            }
           }
         ],
         "createdAt": "2026-09-14T06:31:42.502Z"
@@ -760,7 +773,7 @@
         "expiryYear": "2028",
         "cvv": "892",
         "cardType": "VISA",
-        "isAccessGrantedToAgent": true,
+        "isAccessGrantedToAgent": false,
         "grantedByManagerId": "usr_sales_mgr",
         "grantedByManagerName": "Marcus Brooks (Sales Director & Manager)",
         "grantedAt": "2026-09-11T15:12:01.725Z"
@@ -768,7 +781,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:14:33.732Z",
-      "updatedAt": "2026-09-11T15:18:30.742Z",
+      "updatedAt": "2026-09-14T10:34:08.145Z",
       "footprint": {
         "id": "fp_lead_xqil2py",
         "leadId": "lead_xqil2py",
@@ -808,6 +821,17 @@
               "viewerEmail": "marcus.brooks@travelocase.com",
               "ipAddress": "::ffff:127.0.0.1",
               "cardLast4": "1018"
+            }
+          },
+          {
+            "timestamp": "2026-09-14T10:34:08.145Z",
+            "event": "CARD_ACCESS_EXPIRED",
+            "url": "/leads/lead_xqil2py/pci-vault/expired",
+            "metadata": {
+              "reason": "3-minute clearance window elapsed",
+              "autoRevokedAt": "2026-09-14T10:34:08.145Z",
+              "cardLast4": "1018",
+              "assignedAgent": "David Miller (Travel Booking Agent)"
             }
           }
         ],
@@ -1349,12 +1373,12 @@
         "expiryYear": "2029",
         "cvv": "349",
         "cardType": "MASTERCARD",
-        "isAccessGrantedToAgent": true,
+        "isAccessGrantedToAgent": false,
         "grantedByManagerName": "Marcus Brooks (Sales Director)",
         "grantedAt": "2026-09-10T14:30:00Z"
       },
       "createdAt": "2026-09-08T14:10:00Z",
-      "updatedAt": "2026-09-11T07:45:00Z",
+      "updatedAt": "2026-09-14T10:34:08.148Z",
       "footprint": {
         "id": "fp_03",
         "leadId": "lead_flight_03",
@@ -1376,6 +1400,17 @@
             "timestamp": "2026-09-08T14:08:44Z",
             "event": "CARD_PAYMENT_INITIATED",
             "url": "/checkout"
+          },
+          {
+            "timestamp": "2026-09-14T10:34:08.148Z",
+            "event": "CARD_ACCESS_EXPIRED",
+            "url": "/leads/lead_flight_03/pci-vault/expired",
+            "metadata": {
+              "reason": "3-minute clearance window elapsed",
+              "autoRevokedAt": "2026-09-14T10:34:08.148Z",
+              "cardLast4": "3311",
+              "assignedAgent": "Sarah Chen"
+            }
           }
         ],
         "createdAt": "2026-09-08T14:10:00Z"
@@ -1719,6 +1754,54 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "SYSTEM",
+      "actorName": "Security Sentinel",
+      "actorRole": "ADMIN",
+      "action": "CARD_ACCESS_EXPIRED",
+      "metadata": {
+        "reason": "3-minute clearance window elapsed",
+        "cardLast4": "3311",
+        "assignedAgent": "Sarah Chen"
+      },
+      "id": "act_1nofxdp",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T10:34:08.148Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "SYSTEM",
+      "actorName": "Security Sentinel",
+      "actorRole": "ADMIN",
+      "action": "CARD_ACCESS_EXPIRED",
+      "metadata": {
+        "reason": "3-minute clearance window elapsed",
+        "cardLast4": "1018",
+        "assignedAgent": "David Miller (Travel Booking Agent)"
+      },
+      "id": "act_nvnnk78",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T10:34:08.145Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "SALES_MANAGER",
+        "cardLast4": "8382",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_sfp4b6a",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T10:13:16.154Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_jk6xjtc",
@@ -2701,6 +2784,56 @@
   ],
   "auditLogs": [
     {
+      "actorId": "SYSTEM",
+      "actorEmail": "security@kritya.crm",
+      "action": "CARD_ACCESS_AUTO_REVOKED",
+      "resource": "Lead:lead_flight_03",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "reason": "3-minute clearance window elapsed",
+        "leadId": "lead_flight_03",
+        "cardLast4": "3311"
+      },
+      "id": "aud_xvbhj4u",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T10:34:08.148Z"
+    },
+    {
+      "actorId": "SYSTEM",
+      "actorEmail": "security@kritya.crm",
+      "action": "CARD_ACCESS_AUTO_REVOKED",
+      "resource": "Lead:lead_xqil2py",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "reason": "3-minute clearance window elapsed",
+        "leadId": "lead_xqil2py",
+        "cardLast4": "1018"
+      },
+      "id": "aud_kfcpgg9",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T10:34:08.145Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_jk6xjtc:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Marcus Brooks (Sales Director & Manager)",
+        "actorRole": "SALES_MANAGER",
+        "leadId": "lead_jk6xjtc",
+        "cardLast4": "8382",
+        "timestamp": "2026-09-14T10:13:16.153Z"
+      },
+      "id": "aud_83xlka1",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T10:13:16.154Z"
+    },
+    {
       "actorId": "usr_superadmin",
       "actorEmail": "super.admin@travelocase.com",
       "action": "LEAD_DETAILS_UPDATED",
@@ -3664,5 +3797,5 @@
   ],
   "roundRobinIndex": 6,
   "lastBookingNumber": 1011,
-  "lastPersistedAt": "2026-09-14T07:18:59.433Z"
+  "lastPersistedAt": "2026-09-14T10:49:49.483Z"
 }

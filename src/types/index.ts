@@ -117,6 +117,8 @@ export interface CardDetails {
   grantedByManagerId?: string;
   grantedByManagerName?: string;
   grantedAt?: string;
+  accessExpiresAt?: string; // Expiration timestamp for agent visibility (3-minute window)
+  accessDurationMinutes?: number; // Duration of access granted (default: 3 minutes)
 }
 
 export interface EmailTemplate {
