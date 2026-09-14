@@ -153,7 +153,7 @@ export function SuperAdminView({
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-1 text-xs overflow-x-auto max-w-full pb-0.5 sm:pb-0">
+        <div className="flex gap-1 text-xs overflow-x-auto no-scrollbar touch-scroll max-w-full pb-0.5 sm:pb-0">
           <button
             onClick={() => setActiveTab("team")}
             className={`px-3 py-1.5 rounded-md font-medium transition whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
@@ -290,7 +290,7 @@ export function SuperAdminView({
               </div>
 
               {/* Role filter buttons */}
-              <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-0.5 md:pb-0 text-xs">
+              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar touch-scroll max-w-full pb-0.5 md:pb-0 text-xs">
                 {[
                   { id: "ALL", label: "All Users" },
                   { id: "ADMINS", label: "Admins" },
@@ -335,8 +335,8 @@ export function SuperAdminView({
                 </span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="overflow-x-auto touch-scroll">
+                <table className="w-full text-left text-xs border-collapse min-w-[760px]">
                   <thead className="bg-slate-100/90 text-slate-700 border-b border-slate-200 font-semibold">
                     <tr>
                       <th className="py-2.5 px-3">User & Profile</th>
@@ -480,8 +480,8 @@ export function SuperAdminView({
                 <span className="text-[10px] font-mono text-slate-500">Live Stream</span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="overflow-x-auto touch-scroll">
+                <table className="w-full text-left text-xs border-collapse min-w-[700px]">
                   <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                     <tr>
                       <th className="py-2.5 px-3">Actor & Role</th>

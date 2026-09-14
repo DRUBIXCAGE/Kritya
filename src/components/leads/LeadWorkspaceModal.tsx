@@ -84,6 +84,7 @@ export function LeadWorkspaceModal({
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("flight_auth_01");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSentSuccess, setEmailSentSuccess] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"booking" | "security">("booking");
 
   const canAssignLeads =
     currentUser.role === "SUPER_ADMIN" ||
@@ -404,14 +405,46 @@ export function LeadWorkspaceModal({
           </div>
         </div>
 
+        {/* Mobile Tab Switcher for small screens (< lg) */}
+        <div className="lg:hidden flex border-b border-slate-200 bg-slate-100 p-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => setMobileTab("booking")}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+              mobileTab === "booking"
+                ? "bg-indigo-600 text-white shadow-xs font-bold"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Plane className="h-3.5 w-3.5" />
+            <span>Booking & Manifest</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("security")}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+              mobileTab === "security"
+                ? "bg-indigo-600 text-white shadow-xs font-bold"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <CreditCard className="h-3.5 w-3.5" />
+            <span>Card Vault & Audit</span>
+          </button>
+        </div>
+
         {/* ========================================================================= */}
         {/* MAIN BODY: 2-Column High-Density Enterprise Layout                        */}
         {/* ========================================================================= */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-y-auto divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 overflow-hidden">
           {/* ----------------------------------------------------------------------- */}
           {/* LEFT PANE (7 cols): Contact Details, Passenger Manifest, Email Hub      */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="lg:col-span-7 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto bg-white">
+          <div
+            className={`lg:col-span-7 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto touch-scroll bg-white ${
+              mobileTab === "security" ? "hidden lg:block" : "block"
+            }`}
+          >
             {/* SECTION 1: CUSTOMER CONTACT DETAILS (SEPARATED) */}
             <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
@@ -749,7 +782,11 @@ export function LeadWorkspaceModal({
           {/* ----------------------------------------------------------------------- */}
           {/* RIGHT PANE (5 cols): Card Vault, Digital Footprint, Activity Trail      */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="lg:col-span-5 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto bg-slate-50/70">
+          <div
+            className={`lg:col-span-5 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto touch-scroll bg-slate-50/70 ${
+              mobileTab === "booking" ? "hidden lg:block" : "block"
+            }`}
+          >
             {/* SECTION 5: PCI CARD SECURITY VAULT */}
             <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">

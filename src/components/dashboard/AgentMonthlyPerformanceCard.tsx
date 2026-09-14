@@ -123,51 +123,65 @@ export function AgentMonthlyPerformanceCard({
     };
   }, [leads, isSalesAgent, currentUser, selectedAgentId, selectedMonth]);
 
+  // Mobile collapse state for small screens
+  const [isMobileCollapsed, setIsMobileCollapsed] = useState(false);
+
   return (
     <div className="border-b border-slate-200 bg-white p-3 sm:p-4 space-y-3 shadow-xs">
       {/* Top Header Row: Agent Profile / Switcher + Month Selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         {/* Left: Agent Identity */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20 font-bold text-sm">
-              {activeAgent
-                ? activeAgent.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()
-                : "ALL"}
-            </div>
-            <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white" />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+        <div className="flex items-center justify-between w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="relative">
+              <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20 font-bold text-xs sm:text-sm shrink-0">
                 {activeAgent
-                  ? `${activeAgent.name}'s Monthly Sales Desk`
-                  : "All Sales Agents Monthly Overview"}
-              </h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
-                {isSalesAgent ? "My Performance" : "Agent Scorecard"}
-              </span>
+                  ? activeAgent.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : "ALL"}
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white" />
             </div>
 
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              {activeAgent
-                ? `${activeAgent.role} • ${activeAgent.email}`
-                : "Consolidated Flight Sales & Commission Revenue"}
-            </p>
+            <div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h2 className="text-xs sm:text-base font-bold text-slate-900 tracking-tight">
+                  {activeAgent
+                    ? `${activeAgent.name}'s Monthly Sales Desk`
+                    : "All Sales Agents Monthly Overview"}
+                </h2>
+                <span className="text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+                  {isSalesAgent ? "My Performance" : "Scorecard"}
+                </span>
+              </div>
+
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate max-w-[220px] sm:max-w-none">
+                {activeAgent
+                  ? `${activeAgent.role} • ${activeAgent.email}`
+                  : "Consolidated Flight Sales & Commission Revenue"}
+              </p>
+            </div>
           </div>
+
+          {/* Toggle metrics button for mobile screens */}
+          <button
+            type="button"
+            onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
+            className="sm:hidden px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold text-slate-700 border border-slate-200 shrink-0"
+          >
+            {isMobileCollapsed ? "Show Stats ▼" : "Hide ▲"}
+          </button>
         </div>
 
         {/* Right: Controls (Agent Selector for Managers + Month Selector) */}
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {/* Agent Dropdown for Managers/Admins */}
           {isManagerOrAdmin && salesAgents.length > 0 && (
-            <div className="relative flex-1 sm:flex-none">
+            <div className="relative flex-1 sm:flex-none min-w-[140px]">
               <select
                 value={selectedAgentId}
                 onChange={(e) => setSelectedAgentId(e.target.value)}
@@ -185,7 +199,7 @@ export function AgentMonthlyPerformanceCard({
           )}
 
           {/* Month Selector Dropdown */}
-          <div className="relative flex-1 sm:flex-none">
+          <div className="relative flex-1 sm:flex-none min-w-[140px]">
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
@@ -202,11 +216,11 @@ export function AgentMonthlyPerformanceCard({
         </div>
       </div>
 
-      {/* Monthly Sales Metric Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+      {/* Monthly Sales Metric Cards Grid - Collapsible on Mobile */}
+      <div className={`${isMobileCollapsed ? "hidden sm:grid" : "grid"} grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5`}>
         {/* 1. Monthly Closed Sales Revenue */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-emerald-500/50 transition flex flex-col justify-between shadow-xs">
-          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
+        <div className="p-2 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-emerald-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[10px] sm:text-[11px] font-medium">
             <span>Closed Sales</span>
             <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
           </div>
@@ -303,7 +317,7 @@ export function AgentMonthlyPerformanceCard({
       </div>
 
       {/* Monthly Quota & Target Progress Bar */}
-      <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
+      <div className={`${isMobileCollapsed ? "hidden sm:flex" : "flex"} p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs`}>
         <div className="flex items-center gap-2 shrink-0">
           <Award className="h-4 w-4 text-amber-500" />
           <span className="font-semibold text-slate-800">

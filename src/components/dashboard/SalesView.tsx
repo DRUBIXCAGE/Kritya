@@ -280,8 +280,8 @@ export function SalesView({
       />
 
       {/* Primary Toolbar: Search + Stage Filter Buttons */}
-      <div className="p-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-white">
-        <div className="flex items-center gap-2 flex-1 max-w-md">
+      <div className="p-3 border-b border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-white">
+        <div className="flex items-center gap-2 flex-1 max-w-md w-full">
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
@@ -295,12 +295,12 @@ export function SalesView({
         </div>
 
         {/* Stage Filter Buttons */}
-        <div className="flex items-center gap-1 text-xs overflow-x-auto">
+        <div className="flex items-center gap-1 text-xs overflow-x-auto no-scrollbar touch-scroll max-w-full pb-1 md:pb-0">
           {["ALL", "NEW", "FOLLOW_UP", "AUTHENTICATION_SENT", "QUALIFIED", "SALE", "CHARGING", "CANCELLED"].map((st) => (
             <button
               key={st}
               onClick={() => setFilterStatus(st)}
-              className={`px-2.5 py-1 rounded text-xs font-medium transition whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded text-xs font-medium transition whitespace-nowrap shrink-0 ${
                 filterStatus === st
                   ? "bg-indigo-600 text-white shadow-xs font-bold"
                   : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200"
@@ -345,7 +345,7 @@ export function SalesView({
           </div>
 
           {/* Quick Date Presets (Horizontally scrollable on small mobile screens) */}
-          <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-0.5 sm:pb-0">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar touch-scroll max-w-full pb-1 sm:pb-0">
             {[
               { id: "ALL", label: "All Time" },
               { id: "TODAY", label: "Today" },
@@ -461,8 +461,8 @@ export function SalesView({
       )}
 
       {/* High-Density Pipeline Lead Datatable */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto">
-        <table className="w-full text-left text-xs border-collapse">
+      <div className="flex-1 overflow-x-auto overflow-y-auto touch-scroll min-h-[400px]">
+        <table className="w-full min-w-[940px] text-left text-xs border-collapse">
           <thead className="bg-slate-100/90 text-slate-700 sticky top-0 border-b border-slate-200 z-10 font-semibold">
             <tr>
               {canAssignLeads && (

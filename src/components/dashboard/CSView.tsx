@@ -161,7 +161,7 @@ export function CSView({
               </span>
             </div>
 
-            <div className="flex gap-1 text-xs overflow-x-auto">
+            <div className="flex gap-1 text-xs overflow-x-auto no-scrollbar touch-scroll">
               {["ALL", "ONBOARDING", "OPEN", "IN_PROGRESS", "RESOLVED", "BREACHED"].map((tab) => (
                 <button
                   key={tab}
@@ -178,8 +178,8 @@ export function CSView({
             </div>
           </div>
 
-          <div className="flex-1 overflow-x-auto overflow-y-auto">
-            <table className="w-full text-left text-xs border-collapse">
+          <div className="flex-1 overflow-x-auto overflow-y-auto touch-scroll min-h-[300px]">
+            <table className="w-full text-left text-xs border-collapse min-w-[650px]">
               <thead className="bg-slate-100/90 text-slate-700 sticky top-0 border-b border-slate-200 z-10 font-semibold">
                 <tr>
                   <th className="py-2.5 px-3 font-semibold">Subject & Customer</th>
@@ -247,7 +247,7 @@ export function CSView({
 
         {/* Right: Ticket Detail Workdesk */}
         <div
-          className={`w-full lg:w-2/5 p-3 sm:p-4 flex-col bg-slate-50/70 overflow-y-auto space-y-4 ${
+          className={`w-full lg:w-2/5 p-3 sm:p-4 flex-col bg-slate-50/70 overflow-y-auto touch-scroll space-y-4 ${
             mobileTab === "tickets" ? "hidden lg:flex" : "flex"
           }`}
         >

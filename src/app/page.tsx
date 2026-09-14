@@ -228,7 +228,7 @@ export default function DashboardPage() {
 
   if (!currentUser) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-slate-50 text-slate-500 font-mono text-xs">
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 text-slate-500 font-mono text-xs">
         Initializing Enterprise CRM Engine...
       </div>
     );
@@ -238,7 +238,7 @@ export default function DashboardPage() {
   const leadActivity = selectedLead ? activityLogs.filter((l) => l.entityId === selectedLead.id) : [];
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-slate-50 text-slate-900">
+    <div className="min-h-[100dvh] w-full flex flex-col bg-slate-50 text-slate-900 md:h-screen md:overflow-hidden">
       {/* Top Navigation & Live Role Simulator */}
       <Navbar
         currentUser={currentUser}
@@ -254,9 +254,9 @@ export default function DashboardPage() {
       />
 
       {/* Main Workspace Area */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
         {activeView === "sales" && (
-          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
             <SalesView
               leads={leads}
               currentUser={currentUser}
