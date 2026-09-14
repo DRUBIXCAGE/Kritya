@@ -7,11 +7,9 @@ import { SalesView } from "@/components/dashboard/SalesView";
 import { ChargingView } from "@/components/dashboard/ChargingView";
 import { CSView } from "@/components/dashboard/CSView";
 import { SuperAdminView } from "@/components/dashboard/SuperAdminView";
-import { LeadDetailSplitPane } from "@/components/leads/LeadDetailSplitPane";
 import { LeadIngestionModal } from "@/components/leads/LeadIngestionModal";
 import { LeadWorkspaceModal } from "@/components/leads/LeadWorkspaceModal";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
-import { Table, Eye, FileSpreadsheet } from "lucide-react";
 
 export default function DashboardPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -31,7 +29,6 @@ export default function DashboardPage() {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isIngestModalOpen, setIsIngestModalOpen] = useState(false);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
-  const [mobileSalesTab, setMobileSalesTab] = useState<"table" | "detail">("table");
 
   // SSE & Realtime
   const [isConnected, setIsConnected] = useState(false);
@@ -231,7 +228,7 @@ export default function DashboardPage() {
 
   if (!currentUser) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-slate-950 text-slate-400 font-mono text-xs">
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50 text-slate-500 font-mono text-xs">
         Initializing Enterprise CRM Engine...
       </div>
     );
@@ -241,7 +238,7 @@ export default function DashboardPage() {
   const leadActivity = selectedLead ? activityLogs.filter((l) => l.entityId === selectedLead.id) : [];
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-slate-950">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-slate-50 text-slate-900">
       {/* Top Navigation & Live Role Simulator */}
       <Navbar
         currentUser={currentUser}
@@ -259,73 +256,20 @@ export default function DashboardPage() {
       {/* Main Workspace Area */}
       <main className="flex-1 flex overflow-hidden">
         {activeView === "sales" && (
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Mobile View Toggle Strip (Only on mobile screens < 1024px) */}
-            <div className="lg:hidden flex border-b border-slate-800 bg-slate-900/90 p-1">
-              <button
-                onClick={() => setMobileSalesTab("table")}
-                className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
-                  mobileSalesTab === "table"
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <FileSpreadsheet className="h-3.5 w-3.5" />
-                <span>Pipeline Datatable</span>
-              </button>
-              <button
-                onClick={() => setMobileSalesTab("detail")}
-                className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
-                  mobileSalesTab === "detail"
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Eye className="h-3.5 w-3.5" />
-                <span>Selected Details</span>
-              </button>
-            </div>
-
-            {/* Left/Middle: Sales Pipeline Table & Metrics */}
-            <div
-              className={`flex-1 flex flex-col overflow-hidden min-w-0 ${
-                mobileSalesTab === "detail" ? "hidden lg:flex" : "flex"
-              }`}
-            >
-              <SalesView
-                leads={leads}
-                currentUser={currentUser}
-                users={users}
-                onSelectLead={(l) => {
-                  setSelectedLeadId(l.id);
-                  setIsWorkspaceModalOpen(true);
-                }}
-                selectedLeadId={selectedLeadId}
-                onOpenIngestModal={() => setIsIngestModalOpen(true)}
-                onTransitionLead={(id, st) => handleTransitionLead(id, st)}
-                onRefresh={fetchData}
-              />
-            </div>
-
-            {/* Right: High-Density Split-Pane Lead Detail */}
-            <div
-              className={`w-full lg:w-[460px] xl:w-[520px] shrink-0 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col overflow-hidden ${
-                mobileSalesTab === "table" ? "hidden lg:flex" : "flex"
-              }`}
-            >
-              <LeadDetailSplitPane
-                lead={selectedLead}
-                currentUser={currentUser}
-                users={users}
-                onClose={() => {
-                  setSelectedLeadId(undefined);
-                  setMobileSalesTab("table");
-                }}
-                onTransition={(st) => (selectedLead ? handleTransitionLead(selectedLead.id, st) : Promise.resolve())}
-                onRefresh={fetchData}
-                activityLogs={leadActivity}
-              />
-            </div>
+          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+            <SalesView
+              leads={leads}
+              currentUser={currentUser}
+              users={users}
+              onSelectLead={(l) => {
+                setSelectedLeadId(l.id);
+                setIsWorkspaceModalOpen(true);
+              }}
+              selectedLeadId={selectedLeadId}
+              onOpenIngestModal={() => setIsIngestModalOpen(true)}
+              onTransitionLead={(id, st) => handleTransitionLead(id, st)}
+              onRefresh={fetchData}
+            />
           </div>
         )}
 

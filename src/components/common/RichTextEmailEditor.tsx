@@ -124,7 +124,7 @@ export function RichTextEmailEditor({
   const insertImageHtml = (src: string, alt: string) => {
     if (!editorRef.current) return;
     editorRef.current.focus();
-    const imgHtml = `<img src="${src}" alt="${alt}" style="max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; border: 1px solid #475569; margin: 8px 0; display: block; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);" />`;
+    const imgHtml = `<img src="${src}" alt="${alt}" style="max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; border: 1px solid #cbd5e1; margin: 8px 0; display: block; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);" />`;
     document.execCommand("insertHTML", false, imgHtml);
     handleInput();
   };
@@ -153,7 +153,7 @@ export function RichTextEmailEditor({
   };
 
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-900/90 overflow-hidden shadow-inner flex flex-col transition-all focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500/50">
+    <div className="rounded-xl border border-slate-300 bg-white overflow-hidden shadow-xs flex flex-col transition-all focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500/50">
       {/* Hidden File Input for Image Upload */}
       <input
         type="file"
@@ -165,13 +165,13 @@ export function RichTextEmailEditor({
       />
 
       {/* Editor Formatting Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 p-1.5 bg-slate-950 border-b border-slate-800 text-slate-300">
+      <div className="flex flex-wrap items-center gap-0.5 p-1.5 bg-slate-50 border-b border-slate-200 text-slate-700">
         {/* Text Styles */}
         <button
           type="button"
           onClick={() => executeCommand("bold")}
           title="Bold (Ctrl+B)"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Bold className="h-3.5 w-3.5" />
         </button>
@@ -179,7 +179,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("italic")}
           title="Italic (Ctrl+I)"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Italic className="h-3.5 w-3.5" />
         </button>
@@ -187,7 +187,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("underline")}
           title="Underline (Ctrl+U)"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Underline className="h-3.5 w-3.5" />
         </button>
@@ -195,19 +195,19 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("strikeThrough")}
           title="Strikethrough"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Strikethrough className="h-3.5 w-3.5" />
         </button>
 
-        <div className="h-4 w-px bg-slate-800 mx-1" />
+        <div className="h-4 w-px bg-slate-200 mx-1" />
 
         {/* Headings */}
         <button
           type="button"
           onClick={() => executeCommand("formatBlock", "<h2>")}
           title="Heading 2"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600 flex items-center gap-0.5 text-[11px] font-bold"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600 flex items-center gap-0.5 text-[11px] font-bold"
         >
           <Heading2 className="h-3.5 w-3.5" />
         </button>
@@ -215,7 +215,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("formatBlock", "<h3>")}
           title="Heading 3"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600 flex items-center gap-0.5 text-[11px] font-bold"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600 flex items-center gap-0.5 text-[11px] font-bold"
         >
           <Heading3 className="h-3.5 w-3.5" />
         </button>
@@ -223,19 +223,19 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("formatBlock", "<p>")}
           title="Normal Paragraph"
-          className="px-1.5 py-1 rounded hover:bg-slate-800 hover:text-white transition text-[11px] font-mono"
+          className="px-1.5 py-1 rounded hover:bg-slate-200 hover:text-slate-900 transition text-[11px] font-mono"
         >
           P
         </button>
 
-        <div className="h-4 w-px bg-slate-800 mx-1" />
+        <div className="h-4 w-px bg-slate-200 mx-1" />
 
         {/* Lists & Quotes */}
         <button
           type="button"
           onClick={() => executeCommand("insertUnorderedList")}
           title="Bullet List"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <List className="h-3.5 w-3.5" />
         </button>
@@ -243,7 +243,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("insertOrderedList")}
           title="Numbered List"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <ListOrdered className="h-3.5 w-3.5" />
         </button>
@@ -251,7 +251,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("formatBlock", "<blockquote>")}
           title="Blockquote"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Quote className="h-3.5 w-3.5" />
         </button>
@@ -259,19 +259,19 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => executeCommand("insertHorizontalRule")}
           title="Divider Line"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <Minus className="h-3.5 w-3.5" />
         </button>
 
-        <div className="h-4 w-px bg-slate-800 mx-1" />
+        <div className="h-4 w-px bg-slate-200 mx-1" />
 
         {/* Link & Image Insertion */}
         <button
           type="button"
           onClick={handleInsertLink}
           title="Insert Link"
-          className="p-1.5 rounded hover:bg-slate-800 hover:text-white transition active:bg-indigo-600"
+          className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900 transition active:bg-indigo-600"
         >
           <LinkIcon className="h-3.5 w-3.5" />
         </button>
@@ -279,7 +279,7 @@ export function RichTextEmailEditor({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           title="Insert / Upload Image (or Paste directly with Ctrl+V)"
-          className="flex items-center gap-1 px-2 py-1 rounded bg-indigo-950/70 border border-indigo-800/80 text-indigo-300 hover:bg-indigo-900/80 hover:text-white transition text-xs font-semibold"
+          className="flex items-center gap-1 px-2 py-1 rounded bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 transition text-xs font-semibold"
         >
           <ImageIcon className="h-3.5 w-3.5" />
           <span className="text-[10px] hidden sm:inline">Insert / Paste Image</span>
@@ -291,7 +291,7 @@ export function RichTextEmailEditor({
             type="button"
             onClick={() => executeCommand("removeFormat")}
             title="Clear Formatting"
-            className="p-1.5 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="p-1.5 rounded text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition"
           >
             <Eraser className="h-3.5 w-3.5" />
           </button>
@@ -306,22 +306,22 @@ export function RichTextEmailEditor({
         onPaste={handlePaste}
         onDrop={handleDrop}
         style={{ minHeight, maxHeight }}
-        className="p-3.5 overflow-y-auto text-xs text-slate-100 font-sans leading-relaxed outline-none focus:outline-none focus:ring-0 empty:before:content-[attr(data-placeholder)] empty:before:text-slate-500 empty:before:pointer-events-none prose prose-invert max-w-none prose-sm"
+        className="p-3.5 overflow-y-auto text-xs text-slate-900 font-sans leading-relaxed outline-none focus:outline-none focus:ring-0 empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none prose max-w-none prose-sm"
         data-placeholder={placeholder}
       />
 
       {/* Editor Status Bar */}
-      <div className="flex items-center justify-between px-3 py-1 bg-slate-950/70 border-t border-slate-800/60 text-[10px] font-mono text-slate-400">
+      <div className="flex items-center justify-between px-3 py-1 bg-slate-50 border-t border-slate-200 text-[10px] font-mono text-slate-500">
         <div className="flex items-center gap-2">
           <span>Tip: Press <strong>Ctrl+V</strong> to paste screenshots directly</span>
           {imageCount > 0 && (
-            <span className="text-cyan-400 flex items-center gap-1 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/50">
+            <span className="text-cyan-800 flex items-center gap-1 bg-cyan-50 px-1.5 py-0.5 rounded border border-cyan-200 font-semibold">
               <ImageIcon className="h-3 w-3" />
               {imageCount} {imageCount === 1 ? "Image" : "Images"} attached
             </span>
           )}
         </div>
-        <div className="text-slate-500">HTML Rich-Text Mode</div>
+        <div className="text-slate-400">HTML Rich-Text Mode</div>
       </div>
     </div>
   );

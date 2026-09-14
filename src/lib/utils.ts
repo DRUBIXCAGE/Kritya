@@ -60,7 +60,7 @@ export function calculateSlaStatus(deadlineString: string): {
       return {
         isBreached: true,
         timeLeft: `Breached by ${breachedMinutes > 60 ? Math.floor(breachedMinutes / 60) + 'h' : breachedMinutes + 'm'}`,
-        badgeClass: "bg-red-500/15 text-red-400 border-red-500/30",
+        badgeClass: "bg-red-50 text-red-700 border-red-200 font-semibold",
       };
     }
 
@@ -69,7 +69,7 @@ export function calculateSlaStatus(deadlineString: string): {
       return {
         isBreached: false,
         timeLeft: `${minutesLeft}m left`,
-        badgeClass: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+        badgeClass: "bg-amber-50 text-amber-800 border-amber-200 font-semibold",
       };
     }
 
@@ -77,13 +77,13 @@ export function calculateSlaStatus(deadlineString: string): {
     return {
       isBreached: false,
       timeLeft: `${hoursLeft}h left`,
-      badgeClass: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+      badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold",
     };
   } catch {
     return {
       isBreached: false,
       timeLeft: "N/A",
-      badgeClass: "bg-slate-500/15 text-slate-400 border-slate-500/30",
+      badgeClass: "bg-slate-100 text-slate-600 border-slate-200",
     };
   }
 }

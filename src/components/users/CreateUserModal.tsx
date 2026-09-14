@@ -146,59 +146,59 @@ export function CreateUserModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-4 sm:p-6 text-slate-100 max-h-[96vh] flex flex-col overflow-y-auto animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-2xl p-4 sm:p-6 text-slate-900 max-h-[96vh] flex flex-col overflow-y-auto animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20 shrink-0">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                 Create User & Onboard Operator
               </h2>
-              <p className="text-[11px] sm:text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-600">
                 Agents created with unique Username. Admins & Managers require Email + Username.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Current Creator Authority Banner */}
-        <div className="mt-3.5 p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
+        <div className="mt-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+            <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
             <div>
-              <div className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Creator Authority:</div>
-              <div className="font-semibold text-white flex items-center gap-1.5">
+              <div className="text-[10px] text-slate-500 uppercase font-mono tracking-wider">Creator Authority:</div>
+              <div className="font-semibold text-slate-900 flex items-center gap-1.5">
                 <span>{currentUser.name}</span>
-                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                   {currentUser.role}
                 </span>
                 {currentUser.username && (
-                  <span className="font-mono text-[10px] text-slate-400">
+                  <span className="font-mono text-[10px] text-slate-500">
                     @{currentUser.username}
                   </span>
                 )}
               </div>
             </div>
           </div>
-          <div className="text-right text-[11px] text-slate-400 font-mono">
+          <div className="text-right text-[11px] text-slate-600 font-mono">
             {currentUser.role === "SUPER_ADMIN" && (
-              <span className="text-purple-300 font-semibold">Hierarchy: Can create Admins, Managers & Agents</span>
+              <span className="text-purple-700 font-semibold">Hierarchy: Can create Admins, Managers & Agents</span>
             )}
             {currentUser.role === "ADMIN" && (
-              <span className="text-indigo-300 font-semibold">Hierarchy: Can create Managers & Agents</span>
+              <span className="text-indigo-700 font-semibold">Hierarchy: Can create Managers & Agents</span>
             )}
             {currentUser.role.endsWith("_MANAGER") && (
-              <span className="text-cyan-300 font-semibold">Hierarchy: Can create Agents for your department</span>
+              <span className="text-cyan-700 font-semibold">Hierarchy: Can create Agents for your department</span>
             )}
           </div>
         </div>
@@ -207,39 +207,39 @@ export function CreateUserModal({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Messages */}
           {errorMessage && (
-            <div className="p-3 rounded-lg bg-red-950/80 border border-red-800/80 text-red-200 text-xs flex items-center gap-2 animate-in fade-in">
-              <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2 animate-in fade-in">
+              <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="p-3 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-200 text-xs flex items-center gap-2 animate-in fade-in">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 animate-in fade-in">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
               <span>{successMessage}</span>
             </div>
           )}
 
           {/* System Role Dropdown (Strictly filtered based on hierarchy) */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1 flex items-center justify-between">
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Shield className="h-3.5 w-3.5 text-indigo-400" />
+                <Shield className="h-3.5 w-3.5 text-indigo-600" />
                 Target System Role (Permitted by Hierarchy):
               </span>
-              <span className="text-[10px] font-mono text-indigo-300">
+              <span className="text-[10px] font-mono text-indigo-700 font-semibold">
                 {allowedRoles.length} Roles Authorized
               </span>
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
             >
               {allowedRoles.map((r) => {
                 const meta = ROLE_HIERARCHY_CONFIG[r];
                 return (
-                  <option key={r} value={r} className="bg-slate-900 text-slate-100 py-1">
+                  <option key={r} value={r} className="bg-white text-slate-800 py-1">
                     {meta ? `${meta.title} (${r}) - Level ${meta.level}` : r}
                   </option>
                 );
@@ -250,8 +250,8 @@ export function CreateUserModal({
           {/* Role Specification Notice */}
           <div className={`p-2.5 rounded-lg border text-xs flex items-center justify-between gap-2 ${
             isAgentRole 
-              ? "bg-emerald-950/40 border-emerald-800/60 text-emerald-300"
-              : "bg-purple-950/40 border-purple-800/60 text-purple-300"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-purple-50 border-purple-200 text-purple-800"
           }`}>
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 shrink-0" />
@@ -261,7 +261,7 @@ export function CreateUserModal({
                   : "Executive Admin / Manager Account: Both Enterprise Corporate Email AND unique @username are mandatory."}
               </span>
             </div>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 shrink-0">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white border border-slate-200 shrink-0 font-semibold">
               {isAgentRole ? "Username-Driven" : "Email + Username"}
             </span>
           </div>
@@ -270,9 +270,9 @@ export function CreateUserModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
             {/* Full Name */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1 flex items-center gap-1">
-                <UserIcon className="h-3.5 w-3.5 text-indigo-400" />
-                Full Name <span className="text-red-400">*</span>:
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <UserIcon className="h-3.5 w-3.5 text-indigo-600" />
+                Full Name <span className="text-red-500">*</span>:
               </label>
               <input
                 type="text"
@@ -280,18 +280,18 @@ export function CreateUserModal({
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 required
-                className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             {/* Username Field */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1 flex items-center justify-between">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
                 <span className="flex items-center gap-1">
-                  <span className="text-indigo-400 font-mono font-bold">@</span>
-                  {isAgentRole ? "Agent Username (Primary)" : "System Username"} <span className="text-red-400">*</span>:
+                  <span className="text-indigo-600 font-mono font-bold">@</span>
+                  {isAgentRole ? "Agent Username (Primary)" : "System Username"} <span className="text-red-500">*</span>:
                 </span>
-                <span className="text-[10px] font-mono text-indigo-300">
+                <span className="text-[10px] font-mono text-indigo-700 font-semibold">
                   {isAgentRole ? "Identifier" : "Required"}
                 </span>
               </label>
@@ -303,24 +303,24 @@ export function CreateUserModal({
                   value={username}
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   required
-                  className="w-full rounded-lg bg-slate-950 border border-slate-700 pl-7 pr-3 py-2 text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg bg-white border border-slate-300 pl-7 pr-3 py-2 text-xs text-slate-900 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             {/* Email Address */}
             <div className="sm:col-span-2">
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1 flex items-center justify-between">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
                 <span className="flex items-center gap-1">
-                  <Mail className="h-3.5 w-3.5 text-indigo-400" />
-                  Enterprise Corporate Email: {!isAgentRole && <span className="text-red-400">*</span>}
+                  <Mail className="h-3.5 w-3.5 text-indigo-600" />
+                  Enterprise Corporate Email: {!isAgentRole && <span className="text-red-500">*</span>}
                 </span>
                 {isAgentRole ? (
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-slate-500">
                     Auto-generated from username
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono text-purple-300">
+                  <span className="text-[10px] font-mono text-purple-700 font-semibold">
                     Mandatory for Admins/Managers
                   </span>
                 )}
@@ -331,34 +331,34 @@ export function CreateUserModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required={!isAgentRole}
-                className="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           {/* Role Preview Card & Department Badge */}
           {roleMeta && (
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
               <div className="flex items-center justify-between">
-                <div className="font-semibold text-white flex items-center gap-2">
-                  <span className="text-indigo-400">{roleMeta.title}</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-900 text-slate-400 border border-slate-800">
+                <div className="font-semibold text-slate-900 flex items-center gap-2">
+                  <span className="text-indigo-700">{roleMeta.title}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white text-slate-600 border border-slate-200">
                     Hierarchy Level {roleMeta.level}
                   </span>
                 </div>
-                <div className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1">
+                <div className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200 flex items-center gap-1 font-semibold">
                   <Building className="h-3 w-3" />
                   <span>Dept: {deptType} ({roleMeta.departmentId})</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400">{roleMeta.description}</p>
+              <p className="text-[11px] text-slate-600">{roleMeta.description}</p>
             </div>
           )}
 
           {/* Avatar Selector */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1.5 flex items-center gap-1">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
               Select Profile Avatar:
             </label>
             <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -369,7 +369,7 @@ export function CreateUserModal({
                   onClick={() => setAvatarUrl(av.url)}
                   className={`relative rounded-full p-0.5 transition shrink-0 ${
                     avatarUrl === av.url
-                      ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-900 scale-105"
+                      ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-white scale-105"
                       : "opacity-60 hover:opacity-100"
                   }`}
                   title={av.label}
@@ -385,18 +385,18 @@ export function CreateUserModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition"
+              className="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || allowedRoles.length === 0}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition disabled:opacity-50 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition disabled:opacity-50 flex items-center gap-1.5"
             >
               {isSubmitting ? (
                 <span>Creating User...</span>

@@ -124,7 +124,7 @@ export function AgentMonthlyPerformanceCard({
   }, [leads, isSalesAgent, currentUser, selectedAgentId, selectedMonth]);
 
   return (
-    <div className="border-b border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950/80 p-3 sm:p-4 space-y-3">
+    <div className="border-b border-slate-200 bg-white p-3 sm:p-4 space-y-3 shadow-xs">
       {/* Top Header Row: Agent Profile / Switcher + Month Selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         {/* Left: Agent Identity */}
@@ -140,22 +140,22 @@ export function AgentMonthlyPerformanceCard({
                     .toUpperCase()
                 : "ALL"}
             </div>
-            <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
+            <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white" />
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
                 {activeAgent
                   ? `${activeAgent.name}'s Monthly Sales Desk`
                   : "All Sales Agents Monthly Overview"}
               </h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
                 {isSalesAgent ? "My Performance" : "Agent Scorecard"}
               </span>
             </div>
 
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 mt-0.5">
               {activeAgent
                 ? `${activeAgent.role} • ${activeAgent.email}`
                 : "Consolidated Flight Sales & Commission Revenue"}
@@ -171,11 +171,11 @@ export function AgentMonthlyPerformanceCard({
               <select
                 value={selectedAgentId}
                 onChange={(e) => setSelectedAgentId(e.target.value)}
-                className="w-full sm:w-auto bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1.5 pr-7 text-xs text-slate-200 font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none cursor-pointer"
+                className="w-full sm:w-auto bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 pr-7 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none cursor-pointer hover:border-slate-400 transition"
               >
-                <option value="ALL">👥 All Sales Agents (Team)</option>
+                <option value="ALL" className="bg-white text-slate-800">👥 All Sales Agents (Team)</option>
                 {salesAgents.map((agent) => (
-                  <option key={agent.id} value={agent.id}>
+                  <option key={agent.id} value={agent.id} className="bg-white text-slate-800">
                     👤 {agent.name}
                   </option>
                 ))}
@@ -189,15 +189,15 @@ export function AgentMonthlyPerformanceCard({
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full sm:w-auto bg-slate-900 border border-indigo-500/50 rounded-lg px-2.5 py-1.5 pr-7 text-xs text-indigo-200 font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none cursor-pointer shadow-sm"
+              className="w-full sm:w-auto bg-indigo-50/70 border border-indigo-200 rounded-lg px-2.5 py-1.5 pr-7 text-xs text-indigo-900 font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none cursor-pointer shadow-xs"
             >
               {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value} className="bg-slate-950 text-slate-200">
+                <option key={m.value} value={m.value} className="bg-white text-slate-800">
                   📅 {m.label}
                 </option>
               ))}
             </select>
-            <ChevronDown className="h-3.5 w-3.5 text-indigo-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="h-3.5 w-3.5 text-indigo-600 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -205,97 +205,97 @@ export function AgentMonthlyPerformanceCard({
       {/* Monthly Sales Metric Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         {/* 1. Monthly Closed Sales Revenue */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-emerald-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-emerald-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Closed Sales</span>
-            <DollarSign className="h-3.5 w-3.5 text-emerald-400" />
+            <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-emerald-400 font-mono">
+            <div className="text-base sm:text-lg font-bold text-emerald-600 font-mono">
               {formatCurrency(metrics.wonRevenue)}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-emerald-400" />
+            <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
+              <Sparkles className="h-3 w-3 text-emerald-600" />
               <span>{metrics.wonCount} deals won</span>
             </div>
           </div>
         </div>
 
         {/* 2. Monthly Bookings Handled */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-indigo-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-indigo-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Total Bookings</span>
-            <Plane className="h-3.5 w-3.5 text-indigo-400" />
+            <Plane className="h-3.5 w-3.5 text-indigo-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-white font-mono">
-              {metrics.totalInquiries} <span className="text-xs text-slate-400 font-normal">Flights</span>
+            <div className="text-base sm:text-lg font-bold text-slate-900 font-mono">
+              {metrics.totalInquiries} <span className="text-xs text-slate-500 font-normal">Flights</span>
             </div>
-            <div className="text-[10px] text-indigo-300 mt-0.5">
+            <div className="text-[10px] text-indigo-600 mt-0.5 font-medium">
               {formatCurrency(metrics.totalPipelineValue)} volume
             </div>
           </div>
         </div>
 
         {/* 3. Conversion / Win Rate */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-cyan-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-cyan-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Conversion Rate</span>
-            <Percent className="h-3.5 w-3.5 text-cyan-400" />
+            <Percent className="h-3.5 w-3.5 text-cyan-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-cyan-300 font-mono">
+            <div className="text-base sm:text-lg font-bold text-cyan-700 font-mono">
               {metrics.conversionRate}%
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">
+            <div className="text-[10px] text-slate-500 mt-0.5">
               {metrics.wonCount}/{metrics.totalInquiries || 1} converted
             </div>
           </div>
         </div>
 
         {/* 4. Travel Auth Emails Sent */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-purple-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-purple-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Auth Emails</span>
-            <Mail className="h-3.5 w-3.5 text-purple-400" />
+            <Mail className="h-3.5 w-3.5 text-purple-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-purple-300 font-mono">
+            <div className="text-base sm:text-lg font-bold text-purple-700 font-mono">
               {metrics.authEmailsSent}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">
-              from ticketing@travelocase.com
+            <div className="text-[10px] text-slate-500 mt-0.5">
+              ticketing@travelocase.com
             </div>
           </div>
         </div>
 
         {/* 5. Pending Verbal / Auth Follow-ups */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-amber-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-amber-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Pending Follow-ups</span>
-            <PhoneCall className="h-3.5 w-3.5 text-amber-400" />
+            <PhoneCall className="h-3.5 w-3.5 text-amber-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-amber-300 font-mono">
+            <div className="text-base sm:text-lg font-bold text-amber-700 font-mono">
               {metrics.pendingFollowups}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">
+            <div className="text-[10px] text-slate-500 mt-0.5">
               {metrics.callConfirmed} calls confirmed
             </div>
           </div>
         </div>
 
         {/* 6. Average Deal Ticket Size */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-blue-500/50 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200 hover:border-blue-500/50 transition flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 text-[11px] font-medium">
             <span>Avg Ticket Size</span>
-            <Target className="h-3.5 w-3.5 text-blue-400" />
+            <Target className="h-3.5 w-3.5 text-blue-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-blue-300 font-mono">
+            <div className="text-base sm:text-lg font-bold text-blue-700 font-mono">
               {formatCurrency(metrics.avgTicketSize)}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">
+            <div className="text-[10px] text-slate-500 mt-0.5">
               per closed passenger
             </div>
           </div>
@@ -303,31 +303,31 @@ export function AgentMonthlyPerformanceCard({
       </div>
 
       {/* Monthly Quota & Target Progress Bar */}
-      <div className="p-2.5 sm:p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
         <div className="flex items-center gap-2 shrink-0">
-          <Award className="h-4 w-4 text-amber-400" />
-          <span className="font-semibold text-slate-200">
+          <Award className="h-4 w-4 text-amber-500" />
+          <span className="font-semibold text-slate-800">
             Monthly Quota Target ({formatCurrency(metrics.monthlyQuota)}):
           </span>
-          <span className="font-mono font-bold text-emerald-400">
+          <span className="font-mono font-bold text-emerald-600">
             {formatCurrency(metrics.wonRevenue)} achieved ({metrics.quotaProgress.toFixed(1)}%)
           </span>
         </div>
 
         <div className="w-full sm:w-72 flex items-center gap-2">
-          <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+          <div className="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 metrics.quotaProgress >= 100
-                  ? "bg-emerald-400 shadow-sm shadow-emerald-400"
+                  ? "bg-emerald-500 shadow-sm shadow-emerald-400"
                   : metrics.quotaProgress >= 70
-                  ? "bg-gradient-to-r from-indigo-500 to-emerald-400"
-                  : "bg-indigo-500"
+                  ? "bg-gradient-to-r from-indigo-500 to-emerald-500"
+                  : "bg-indigo-600"
               }`}
               style={{ width: `${metrics.quotaProgress}%` }}
             />
           </div>
-          <span className="text-[10px] font-mono text-slate-400 shrink-0 font-bold">
+          <span className="text-[10px] font-mono text-slate-600 shrink-0 font-bold">
             {metrics.quotaProgress >= 100 ? "🎉 Quota Exceeded" : `${(100 - metrics.quotaProgress).toFixed(0)}% to target`}
           </span>
         </div>
