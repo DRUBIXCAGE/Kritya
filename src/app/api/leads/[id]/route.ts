@@ -41,3 +41,47 @@ export async function GET(
     );
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const leadId = params.id;
+    const body = await req.json();
+    const { actorId, ...updates } = body;
+
+    if (!actorId) {
+      return NextResponse.json(
+        { success: false, error: "Actor ID is required for audit and permission validation." },
+        { status: 400 }
+      );
+    }
+
+    const actor = crmStore.getUserById(actorId);
+    if (!actor) {
+      return NextResponse.json(
+        { success: false, error: "Actor account not found in system." },
+        { status: 401 }
+      );
+    }
+
+    const result = crmStore.updateLead(actor, leadId, updates);
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: result.error || "Failed to update lead." },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({ success: true, lead: result.lead });
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to update lead details";
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 500 }
+    );
+  }
+}
+

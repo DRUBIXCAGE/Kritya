@@ -98,7 +98,7 @@ class EnterpriseCRMStore {
         }
       });
 
-      // Ensure all loaded leads have sequential bookingNumber and bookingId backfilled
+      // Ensure all loaded leads have sequential bookingNumber, bookingId, ticketPrice, salePrice, and mco backfilled
       let maxBookingNum = typeof this.lastBookingNumber === "number" ? this.lastBookingNumber : 1000;
       this.leads.forEach((l) => {
         if (!l.bookingNumber) {
@@ -112,6 +112,55 @@ class EnterpriseCRMStore {
           if (l.bookingNumber > maxBookingNum) {
             maxBookingNum = l.bookingNumber;
           }
+        }
+
+        // Pricing & MCO handling:
+        // RULE: No default values for salePrice or mco! Only ticketPrice is ingested from the site.
+        // Agent enters salePrice, and MCO is auto-calculated as (salePrice - ticketPrice).
+        // Confirmed or completed leads ("SALE", "CHARGING", "SUCCESS") show ONLY sale price.
+        const isConfirmedOrCompleted = ["SALE", "CHARGING", "SUCCESS"].includes(l.status);
+        if (isConfirmedOrCompleted) {
+          if (typeof l.salePrice !== "number" || l.salePrice === 0) {
+            l.salePrice = l.dealValue || l.ticketPrice || 0;
+          }
+          l.dealValue = l.salePrice;
+          if (typeof l.ticketPrice !== "number") {
+            l.ticketPrice = l.salePrice;
+          }
+          l.mco = Math.max(0, l.salePrice - l.ticketPrice);
+        } else {
+          // Unconfirmed / in-progress leads:
+          // Ingested ticket price only; NO default fake salePrice or MCO!
+          // If this lead was previously tainted with synthetic 0.78 ticketPrice backfill, reset it:
+          if (l.salePrice && l.ticketPrice === Math.round(l.salePrice * 0.78)) {
+            l.ticketPrice = l.salePrice;
+            l.salePrice = undefined;
+            l.mco = undefined;
+          } else if (typeof l.ticketPrice !== "number" || l.ticketPrice === 0) {
+            l.ticketPrice = l.bookingDetails?.ticketPrice || (typeof l.dealValue === "number" && l.dealValue > 0 ? l.dealValue : 0);
+          }
+
+          if (l.status === "NEW") {
+            // Fresh incoming site inquiry: strictly no salePrice or MCO until agent quotes
+            l.salePrice = undefined;
+            l.mco = undefined;
+            l.dealValue = 0;
+          } else if (typeof l.salePrice === "number" && l.salePrice > 0) {
+            // Agent entered a custom sale price
+            l.mco = l.salePrice - (l.ticketPrice || 0);
+            l.dealValue = l.salePrice;
+          } else {
+            // No default values: awaiting agent sale quote
+            l.salePrice = undefined;
+            l.mco = undefined;
+            l.dealValue = 0;
+          }
+        }
+
+        if (l.bookingDetails) {
+          l.bookingDetails.salePrice = l.salePrice;
+          l.bookingDetails.ticketPrice = l.ticketPrice;
+          l.bookingDetails.mco = l.mco;
         }
       });
       this.lastBookingNumber = Math.max(maxBookingNum, 1000);
@@ -426,6 +475,30 @@ class EnterpriseCRMStore {
     userId?: string,
     options?: { bookingId?: string; search?: string }
   ): Lead[] {
+    this.leads.forEach((l) => {
+      const isConfirmedOrCompleted = ["SALE", "CHARGING", "SUCCESS"].includes(l.status);
+      if (isConfirmedOrCompleted) {
+        if (!l.salePrice) l.salePrice = l.dealValue || l.ticketPrice || 0;
+        l.dealValue = l.salePrice;
+        if (l.mco === undefined || l.mco === null) {
+          l.mco = Math.max(0, (l.salePrice || 0) - (l.ticketPrice || 0));
+        }
+      } else {
+        if (l.status === "NEW") {
+          l.salePrice = undefined;
+          l.mco = undefined;
+          l.dealValue = 0;
+        } else if (typeof l.salePrice === "number" && l.salePrice > 0) {
+          l.mco = l.salePrice - (l.ticketPrice || 0);
+          l.dealValue = l.salePrice;
+        } else {
+          l.salePrice = undefined;
+          l.mco = undefined;
+          l.dealValue = 0;
+        }
+      }
+    });
+
     let result = this.leads;
 
     // 1. Strict Role-Based Access Isolation
@@ -762,6 +835,188 @@ class EnterpriseCRMStore {
     return { success: true, count: updatedLeads.length, leads: updatedLeads };
   }
 
+  // ----------------------------------------------------
+  // Update Lead Details, Multiple Flights & Manifest
+  // ----------------------------------------------------
+  updateLead(
+    actor: User,
+    leadId: string,
+    payload: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      company?: string;
+      dealValue?: number;
+      ticketPrice?: number;
+      salePrice?: number;
+      mco?: number;
+      currency?: string;
+      notes?: string;
+      bookingDetails?: Partial<FlightBooking>;
+    }
+  ): { success: boolean; lead?: Lead; error?: string } {
+    const lead = this.leads.find((l) => l.id === leadId);
+    if (!lead) return { success: false, error: "Lead booking not found." };
+
+    // RBAC: Sales agent can only edit their own assigned leads. Managers and Admins can edit any lead.
+    if (
+      actor.role === "SALES_AGENT" &&
+      lead.assignedToId &&
+      lead.assignedToId !== actor.id
+    ) {
+      return {
+        success: false,
+        error: "Access Denied: You can only edit leads assigned to you.",
+      };
+    }
+
+    // Merge primary customer fields
+    if (typeof payload.name === "string" && payload.name.trim()) {
+      lead.name = payload.name.trim();
+    }
+    if (typeof payload.email === "string" && payload.email.trim()) {
+      lead.email = payload.email.trim().toLowerCase();
+    }
+    if (typeof payload.phone === "string") {
+      lead.phone = payload.phone.trim();
+    }
+    if (typeof payload.company === "string") {
+      lead.company = payload.company.trim();
+    }
+
+    // Pricing & MCO handling:
+    // Sale Price & Ticket Price are custom/editable.
+    // MCO is auto-calculated as Sale Price - Ticket Price (Actual amount earned by agent).
+    // Or if MCO is adjusted, Sale Price = Ticket Price + MCO.
+    if (typeof payload.ticketPrice === "number" && !isNaN(payload.ticketPrice)) {
+      lead.ticketPrice = Math.max(0, payload.ticketPrice);
+    }
+    if (typeof payload.salePrice === "number" && !isNaN(payload.salePrice)) {
+      lead.salePrice = Math.max(0, payload.salePrice);
+      lead.dealValue = lead.salePrice;
+    } else if (typeof payload.dealValue === "number" && !isNaN(payload.dealValue)) {
+      lead.salePrice = Math.max(0, payload.dealValue);
+      lead.dealValue = lead.salePrice;
+    }
+
+    if (typeof payload.mco === "number" && !isNaN(payload.mco)) {
+      lead.mco = payload.mco;
+      if (typeof payload.salePrice !== "number" && typeof payload.dealValue !== "number") {
+        lead.salePrice = (lead.ticketPrice || 0) + lead.mco;
+        lead.dealValue = lead.salePrice;
+      }
+    } else {
+      const sp = lead.salePrice ?? lead.dealValue ?? 0;
+      const tp = lead.ticketPrice ?? 0;
+      lead.mco = sp - tp;
+    }
+
+    if (typeof payload.currency === "string" && payload.currency.trim()) {
+      lead.currency = payload.currency.trim().toUpperCase();
+    }
+    if (typeof payload.notes === "string") {
+      lead.notes = payload.notes;
+    }
+
+    // Merge bookingDetails if provided
+    if (payload.bookingDetails) {
+      const b = payload.bookingDetails;
+      if (!lead.bookingDetails) {
+        lead.bookingDetails = {
+          origin: b.origin || "JFK",
+          destination: b.destination || "LHR",
+          tripType: b.tripType || "ROUND_TRIP",
+          departureDate: b.departureDate || new Date().toISOString().split("T")[0],
+          airline: b.airline || "American Airlines",
+          flightNumber: b.flightNumber || "AA 100",
+          cabinClass: b.cabinClass || "ECONOMY",
+          passengers: b.passengers || [],
+          pnrCode: b.pnrCode || "NX-PNR",
+          flights: b.flights || [],
+        };
+      } else {
+        if (b.origin) lead.bookingDetails.origin = b.origin;
+        if (b.destination) lead.bookingDetails.destination = b.destination;
+        if (b.tripType) lead.bookingDetails.tripType = b.tripType;
+        if (b.departureDate) lead.bookingDetails.departureDate = b.departureDate;
+        if (b.returnDate !== undefined) lead.bookingDetails.returnDate = b.returnDate;
+        if (b.airline) lead.bookingDetails.airline = b.airline;
+        if (b.flightNumber) lead.bookingDetails.flightNumber = b.flightNumber;
+        if (b.cabinClass) lead.bookingDetails.cabinClass = b.cabinClass;
+        if (b.pnrCode) lead.bookingDetails.pnrCode = b.pnrCode;
+        if (Array.isArray(b.passengers)) lead.bookingDetails.passengers = b.passengers;
+        if (Array.isArray(b.flights)) {
+          lead.bookingDetails.flights = b.flights;
+          // Synchronize top-level origin, destination, airline, flightNumber from flight legs if available
+          if (b.flights.length > 0) {
+            lead.bookingDetails.origin = b.flights[0].origin || lead.bookingDetails.origin;
+            lead.bookingDetails.destination =
+              b.flights[b.flights.length - 1].destination || lead.bookingDetails.destination;
+            lead.bookingDetails.departureDate =
+              b.flights[0].departureDate || lead.bookingDetails.departureDate;
+            lead.bookingDetails.airline = b.flights[0].airline || lead.bookingDetails.airline;
+            lead.bookingDetails.flightNumber =
+              b.flights[0].flightNumber || lead.bookingDetails.flightNumber;
+          }
+        }
+      }
+    }
+
+    if (lead.bookingDetails) {
+      lead.bookingDetails.ticketPrice = lead.ticketPrice;
+      lead.bookingDetails.salePrice = lead.salePrice;
+      lead.bookingDetails.mco = lead.mco;
+    }
+
+    lead.updatedAt = new Date().toISOString();
+
+    this.logActivity({
+      entityType: "LEAD",
+      entityId: lead.id,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      action: "LEAD_DETAILS_UPDATED",
+      toState: lead.status,
+      metadata: {
+        bookingNumber: lead.bookingNumber,
+        passengerCount: lead.bookingDetails?.passengers?.length || 0,
+        flightSegmentsCount: lead.bookingDetails?.flights?.length || 1,
+        dealValue: lead.dealValue,
+        currency: lead.currency,
+      },
+    });
+
+    this.logAudit({
+      actorId: actor.id,
+      actorEmail: actor.email,
+      action: "LEAD_DETAILS_UPDATED",
+      resource: `Lead:${lead.id}`,
+      ipAddress: "127.0.0.1",
+      status: "SUCCESS",
+      payload: {
+        leadId: lead.id,
+        bookingNumber: lead.bookingNumber,
+        actor: actor.email,
+        updatedFields: Object.keys(payload),
+      },
+    });
+
+    broadcastEvent({
+      type: "LEAD_TRANSITION",
+      tenantId: lead.tenantId,
+      actor: { id: actor.id, name: actor.name, role: actor.role },
+      payload: {
+        leadId: lead.id,
+        action: "LEAD_UPDATED",
+        lead,
+      },
+    });
+
+    this.saveToDatabase();
+    return { success: true, lead };
+  }
+
   // Manager Grant Protocol for Card View
   grantCardAccess(
     leadId: string,
@@ -1055,11 +1310,13 @@ class EnterpriseCRMStore {
   }
 
   // Ingestion with Digital Footprint, Flight Booking, and Card Details
+  // Only ticketPrice is ingested from the site. No default values for salePrice or mco.
   ingestLead(payload: {
     name: string;
     email: string;
     phone?: string;
     company?: string;
+    ticketPrice?: number;
     dealValue?: number;
     currency?: string;
     notes?: string;
@@ -1102,6 +1359,11 @@ class EnterpriseCRMStore {
     const nextBookingNumber = this.lastBookingNumber;
     const defaultPnr = "TC-" + nextBookingNumber;
 
+    const ingestedTicketPrice =
+      typeof payload.ticketPrice === "number" && !isNaN(payload.ticketPrice)
+        ? Math.max(0, payload.ticketPrice)
+        : (typeof payload.dealValue === "number" && !isNaN(payload.dealValue) ? Math.max(0, payload.dealValue) : 0);
+
     const defaultBooking: FlightBooking = payload.bookingDetails || {
       origin: "JFK (New York)",
       destination: "LHR (London Heathrow)",
@@ -1112,6 +1374,9 @@ class EnterpriseCRMStore {
       flightNumber: "BA-178",
       cabinClass: "BUSINESS",
       pnrCode: defaultPnr,
+      ticketPrice: ingestedTicketPrice,
+      salePrice: undefined,
+      mco: undefined,
       passengers: [
         {
           id: "pax_" + Math.random().toString(36).substring(2, 6),
@@ -1134,6 +1399,9 @@ class EnterpriseCRMStore {
     if (!defaultBooking.pnrCode) {
       defaultBooking.pnrCode = defaultPnr;
     }
+    defaultBooking.ticketPrice = ingestedTicketPrice;
+    defaultBooking.salePrice = undefined;
+    defaultBooking.mco = undefined;
 
     const defaultCard: CardDetails = payload.cardDetails || {
       cardholderName: payload.name.toUpperCase(),
@@ -1158,11 +1426,14 @@ class EnterpriseCRMStore {
       phone: payload.phone || "+1 (555) 019-3344",
       company: payload.company || "Corporate Client",
       status: "NEW",
-      dealValue: payload.dealValue || 12500,
+      ticketPrice: ingestedTicketPrice,
+      salePrice: undefined, // No default value! Agent will enter sale price
+      mco: undefined,       // MCO will be calculated when sale price is entered
+      dealValue: 0,
       currency: payload.currency || "USD",
       notes:
         payload.notes ||
-        `Flight inquiry booking #${nextBookingNumber} ingested with passenger roster and card vault record.`,
+        `Flight inquiry booking #${nextBookingNumber} ingested from website. Ingested Ticket Price: $${ingestedTicketPrice}.`,
       bookingDetails: defaultBooking,
       cardDetails: defaultCard,
       authEmailSent: false,
@@ -1595,8 +1866,8 @@ class EnterpriseCRMStore {
 const globalForCrmStore = globalThis as unknown as {
   crmStore: EnterpriseCRMStore;
 };
-export const crmStore =
-  globalForCrmStore.crmStore || new EnterpriseCRMStore();
+// Export singleton instance with database persistence
+export const crmStore = new EnterpriseCRMStore();
 if (process.env.NODE_ENV !== "production") {
   globalForCrmStore.crmStore = crmStore;
 }

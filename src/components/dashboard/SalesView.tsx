@@ -271,7 +271,7 @@ export function SalesView({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+    <div className="flex-1 min-h-0 flex flex-col min-w-0 bg-slate-50 xl:overflow-hidden">
       {/* Top Section: Individual Sales and Performance Details on a Monthly Basis */}
       <AgentMonthlyPerformanceCard
         leads={leads}
@@ -461,7 +461,7 @@ export function SalesView({
       )}
 
       {/* High-Density Pipeline Lead Datatable */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto touch-scroll min-h-[400px]">
+      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto touch-scroll">
         <table className="w-full min-w-[940px] text-left text-xs border-collapse">
           <thead className="bg-slate-100/90 text-slate-700 sticky top-0 border-b border-slate-200 z-10 font-semibold">
             <tr>
@@ -487,8 +487,7 @@ export function SalesView({
               <th className="py-2.5 px-3 font-semibold">Passenger & PNR</th>
               <th className="py-2.5 px-3 font-semibold">Flight Routing</th>
               <th className="py-2.5 px-3 font-semibold">Stage / Status</th>
-              <th className="py-2.5 px-3 font-semibold">Fare Value</th>
-              <th className="py-2.5 px-3 font-semibold">Card Security</th>
+              <th className="py-2.5 px-3 font-semibold">Pricing / Sale Price</th>
               <th className="py-2.5 px-3 font-semibold">
                 {canAssignLeads ? "Assigned Agent (Change)" : "Assigned Agent"}
               </th>
@@ -499,7 +498,7 @@ export function SalesView({
           <tbody className="divide-y divide-slate-200 bg-white">
             {filteredLeads.length === 0 ? (
               <tr>
-                <td colSpan={canAssignLeads ? 9 : 8} className="py-12 text-center text-slate-500">
+                <td colSpan={canAssignLeads ? 8 : 7} className="py-12 text-center text-slate-500">
                   <Plane className="h-8 w-8 mx-auto mb-2 text-slate-300" />
                   <p className="text-sm font-medium text-slate-600">No flight bookings match your date or search filters</p>
                   <button
@@ -515,8 +514,6 @@ export function SalesView({
                 const isSelected = lead.id === selectedLeadId;
                 const isChecked = selectedLeadIds.includes(lead.id);
                 const booking = lead.bookingDetails;
-                const card = lead.cardDetails;
-                const last4 = card?.cardNumber?.slice(-4) || "4242";
 
                 return (
                   <tr
@@ -574,22 +571,56 @@ export function SalesView({
                     <td className="py-2.5 px-3">
                       <LeadStatusChip status={lead.status} />
                     </td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-emerald-700">
-                      {formatCurrency(lead.dealValue, lead.currency)}
-                    </td>
                     <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-1 font-mono text-[11px]">
-                        <span className="text-slate-600">•••• {last4}</span>
-                        {card?.isAccessGrantedToAgent ? (
-                          <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold">
-                            CLEARANCE
-                          </span>
-                        ) : (
-                          <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-300 font-bold">
-                            MASKED
-                          </span>
-                        )}
-                      </div>
+                      {(() => {
+                        const isConfirmedOrCompleted = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
+
+                        if (isConfirmedOrCompleted) {
+                          // Confirmed or completed lead must show ONLY sale price
+                          const finalSalePrice = lead.salePrice || lead.dealValue || 0;
+                          return (
+                            <div className="font-mono text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight">
+                              {formatCurrency(finalSalePrice, lead.currency)}
+                            </div>
+                          );
+                        }
+
+                        // Unconfirmed / in-progress leads: Ingested ticket price + agent sale price quote & MCO
+                        const tp = lead.ticketPrice ?? 0;
+                        const hasSalePrice = typeof lead.salePrice === "number" && lead.salePrice > 0;
+                        const sp = hasSalePrice ? lead.salePrice! : 0;
+                        const mco = hasSalePrice ? (lead.mco !== undefined ? lead.mco : sp - tp) : undefined;
+
+                        return (
+                          <div className="space-y-1">
+                            {hasSalePrice ? (
+                              <>
+                                <div className="flex items-center gap-1 font-mono text-xs font-bold text-slate-900">
+                                  <span className="text-[10px] text-slate-500 font-normal">Sale:</span>
+                                  <span>{formatCurrency(sp, lead.currency)}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                                  <span>Ticket: {formatCurrency(tp, lead.currency)}</span>
+                                  <span>&bull;</span>
+                                  <span className="font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-1 py-0.2 rounded shadow-xs">
+                                    MCO: {mco! >= 0 ? `+${formatCurrency(mco!, lead.currency)}` : `-${formatCurrency(Math.abs(mco!), lead.currency)}`}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="space-y-0.5">
+                                <div className="text-[11px] font-mono font-semibold text-slate-700">
+                                  Ticket: {formatCurrency(tp, lead.currency)}
+                                </div>
+                                <div className="text-[10px] text-amber-700 font-medium flex items-center gap-1">
+                                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                  Awaiting Sale Price
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="py-2.5 px-3" onClick={(e) => canAssignLeads && e.stopPropagation()}>
                       {canAssignLeads ? (

@@ -187,9 +187,9 @@ export function Navbar({
         </form>
 
         {/* Right Controls: Ingest Lead, Realtime SSE Status, Role Simulator */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Live Pipeline SSE pulse */}
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10px] sm:text-[11px] text-slate-600 font-mono shrink-0">
+          <div className="hidden xs:flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10px] sm:text-[11px] text-slate-600 font-mono shrink-0">
             <span className="relative flex h-2 w-2">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -214,11 +214,12 @@ export function Navbar({
           {isManagerOrAdmin && (
             <button
               onClick={onOpenIngestModal}
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-sm shadow-indigo-500/25 transition border border-indigo-400/30 active:scale-95 shrink-0"
+              className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-sm shadow-indigo-500/25 transition border border-indigo-400/30 active:scale-95 shrink-0"
+              title="Ingest new booking or simulation"
             >
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Ingest Booking</span>
-              <span className="sm:hidden">Ingest</span>
+              <span className="sm:hidden text-[11px]">Ingest</span>
             </button>
           )}
 
@@ -226,7 +227,7 @@ export function Navbar({
           {canCreateUsers && onOpenCreateUserModal && (
             <button
               onClick={onOpenCreateUserModal}
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-xs transition active:scale-95 shrink-0"
+              className="hidden sm:flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-xs transition active:scale-95 shrink-0"
               title={
                 currentUser.role === "SUPER_ADMIN"
                   ? "Create Admins, Managers, and Agents"
@@ -236,15 +237,14 @@ export function Navbar({
               }
             >
               <UserPlus className="h-3.5 w-3.5 text-purple-600" />
-              <span className="hidden sm:inline">
+              <span>
                 {currentUser.role.endsWith("_MANAGER") ? "+ Add Agent" : "+ Create User"}
               </span>
-              <span className="sm:hidden">+ User</span>
             </button>
           )}
 
           {/* Role Simulator Switcher */}
-          <div className="flex items-center gap-1.5 pl-1 sm:pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-slate-200 shrink-0">
             <div className="text-right hidden xl:block">
               <div className="text-xs font-medium text-slate-800 flex items-center justify-end gap-1">
                 <span className="truncate max-w-[120px]">{currentUser.name}</span>
@@ -262,7 +262,7 @@ export function Navbar({
                   const selected = users.find((u) => u.id === e.target.value);
                   if (selected) onSelectUser(selected);
                 }}
-                className="bg-white text-[11px] sm:text-xs text-slate-800 border border-slate-300 rounded-lg px-2 py-1.5 pr-6 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none font-medium hover:border-slate-400 transition max-w-[135px] sm:max-w-[190px] truncate"
+                className="bg-white text-[10px] sm:text-xs text-slate-800 border border-slate-300 rounded-lg px-2 py-1.5 pr-5 sm:pr-6 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer appearance-none font-medium hover:border-slate-400 transition max-w-[110px] sm:max-w-[190px] truncate"
               >
                 {users.map((u) => (
                   <option key={u.id} value={u.id} className="bg-white text-slate-800 py-1">
@@ -270,7 +270,7 @@ export function Navbar({
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
+              <div className="pointer-events-none absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
                 ▼
               </div>
             </div>

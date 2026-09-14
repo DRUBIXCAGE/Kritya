@@ -16,7 +16,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
   const [email, setEmail] = useState("harrison.sterling@sterling-holdings.co.uk");
   const [phone, setPhone] = useState("+44 20 7946 0192");
   const [company, setCompany] = useState("Sterling Holdings International");
-  const [dealValue, setDealValue] = useState("14800");
+  const [ticketPrice, setTicketPrice] = useState("11500");
 
   // Flight booking details
   const [origin, setOrigin] = useState("JFK (New York)");
@@ -53,7 +53,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
       setEmail("harrison.sterling@sterling-holdings.co.uk");
       setPhone("+44 20 7946 0192");
       setCompany("Sterling Holdings International");
-      setDealValue("14800");
+      setTicketPrice("11500");
       setOrigin("JFK (New York)");
       setDestination("LHR (London Heathrow)");
       setAirline("British Airways");
@@ -71,7 +71,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
       setEmail("k.takahashi@tokyo-biotech.jp");
       setPhone("+81 3 5555 0199");
       setCompany("Tokyo BioTech Labs");
-      setDealValue("22400");
+      setTicketPrice("17500");
       setOrigin("SFO (San Francisco)");
       setDestination("HND (Tokyo Haneda)");
       setAirline("All Nippon Airways (ANA)");
@@ -89,7 +89,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
       setEmail("elena.r@zurich-finance.ch");
       setPhone("+41 22 555 8812");
       setCompany("Zurich Global Capital");
-      setDealValue("18900");
+      setTicketPrice("3800");
       setOrigin("ORD (Chicago O'Hare)");
       setDestination("CDG (Paris Charles de Gaulle)");
       setAirline("Air France");
@@ -117,7 +117,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
           email,
           phone,
           company,
-          dealValue: parseFloat(dealValue) || 12500,
+          ticketPrice: parseFloat(ticketPrice) || 0,
           currency: "USD",
           ipAddress,
           userAgent: navigator.userAgent,
@@ -133,6 +133,7 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
             airline,
             flightNumber,
             cabinClass,
+            ticketPrice: parseFloat(ticketPrice) || 0,
             pnrCode: "NX-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
             passengers: [
               {
@@ -353,7 +354,23 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
                   className="w-full rounded bg-white border border-slate-300 px-2.5 py-1 text-xs text-slate-900 font-mono"
                 />
               </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-indigo-900 mb-0.5">
+                  Ticket Price (Ingested from Site) ($)
+                </label>
+                <input
+                  type="number"
+                  value={ticketPrice}
+                  onChange={(e) => setTicketPrice(e.target.value)}
+                  required
+                  placeholder="Ticket cost"
+                  className="w-full rounded bg-white border border-indigo-300 px-2.5 py-1 text-xs text-indigo-950 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
             </div>
+            <p className="text-[10px] text-slate-500 italic">
+              💡 Note: Only raw ticket price is ingested from the website. The sales agent enters the Sale Price quote, and Agent MCO profit is automatically calculated.
+            </p>
           </div>
 
           {/* Section 3: Card Details (PCI Vault - Masked from Agent) */}

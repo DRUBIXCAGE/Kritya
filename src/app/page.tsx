@@ -238,7 +238,7 @@ export default function DashboardPage() {
   const leadActivity = selectedLead ? activityLogs.filter((l) => l.entityId === selectedLead.id) : [];
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col bg-slate-50 text-slate-900 md:h-screen md:overflow-hidden">
+    <div className="min-h-[100dvh] w-full flex flex-col bg-slate-50 text-slate-900 xl:h-screen xl:overflow-hidden">
       {/* Top Navigation & Live Role Simulator */}
       <Navbar
         currentUser={currentUser}
@@ -254,9 +254,9 @@ export default function DashboardPage() {
       />
 
       {/* Main Workspace Area */}
-      <main className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 xl:overflow-hidden">
         {activeView === "sales" && (
-          <div className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
+          <div className="flex-1 flex flex-col min-w-0 xl:overflow-hidden">
             <SalesView
               leads={leads}
               currentUser={currentUser}

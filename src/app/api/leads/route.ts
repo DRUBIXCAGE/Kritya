@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { crmStore } from "@/lib/store";
 import { Role } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const role = searchParams.get("role") as Role | undefined;

@@ -75,6 +75,20 @@ export interface Passenger {
   eTicketNumber?: string;
 }
 
+export interface FlightSegment {
+  id: string;
+  airline: string;
+  flightNumber: string;
+  origin: string; // e.g. "JFK"
+  destination: string; // e.g. "LHR"
+  departureDate: string; // YYYY-MM-DD
+  departureTime?: string; // e.g. "08:30 AM"
+  arrivalDate?: string;
+  arrivalTime?: string;
+  cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST";
+  seatNumber?: string;
+}
+
 export interface FlightBooking {
   origin: string; // e.g. "JFK (New York)"
   destination: string; // e.g. "LHR (London Heathrow)"
@@ -86,6 +100,10 @@ export interface FlightBooking {
   cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST";
   passengers: Passenger[];
   pnrCode?: string;
+  flights?: FlightSegment[];
+  ticketPrice?: number; // Cost of ticket / Net Fare
+  salePrice?: number; // Custom Sale Price / Gross Total
+  mco?: number; // Miscellaneous Charges Order = salePrice - ticketPrice (Amount earned by agent)
 }
 
 export interface CardDetails {
@@ -162,6 +180,9 @@ export interface Lead {
   company?: string;
   status: LeadStatus;
   dealValue: number;
+  ticketPrice?: number; // Custom ticket cost / net fare
+  salePrice?: number; // Custom sale price / gross total sold to client
+  mco?: number; // MCO = salePrice - ticketPrice (Actual profit earned by agent)
   currency: string;
   notes?: string;
   bookingDetails?: FlightBooking;

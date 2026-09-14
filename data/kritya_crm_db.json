@@ -374,6 +374,226 @@
   ],
   "leads": [
     {
+      "id": "lead_jk6xjtc",
+      "bookingNumber": 1011,
+      "bookingId": "#1011",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent_xpgob",
+      "assignedToName": "Automated Test Agent",
+      "name": "Prince Alexander",
+      "email": "alexander@monaco-invest.mc",
+      "phone": "+377 98 98 00 00",
+      "company": "Corporate Client",
+      "status": "NEW",
+      "ticketPrice": 9500,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1011 ingested from website. Ingested Ticket Price: $9500.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "LHR (London Heathrow)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-20",
+        "returnDate": "2026-10-30",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "TC-1011",
+        "ticketPrice": 9500,
+        "passengers": [
+          {
+            "id": "pax_5r2e",
+            "fullName": "Prince Alexander",
+            "passportNumber": "US38498835",
+            "passportExpiry": "2031-10-15",
+            "nationality": "United States (USA)",
+            "dob": "1985-06-15",
+            "type": "ADULT",
+            "seatPreference": "2A",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-125-3831448371"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "PRINCE ALEXANDER",
+        "cardNumber": "4532340809398382",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-14T06:31:42.502Z",
+      "updatedAt": "2026-09-14T06:31:42.542Z",
+      "footprint": {
+        "id": "fp_lead_jk6xjtc",
+        "leadId": "lead_jk6xjtc",
+        "ipAddress": "198.51.100.149",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-14T06:26:42.502Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/JFK (New York)-LHR (London Heathrow)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-14T06:29:42.502Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-14T06:31:42.502Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          }
+        ],
+        "createdAt": "2026-09-14T06:31:42.502Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_jk6xjtc",
+        "leadId": "lead_jk6xjtc",
+        "email": "alexander@monaco-invest.mc",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "monaco-invest.mc",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.monaco-invest.mc ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@monaco-invest.mc",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-14T06:31:42.502Z"
+        },
+        "verifiedAt": "2026-09-14T06:31:42.502Z"
+      }
+    },
+    {
+      "id": "lead_aiuros9",
+      "bookingNumber": 1010,
+      "bookingId": "#1010",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent_y5pzw",
+      "assignedToName": "Nameless Agent",
+      "name": "Prince Alexander",
+      "email": "alexander@monaco-invest.mc",
+      "phone": "+377 98 98 00 00",
+      "company": "Corporate Client",
+      "status": "NEW",
+      "ticketPrice": 9500,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1010 ingested from website. Ingested Ticket Price: $9500.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "LHR (London Heathrow)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-10-20",
+        "returnDate": "2026-10-30",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "TC-1010",
+        "ticketPrice": 9500,
+        "passengers": [
+          {
+            "id": "pax_irqf",
+            "fullName": "Prince Alexander",
+            "passportNumber": "US70922959",
+            "passportExpiry": "2031-10-15",
+            "nationality": "United States (USA)",
+            "dob": "1985-06-15",
+            "type": "ADULT",
+            "seatPreference": "2A",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-125-2143245495"
+          }
+        ]
+      },
+      "cardDetails": {
+        "cardholderName": "PRINCE ALEXANDER",
+        "cardNumber": "4532374946461795",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-14T06:31:28.094Z",
+      "updatedAt": "2026-09-14T06:31:28.094Z",
+      "footprint": {
+        "id": "fp_lead_aiuros9",
+        "leadId": "lead_aiuros9",
+        "ipAddress": "198.51.100.98",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://google.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "flight_portal",
+        "utmMedium": "cpc",
+        "utmCampaign": "luxury_business_routes",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-14T06:26:28.094Z",
+            "event": "ROUTE_SEARCH",
+            "url": "/flights/JFK (New York)-LHR (London Heathrow)",
+            "dwellTimeSeconds": 45
+          },
+          {
+            "timestamp": "2026-09-14T06:29:28.094Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "/checkout/passengers",
+            "dwellTimeSeconds": 120
+          },
+          {
+            "timestamp": "2026-09-14T06:31:28.094Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "/checkout/payment"
+          }
+        ],
+        "createdAt": "2026-09-14T06:31:28.094Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_aiuros9",
+        "leadId": "lead_aiuros9",
+        "email": "alexander@monaco-invest.mc",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "monaco-invest.mc",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.monaco-invest.mc ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@monaco-invest.mc",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-14T06:31:28.094Z"
+        },
+        "verifiedAt": "2026-09-14T06:31:28.094Z"
+      }
+    },
+    {
       "id": "lead_99hl6z7",
       "bookingNumber": 1009,
       "bookingId": "#1009",
@@ -385,7 +605,7 @@
       "phone": "+1 (555) 019-3344",
       "company": "Corporate Client",
       "status": "NEW",
-      "dealValue": 28000,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "Flight inquiry booking #1009 ingested with passenger roster and card vault record.",
       "bookingDetails": {
@@ -412,7 +632,8 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-125-1585230482"
           }
-        ]
+        ],
+        "ticketPrice": 28000
       },
       "cardDetails": {
         "cardholderName": "DUCHESS ELEANOR OF AQUITAINE",
@@ -491,7 +712,8 @@
           "evaluationTimestamp": "2026-09-11T10:14:33.741Z"
         },
         "verifiedAt": "2026-09-11T10:14:33.741Z"
-      }
+      },
+      "ticketPrice": 28000
     },
     {
       "id": "lead_xqil2py",
@@ -526,7 +748,10 @@
             "type": "ADULT"
           }
         ],
-        "pnrCode": "TC-1008"
+        "pnrCode": "TC-1008",
+        "salePrice": 19500,
+        "ticketPrice": 15210,
+        "mco": 4290
       },
       "cardDetails": {
         "cardholderName": "SIR ARTHUR WELLESLEY",
@@ -608,7 +833,10 @@
           "evaluationTimestamp": "2026-09-11T10:14:33.732Z"
         },
         "verifiedAt": "2026-09-11T10:14:33.732Z"
-      }
+      },
+      "salePrice": 19500,
+      "ticketPrice": 15210,
+      "mco": 4290
     },
     {
       "id": "lead_gfijvlo",
@@ -622,7 +850,7 @@
       "phone": "+1 (555) 019-3344",
       "company": "Corporate Client",
       "status": "NEW",
-      "dealValue": 28000,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "Flight inquiry booking #1007 ingested with passenger roster and card vault record.",
       "bookingDetails": {
@@ -649,7 +877,8 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-125-8509314386"
           }
-        ]
+        ],
+        "ticketPrice": 28000
       },
       "cardDetails": {
         "cardholderName": "DUCHESS ELEANOR OF AQUITAINE",
@@ -716,7 +945,8 @@
           "evaluationTimestamp": "2026-09-11T10:00:29.335Z"
         },
         "verifiedAt": "2026-09-11T10:00:29.335Z"
-      }
+      },
+      "ticketPrice": 28000
     },
     {
       "id": "lead_dar1t6t",
@@ -730,7 +960,7 @@
       "phone": "+44 20 7946 0999",
       "company": "Wellington & Co",
       "status": "AUTHENTICATION_SENT",
-      "dealValue": 19500,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "Flight inquiry booking #1006 ingested with passenger roster and card vault record.",
       "bookingDetails": {
@@ -751,7 +981,8 @@
             "type": "ADULT"
           }
         ],
-        "pnrCode": "TC-1006"
+        "pnrCode": "TC-1006",
+        "ticketPrice": 19500
       },
       "cardDetails": {
         "cardholderName": "SIR ARTHUR WELLESLEY",
@@ -830,7 +1061,8 @@
           "evaluationTimestamp": "2026-09-11T10:00:29.314Z"
         },
         "verifiedAt": "2026-09-11T10:00:29.315Z"
-      }
+      },
+      "ticketPrice": 19500
     },
     {
       "id": "lead_flight_01",
@@ -844,7 +1076,7 @@
       "phone": "+44 20 7946 0192",
       "company": "Sterling Holdings International",
       "status": "QUALIFIED",
-      "dealValue": 14800,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "Executive business class reservation for 2 passengers. Authentication email sent, waiting for manager clearance to inspect card.",
       "authEmailSent": true,
@@ -888,7 +1120,8 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-125-9482019402"
           }
-        ]
+        ],
+        "ticketPrice": 14800
       },
       "cardDetails": {
         "cardholderName": "HARRISON STERLING",
@@ -949,7 +1182,8 @@
         "smtpCheckValid": true,
         "score": 98,
         "verifiedAt": "2026-09-11T09:30:02Z"
-      }
+      },
+      "ticketPrice": 14800
     },
     {
       "id": "lead_flight_02",
@@ -963,7 +1197,7 @@
       "phone": "+81 3 5555 0199",
       "company": "Tokyo BioTech Labs",
       "status": "AUTHENTICATION_SENT",
-      "dealValue": 22400,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "First Class Roundtrip SFO to Tokyo Haneda. Authentication email sent to passenger.",
       "authEmailSent": true,
@@ -993,7 +1227,8 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-205-8829104401"
           }
-        ]
+        ],
+        "ticketPrice": 22400
       },
       "cardDetails": {
         "cardholderName": "KENJI TAKAHASHI",
@@ -1043,7 +1278,8 @@
         "smtpCheckValid": true,
         "score": 96,
         "verifiedAt": "2026-09-09T11:20:05Z"
-      }
+      },
+      "ticketPrice": 22400
     },
     {
       "id": "lead_flight_03",
@@ -1101,7 +1337,10 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-057-1029481902"
           }
-        ]
+        ],
+        "salePrice": 18900,
+        "ticketPrice": 14742,
+        "mco": 4158
       },
       "cardDetails": {
         "cardholderName": "ELENA ROSTOVA",
@@ -1152,7 +1391,10 @@
         "smtpCheckValid": true,
         "score": 97,
         "verifiedAt": "2026-09-08T14:10:02Z"
-      }
+      },
+      "salePrice": 18900,
+      "ticketPrice": 14742,
+      "mco": 4158
     },
     {
       "id": "lead_flight_04",
@@ -1166,7 +1408,7 @@
       "phone": "+39 06 698 12345",
       "company": "Rome Defense Systems",
       "status": "NEW",
-      "dealValue": 8400,
+      "dealValue": 0,
       "currency": "USD",
       "notes": "New inquiry for LAX to Rome FCO business class.",
       "bookingDetails": {
@@ -1193,7 +1435,8 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-055-7749210001"
           }
-        ]
+        ],
+        "ticketPrice": 8400
       },
       "cardDetails": {
         "cardholderName": "MARCUS A VANCE",
@@ -1237,7 +1480,8 @@
         "smtpCheckValid": true,
         "score": 94,
         "verifiedAt": "2026-09-11T10:40:03Z"
-      }
+      },
+      "ticketPrice": 8400
     },
     {
       "id": "lead_flight_05",
@@ -1293,7 +1537,10 @@
             "specialAssistance": "None",
             "eTicketNumber": "ETKT-618-9482103402"
           }
-        ]
+        ],
+        "salePrice": 36000,
+        "ticketPrice": 28080,
+        "mco": 7920
       },
       "cardDetails": {
         "cardholderName": "BEATRICE MONTGOMERY",
@@ -1342,7 +1589,10 @@
         "smtpCheckValid": true,
         "score": 99,
         "verifiedAt": "2026-09-05T09:00:05Z"
-      }
+      },
+      "salePrice": 36000,
+      "ticketPrice": 28080,
+      "mco": 7920
     }
   ],
   "transactions": [
@@ -1469,6 +1719,59 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "LEAD_DETAILS_UPDATED",
+      "toState": "NEW",
+      "metadata": {
+        "bookingNumber": 1011,
+        "passengerCount": 1,
+        "flightSegmentsCount": 1,
+        "dealValue": 13500,
+        "currency": "USD"
+      },
+      "id": "act_40v1us0",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T06:31:42.542Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> LHR (London Heathrow)",
+        "airline": "British Airways",
+        "authenticityScore": 100,
+        "assignedTo": "Automated Test Agent"
+      },
+      "id": "act_tabwkuh",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T06:31:42.502Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_aiuros9",
+      "actorName": "Flight Ingestion Engine",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> LHR (London Heathrow)",
+        "airline": "British Airways",
+        "authenticityScore": 100,
+        "assignedTo": "Nameless Agent"
+      },
+      "id": "act_wv98kie",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-14T06:31:28.094Z"
+    },
     {
       "entityType": "TRANSACTION",
       "entityId": "txn_fbf8vd",
@@ -2398,6 +2701,53 @@
   ],
   "auditLogs": [
     {
+      "actorId": "usr_superadmin",
+      "actorEmail": "super.admin@travelocase.com",
+      "action": "LEAD_DETAILS_UPDATED",
+      "resource": "Lead:lead_jk6xjtc",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "leadId": "lead_jk6xjtc",
+        "bookingNumber": 1011,
+        "actor": "super.admin@travelocase.com",
+        "updatedFields": [
+          "salePrice"
+        ]
+      },
+      "id": "aud_xszxait",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T06:31:42.542Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_jk6xjtc",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "alexander@monaco-invest.mc",
+        "route": "JFK (New York) -> LHR (London Heathrow)"
+      },
+      "id": "aud_o0v2y73",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T06:31:42.502Z"
+    },
+    {
+      "actorEmail": "ingress.travel@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_aiuros9",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "alexander@monaco-invest.mc",
+        "route": "JFK (New York) -> LHR (London Heathrow)"
+      },
+      "id": "aud_apyv5hu",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-14T06:31:28.094Z"
+    },
+    {
       "actorId": "usr_admin",
       "actorEmail": "admin.rachel@travelocase.com",
       "action": "LEAD_STAGE_TRANSITION",
@@ -3312,7 +3662,7 @@
       "timestamp": "2026-09-10T16:20:00Z"
     }
   ],
-  "roundRobinIndex": 4,
-  "lastBookingNumber": 1009,
-  "lastPersistedAt": "2026-09-14T05:06:30.722Z"
+  "roundRobinIndex": 6,
+  "lastBookingNumber": 1011,
+  "lastPersistedAt": "2026-09-14T06:32:55.562Z"
 }

@@ -87,9 +87,14 @@ export function AgentMonthlyPerformanceCard({
       ["SALE", "CHARGING", "SUCCESS"].includes(l.status)
     );
     const wonCount = wonLeads.length;
-    const wonRevenue = wonLeads.reduce((acc, l) => acc + (l.dealValue || 0), 0);
+    const wonRevenue = wonLeads.reduce((acc, l) => acc + (l.salePrice || l.dealValue || 0), 0);
+    const wonMco = wonLeads.reduce((acc, l) => {
+      const sp = l.salePrice ?? l.dealValue ?? 0;
+      const tp = l.ticketPrice ?? 0;
+      return acc + (l.mco !== undefined ? l.mco : Math.max(0, sp - tp));
+    }, 0);
     const totalPipelineValue = agentLeads.reduce(
-      (acc, l) => acc + (l.dealValue || 0),
+      (acc, l) => acc + (l.salePrice || l.dealValue || 0),
       0
     );
 
@@ -112,6 +117,7 @@ export function AgentMonthlyPerformanceCard({
       totalInquiries,
       wonCount,
       wonRevenue,
+      wonMco,
       totalPipelineValue,
       authEmailsSent,
       callConfirmed,
@@ -225,12 +231,12 @@ export function AgentMonthlyPerformanceCard({
             <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
           </div>
           <div className="mt-1.5">
-            <div className="text-base sm:text-lg font-bold text-emerald-600 font-mono">
+            <div className="text-base sm:text-lg font-bold text-slate-900 font-mono">
               {formatCurrency(metrics.wonRevenue)}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-emerald-600" />
-              <span>{metrics.wonCount} deals won</span>
+            <div className="text-[10px] text-emerald-700 mt-0.5 flex items-center justify-between font-mono font-bold">
+              <span>MCO: +{formatCurrency(metrics.wonMco)}</span>
+              <span className="text-[9px] font-sans text-slate-500 font-normal">({metrics.wonCount} won)</span>
             </div>
           </div>
         </div>
@@ -321,10 +327,13 @@ export function AgentMonthlyPerformanceCard({
         <div className="flex items-center gap-2 shrink-0">
           <Award className="h-4 w-4 text-amber-500" />
           <span className="font-semibold text-slate-800">
-            Monthly Quota Target ({formatCurrency(metrics.monthlyQuota)}):
+            Monthly Target:
           </span>
-          <span className="font-mono font-bold text-emerald-600">
-            {formatCurrency(metrics.wonRevenue)} achieved ({metrics.quotaProgress.toFixed(1)}%)
+          <span className="font-mono font-bold text-slate-900">
+            {formatCurrency(metrics.wonRevenue)} / {formatCurrency(metrics.monthlyQuota)} ({metrics.quotaProgress.toFixed(1)}%)
+          </span>
+          <span className="hidden md:inline font-mono font-bold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2 py-0.5 rounded text-[11px] shadow-xs">
+            💰 Agent MCO Profit: +{formatCurrency(metrics.wonMco)}
           </span>
         </div>
 

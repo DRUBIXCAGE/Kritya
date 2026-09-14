@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Lead, User, LeadStatus } from "@/types";
+import { Lead, User, LeadStatus, FlightSegment, Passenger } from "@/types";
 import { LeadStatusChip } from "@/components/common/StatusChip";
 import { formatCurrency, formatRelativeTime, formatDate } from "@/lib/utils";
 import { ROLE_PERMISSIONS } from "@/lib/rbac";
@@ -46,6 +46,11 @@ import {
   HeartHandshake,
   MapPin,
   FileBadge,
+  Plus,
+  Trash2,
+  Save,
+  Edit,
+  RefreshCw,
 } from "lucide-react";
 
 interface LeadWorkspaceModalProps {
@@ -104,6 +109,112 @@ export function LeadWorkspaceModal({
   const [recipientEmail, setRecipientEmail] = useState<string>(lead?.email || "");
   const [customSubject, setCustomSubject] = useState<string>("");
   const [customBody, setCustomBody] = useState<string>("");
+
+  // Full Workspace Editing State
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isSavingDetails, setIsSavingDetails] = useState<boolean>(false);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+
+  // Customer Contact Fields
+  const [editName, setEditName] = useState<string>("");
+  const [editEmail, setEditEmail] = useState<string>("");
+  const [editPhone, setEditPhone] = useState<string>("");
+  const [editCompany, setEditCompany] = useState<string>("");
+  const [editDealValue, setEditDealValue] = useState<number>(0);
+  const [editCurrency, setEditCurrency] = useState<string>("USD");
+  const [editNotes, setEditNotes] = useState<string>("");
+
+  // Custom Pricing & MCO Fields (MCO = Sale Price - Ticket Price = actual amount earned by agent)
+  const [editSalePrice, setEditSalePrice] = useState<number>(0);
+  const [editTicketPrice, setEditTicketPrice] = useState<number>(0);
+  const [editMco, setEditMco] = useState<number>(0);
+
+  // Handlers for automatic calculation
+  const handleSalePriceChange = (val: number) => {
+    const sp = isNaN(val) ? 0 : Math.max(0, val);
+    setEditSalePrice(sp);
+    setEditDealValue(sp);
+    // Formula: MCO = Sale Price - Ticket Price (Amount earned by agent)
+    if (sp > 0) {
+      setEditMco(sp - editTicketPrice);
+    } else {
+      setEditMco(0);
+    }
+  };
+
+  const handleTicketPriceChange = (val: number) => {
+    const tp = isNaN(val) ? 0 : Math.max(0, val);
+    setEditTicketPrice(tp);
+    if (editSalePrice > 0) {
+      setEditMco(editSalePrice - tp);
+    }
+  };
+
+  const handleMcoChange = (val: number) => {
+    const m = isNaN(val) ? 0 : val;
+    setEditMco(m);
+    const newSp = Math.max(0, editTicketPrice + m);
+    setEditSalePrice(newSp);
+    setEditDealValue(newSp);
+  };
+
+  // Flight Itinerary & Multi-Flight Fields
+  const [editTripType, setEditTripType] = useState<"ROUND_TRIP" | "ONE_WAY" | "MULTI_CITY">("ROUND_TRIP");
+  const [editPnrCode, setEditPnrCode] = useState<string>("");
+  const [editFlights, setEditFlights] = useState<FlightSegment[]>([]);
+
+  // Passenger Manifest Fields
+  const [editPassengers, setEditPassengers] = useState<Passenger[]>([]);
+
+  // Sync lead values to edit state whenever lead changes
+  useEffect(() => {
+    if (lead) {
+      setEditName(lead.name || "");
+      setEditEmail(lead.email || "");
+      setEditPhone(lead.phone || "");
+      setEditCompany(lead.company || "");
+
+      const isConfirmed = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
+      const tp = lead.ticketPrice ?? 0;
+      // No default values: only ticket price was ingested from site.
+      // Agent enters sale price unless it's already set or is a confirmed sale.
+      const sp = (typeof lead.salePrice === "number" && lead.salePrice > 0)
+        ? lead.salePrice
+        : (isConfirmed ? (lead.dealValue || tp) : 0);
+      const m = sp > 0 ? (lead.mco !== undefined ? lead.mco : (sp - tp)) : 0;
+
+      setEditSalePrice(sp);
+      setEditTicketPrice(tp);
+      setEditMco(m);
+      setEditDealValue(sp);
+      setEditCurrency(lead.currency || "USD");
+      setEditNotes(lead.notes || "");
+
+      const b = lead.bookingDetails;
+      setEditTripType(b?.tripType || "ROUND_TRIP");
+      setEditPnrCode(b?.pnrCode || "");
+      setEditPassengers(b?.passengers ? JSON.parse(JSON.stringify(b.passengers)) : []);
+
+      if (b?.flights && b.flights.length > 0) {
+        setEditFlights(JSON.parse(JSON.stringify(b.flights)));
+      } else {
+        setEditFlights([
+          {
+            id: "flt_1",
+            airline: b?.airline || "American Airlines",
+            flightNumber: b?.flightNumber || "AA 100",
+            origin: b?.origin || "JFK",
+            destination: b?.destination || "LHR",
+            departureDate: b?.departureDate || new Date().toISOString().split("T")[0],
+            departureTime: "08:30 AM",
+            arrivalDate: b?.departureDate || new Date().toISOString().split("T")[0],
+            arrivalTime: "08:45 PM",
+            cabinClass: b?.cabinClass || "ECONOMY",
+          },
+        ]);
+      }
+    }
+  }, [lead]);
 
   // Sync email template values whenever template or lead changes
   useEffect(() => {
@@ -277,9 +388,131 @@ export function LeadWorkspaceModal({
     }
   };
 
+  // Save All Workspace Details
+  const handleSaveDetails = async () => {
+    if (!lead) return;
+    setIsSavingDetails(true);
+    setSaveSuccessMessage(null);
+    try {
+      const firstFlt = editFlights[0];
+      const lastFlt = editFlights[editFlights.length - 1];
+
+      const res = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          actorId: currentUser.id,
+          name: editName,
+          email: editEmail,
+          phone: editPhone,
+          company: editCompany,
+          dealValue: Number(editSalePrice),
+          salePrice: Number(editSalePrice),
+          ticketPrice: Number(editTicketPrice),
+          mco: Number(editMco),
+          currency: editCurrency,
+          notes: editNotes,
+          bookingDetails: {
+            tripType: editTripType,
+            pnrCode: editPnrCode,
+            origin: firstFlt?.origin || lead.bookingDetails?.origin || "JFK",
+            destination: lastFlt?.destination || lead.bookingDetails?.destination || "LHR",
+            airline: firstFlt?.airline || lead.bookingDetails?.airline || "American Airlines",
+            flightNumber: firstFlt?.flightNumber || lead.bookingDetails?.flightNumber || "AA 100",
+            departureDate: firstFlt?.departureDate || lead.bookingDetails?.departureDate || new Date().toISOString().split("T")[0],
+            cabinClass: firstFlt?.cabinClass || lead.bookingDetails?.cabinClass || "ECONOMY",
+            flights: editFlights,
+            passengers: editPassengers,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        alert("Failed to save changes: " + data.error);
+      } else {
+        setSaveSuccessMessage("✓ All booking details & flights saved successfully!");
+        setTimeout(() => setSaveSuccessMessage(null), 4000);
+        await onRefresh();
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error("Failed to update workspace details:", err);
+      alert("Error updating details.");
+    } finally {
+      setIsSavingDetails(false);
+    }
+  };
+
+  // Multi-Flight Operations
+  const handleAddFlight = () => {
+    const last = editFlights[editFlights.length - 1];
+    setEditFlights((prev) => [
+      ...prev,
+      {
+        id: `flt_${Date.now()}_${prev.length + 1}`,
+        airline: last?.airline || "American Airlines",
+        flightNumber: "",
+        origin: last?.destination || "JFK",
+        destination: "",
+        departureDate: last?.departureDate || new Date().toISOString().split("T")[0],
+        departureTime: "10:00 AM",
+        arrivalDate: last?.departureDate || new Date().toISOString().split("T")[0],
+        arrivalTime: "02:30 PM",
+        cabinClass: last?.cabinClass || "ECONOMY",
+      },
+    ]);
+  };
+
+  const handleRemoveFlight = (idx: number) => {
+    if (editFlights.length <= 1) return;
+    setEditFlights((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleUpdateFlight = (idx: number, field: keyof FlightSegment, val: string) => {
+    setEditFlights((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: val };
+      return copy;
+    });
+  };
+
+  // Passenger Manifest Operations
+  const handleAddPassenger = () => {
+    setEditPassengers((prev) => [
+      ...prev,
+      {
+        id: `pax_${Date.now()}_${prev.length + 1}`,
+        fullName: "",
+        type: "ADULT",
+        gender: "MALE",
+        passportNumber: "",
+        passportExpiry: "",
+        nationality: "USA",
+        dob: "",
+        seatPreference: "Auto-Assign",
+        mealPreference: "Standard Gourmet",
+        specialAssistance: "None",
+      },
+    ]);
+  };
+
+  const handleRemovePassenger = (idx: number) => {
+    if (editPassengers.length <= 1) return;
+    setEditPassengers((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleUpdatePassenger = (idx: number, field: keyof Passenger, val: string) => {
+    setEditPassengers((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: val };
+      return copy;
+    });
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-0 sm:p-2 md:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-7xl h-[100dvh] sm:h-[94vh] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-white shadow-2xl flex flex-col text-slate-900 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col sm:p-2 md:p-4 sm:items-center sm:justify-center bg-slate-900/60 backdrop-blur-sm overflow-hidden">
+      <div className="relative w-full max-w-7xl h-full sm:h-[94vh] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-white shadow-2xl flex flex-col text-slate-900 overflow-hidden">
         {/* ========================================================================= */}
         {/* TOP BAR: Header Details, PNR, Status Dropdown, Quick Status Actions, Close */}
         {/* ========================================================================= */}
@@ -296,26 +529,26 @@ export function LeadWorkspaceModal({
                 </span>
                 <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">{lead.name}</h1>
                 <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  PNR: {booking?.pnrCode || "NX-PNR"}
+                  PNR: {editPnrCode || booking?.pnrCode || "NX-PNR"}
                 </span>
                 <LeadStatusChip status={lead.status} />
               </div>
               <div className="text-[11px] sm:text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-1.5 sm:gap-3">
                 <span className="flex items-center gap-1 text-slate-700">
                   <Phone className="h-3 w-3 text-slate-400" />
-                  {lead.phone || "+1 (555) 019-2834"}
+                  {editPhone || lead.phone || "+1 (555) 019-2834"}
                 </span>
                 <span className="hidden sm:inline text-slate-300">&bull;</span>
                 <span className="text-slate-700 truncate max-w-[180px] sm:max-w-none flex items-center gap-1">
                   <Mail className="h-3 w-3 text-slate-400" />
-                  {lead.email}
+                  {editEmail || lead.email}
                 </span>
                 {lead.company && (
                   <>
                     <span className="hidden sm:inline text-slate-300">&bull;</span>
                     <span className="text-slate-600 hidden sm:flex items-center gap-1">
                       <Building className="h-3 w-3 text-slate-400" />
-                      {lead.company}
+                      {editCompany || lead.company}
                     </span>
                   </>
                 )}
@@ -383,6 +616,39 @@ export function LeadWorkspaceModal({
               </select>
             </div>
 
+            {/* Edit / Save Workspace Toggle Button */}
+            {!isEditing ? (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition shadow-xs active:scale-95"
+                title="Edit customer details, passenger manifest, and add multiple flights"
+              >
+                <Edit className="h-3.5 w-3.5" />
+                <span>Edit Workspace</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleSaveDetails}
+                  disabled={isSavingDetails}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md transition active:scale-95 disabled:opacity-50"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  <span>{isSavingDetails ? "Saving..." : "Save All Changes"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  disabled={isSavingDetails}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-200 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
             {/* Quick Button: Mark as SALE / Dispatch to Charging */}
             {lead.status !== "SALE" && lead.status !== "CHARGING" && lead.status !== "SUCCESS" && (
               <button
@@ -404,6 +670,22 @@ export function LeadWorkspaceModal({
             </button>
           </div>
         </div>
+
+        {/* Save Success Notification Banner */}
+        {saveSuccessMessage && (
+          <div className="p-2.5 bg-emerald-50 border-b border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between px-4 animate-in fade-in shrink-0">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <span>{saveSuccessMessage}</span>
+            </div>
+            <button
+              onClick={() => setSaveSuccessMessage(null)}
+              className="text-emerald-700 text-[11px] hover:underline font-mono"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Mobile Tab Switcher for small screens (< lg) */}
         <div className="lg:hidden flex border-b border-slate-200 bg-slate-100 p-1 shrink-0">
@@ -445,193 +727,722 @@ export function LeadWorkspaceModal({
               mobileTab === "security" ? "hidden lg:block" : "block"
             }`}
           >
-            {/* SECTION 1: CUSTOMER CONTACT DETAILS (SEPARATED) */}
+            {/* SECTION 1: CUSTOMER CONTACT DETAILS (IN-PLACE EDITABLE) */}
             <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <UserCheck className="h-4 w-4 text-cyan-600" />
                   Primary Customer & Contact Information
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200">
-                  Verified
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 text-xs">
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Full Name / Account</span>
-                  <span className="font-semibold text-slate-900 mt-0.5 block truncate">{lead.name}</span>
-                </div>
-
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Email Address</span>
-                  <span className="font-semibold text-indigo-700 mt-0.5 block truncate">{lead.email}</span>
-                </div>
-
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Phone Number</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">{lead.phone || "+1 (555) 019-2834"}</span>
-                </div>
-
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Company / Account</span>
-                  <span className="font-semibold text-slate-700 mt-0.5 block truncate">{lead.company || "Individual Client"}</span>
-                </div>
-
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Assigned Sales Agent</span>
-                  <span className="font-semibold text-emerald-700 mt-0.5 block">{lead.assignedToName || "Unassigned Pool"}</span>
-                </div>
-
-                <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Ingested Date Stamp</span>
-                  <span className="font-mono text-slate-700 mt-0.5 block text-[11px]">{formatDate(lead.createdAt)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200">
+                    Verified Account
+                  </span>
+                  {!isEditing ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Edit</span>
+                    </button>
+                  ) : (
+                    <span className="text-[10px] font-mono text-purple-700 font-bold bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">
+                      EDITING
+                    </span>
+                  )}
                 </div>
               </div>
+
+              {isEditing ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Full Name</label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Passenger / Account Name"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Email Address</label>
+                      <input
+                        type="email"
+                        value={editEmail}
+                        onChange={(e) => setEditEmail(e.target.value)}
+                        placeholder="customer@email.com"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-indigo-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Phone Number</label>
+                      <input
+                        type="text"
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                        placeholder="+1 (555) 000-0000"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Company / Org</label>
+                      <input
+                        type="text"
+                        value={editCompany}
+                        onChange={(e) => setEditCompany(e.target.value)}
+                        placeholder="Individual or Corporate Account"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
+                      />
+                    </div>
+                  </div>
+
+                {/* Financial & MCO Commission Calculator Block */}
+                <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-50/60 via-purple-50/40 to-emerald-50/60 border border-indigo-200/80 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                      Fare Pricing & Agent MCO Commission Calculator
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2 py-0.5 rounded-full shadow-xs">
+                      MCO = Sale Price − Ticket Price
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
+                        Sale Price (Agent Quote)
+                      </label>
+                      <input
+                        type="number"
+                        value={editSalePrice || ""}
+                        onChange={(e) => handleSalePriceChange(Number(e.target.value))}
+                        placeholder="Enter Sale Price"
+                        className="w-full bg-white border border-indigo-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-indigo-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
+                        Ticket Price (Ingested from Site)
+                      </label>
+                      <input
+                        type="number"
+                        value={editTicketPrice || ""}
+                        onChange={(e) => handleTicketPriceChange(Number(e.target.value))}
+                        placeholder="Ingested Ticket Price"
+                        className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-emerald-800 uppercase block font-semibold mb-0.5 flex items-center justify-between">
+                        <span>MCO (Agent Earned)</span>
+                        <span className="text-[9px] text-emerald-600 font-mono">Auto Calc</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={editMco}
+                        onChange={(e) => handleMcoChange(Number(e.target.value))}
+                        placeholder="Agent MCO"
+                        className="w-full bg-emerald-50/80 border border-emerald-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-extrabold text-emerald-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">Currency</label>
+                      <select
+                        value={editCurrency}
+                        onChange={(e) => setEditCurrency(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-xs"
+                      >
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="CAD">CAD ($)</option>
+                        <option value="AUD">AUD ($)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-indigo-900 bg-white/70 border border-indigo-100 rounded-lg px-2.5 py-1.5">
+                    <span className="flex items-center gap-1 font-mono">
+                      <span>💡 <strong>MCO:</strong> {formatCurrency(editSalePrice, editCurrency)} (Sale) − {formatCurrency(editTicketPrice, editCurrency)} (Ticket) =</span>
+                      <strong className={`font-extrabold text-xs ${editMco >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                        {editMco >= 0 ? `+${formatCurrency(editMco, editCurrency)}` : `-${formatCurrency(Math.abs(editMco), editCurrency)}`}
+                      </strong>
+                    </span>
+                    <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-1.5 py-0.5 rounded">
+                      Actual amount earned by agent
+                    </span>
+                  </div>
+                </div>
+              </div>
+              ) : (
+                <div className="space-y-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 text-xs">
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Full Name / Account</span>
+                      <span className="font-semibold text-slate-900 mt-0.5 block truncate">{editName || lead.name}</span>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Email Address</span>
+                      <span className="font-semibold text-indigo-700 mt-0.5 block truncate">{editEmail || lead.email}</span>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Phone Number</span>
+                      <span className="font-semibold text-slate-800 mt-0.5 block">{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Company / Account</span>
+                      <span className="font-semibold text-slate-700 mt-0.5 block truncate">{editCompany || lead.company || "Individual Client"}</span>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Assigned Sales Agent</span>
+                      <span className="font-semibold text-indigo-700 mt-0.5 block">{lead.assignedToName || "Unassigned Pool"}</span>
+                    </div>
+
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Created Date</span>
+                      <span className="font-mono text-slate-700 mt-0.5 block text-[11px]">{formatDate(lead.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  {/* Prominent Financial Breakdown & MCO Earnings Display */}
+                  {(() => {
+                    const isConfirmed = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
+                    const hasSalePrice = typeof editSalePrice === "number" && editSalePrice > 0;
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] text-slate-500 font-mono uppercase block">
+                            {isConfirmed ? "Confirmed Sale Price" : "Sale Price (Agent Quote)"}
+                          </span>
+                          <span className="text-base font-mono font-extrabold text-slate-900 mt-0.5 block">
+                            {hasSalePrice
+                              ? formatCurrency(editSalePrice, editCurrency || lead.currency)
+                              : isConfirmed
+                              ? formatCurrency(lead.salePrice || lead.dealValue || 0, editCurrency || lead.currency)
+                              : (
+                                <span className="text-amber-700 text-xs font-semibold">Awaiting Agent Quote</span>
+                              )}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {isConfirmed ? "Settled total charged" : hasSalePrice ? "Quoted by sales agent" : "Enter in edit mode to calculate MCO"}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] text-slate-500 font-mono uppercase block">Ticket Price (Ingested from Site)</span>
+                          <span className="text-base font-mono font-bold text-slate-700 mt-0.5 block">
+                            {formatCurrency(editTicketPrice || lead.ticketPrice || 0, editCurrency || lead.currency)}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">Net airline fare cost</span>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-300 shadow-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-emerald-800 font-mono font-bold uppercase block">
+                              Agent MCO (Earned)
+                            </span>
+                            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold">
+                              Agent Profit
+                            </span>
+                          </div>
+                          <span className="text-base font-mono font-extrabold text-emerald-800 mt-0.5 block">
+                            {hasSalePrice || isConfirmed
+                              ? `+${formatCurrency(editMco || lead.mco || 0, editCurrency || lead.currency)}`
+                              : <span className="text-slate-400 text-xs">-- (Awaiting Sale Price)</span>}
+                          </span>
+                          <span className="text-[10px] text-emerald-700 font-semibold font-mono">
+                            {hasSalePrice || isConfirmed
+                              ? "Actual amount earned by agent"
+                              : "Auto-calculated once sale price is entered"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
-            {/* SECTION 2: PASSENGER MANIFEST & TRAVEL DOCUMENTS (SEPARATED IN DETAIL) */}
-            {booking && (
-              <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Users className="h-4 w-4 text-indigo-600" />
-                    Complete Passenger Manifest ({booking.passengers.length} Pax)
-                  </span>
+            {/* SECTION 2: PASSENGER MANIFEST & TRAVEL DOCUMENTS (IN-PLACE EDITABLE) */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Users className="h-4 w-4 text-indigo-600" />
+                  Complete Passenger Manifest ({editPassengers.length} Pax)
+                </span>
+                <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
                     E-Ticket Ready
                   </span>
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Edit Pax</span>
+                    </button>
+                  )}
                 </div>
+              </div>
 
-                <div className="space-y-3">
-                  {booking.passengers.map((pax, idx) => (
-                    <div key={pax.id} className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
-                      {/* Passenger Header Banner */}
-                      <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-1.5">
-                        <div className="font-bold text-slate-900 flex items-center gap-2">
-                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] border border-indigo-200">
-                            {idx + 1}
+              <div className="space-y-3">
+                {editPassengers.map((pax, idx) => (
+                  <div key={pax.id || idx} className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
+                    {/* Passenger Header Banner */}
+                    <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-1.5">
+                      <div className="font-bold text-slate-900 flex items-center gap-2 flex-wrap">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] border border-indigo-200">
+                          {idx + 1}
+                        </span>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={pax.fullName}
+                            onChange={(e) => handleUpdatePassenger(idx, "fullName", e.target.value)}
+                            placeholder="Passenger Full Name"
+                            className="bg-white border border-slate-300 rounded px-2 py-0.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        ) : (
+                          <span className="text-xs sm:text-sm text-slate-900">{pax.fullName || "Unnamed Passenger"}</span>
+                        )}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-slate-200">
+                          {pax.type}
+                        </span>
+                        {pax.gender && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200 hidden sm:inline">
+                            {pax.gender}
                           </span>
-                          <span className="text-xs sm:text-sm text-slate-900">{pax.fullName}</span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-slate-200">
-                            {pax.type}
-                          </span>
-                          {pax.gender && (
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200 hidden sm:inline">
-                              {pax.gender}
-                            </span>
-                          )}
-                        </div>
-                        {pax.eTicketNumber && (
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {isEditing && editPassengers.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePassenger(idx)}
+                            className="text-slate-400 hover:text-red-600 p-1 rounded transition"
+                            title="Remove this passenger"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        {pax.eTicketNumber && !isEditing && (
                           <div className="text-right font-mono text-[10px] sm:text-[11px] text-cyan-800 flex items-center gap-1">
                             <FileBadge className="h-3.5 w-3.5 text-cyan-600" />
                             <span>{pax.eTicketNumber}</span>
                           </div>
                         )}
                       </div>
+                    </div>
 
-                      {/* Passenger Detailed Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
-                        <div className="p-2 rounded bg-white border border-slate-200">
-                          <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport #</span>
-                          <span className="text-slate-800 font-bold font-mono truncate block">{pax.passportNumber || "On File"}</span>
+                    {/* Passenger Detail Inputs vs View Cards */}
+                    {isEditing ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1 text-[11px]">
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Pax Type</label>
+                          <select
+                            value={pax.type}
+                            onChange={(e) => handleUpdatePassenger(idx, "type", e.target.value as any)}
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          >
+                            <option value="ADULT">Adult</option>
+                            <option value="CHILD">Child</option>
+                            <option value="INFANT">Infant</option>
+                          </select>
                         </div>
-
-                        <div className="p-2 rounded bg-white border border-slate-200">
-                          <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport Expiry</span>
-                          <span className="text-emerald-700 font-semibold font-mono truncate block">{pax.passportExpiry || "2030-12-31"}</span>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport #</label>
+                          <input
+                            type="text"
+                            value={pax.passportNumber}
+                            onChange={(e) => handleUpdatePassenger(idx, "passportNumber", e.target.value)}
+                            placeholder="Passport Number"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
                         </div>
-
-                        <div className="p-2 rounded bg-white border border-slate-200">
-                          <span className="text-[10px] text-slate-500 block uppercase font-mono">Nationality</span>
-                          <span className="text-slate-800 font-medium truncate block">{pax.nationality || "Confirmed"}</span>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport Expiry</label>
+                          <input
+                            type="date"
+                            value={pax.passportExpiry || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "passportExpiry", e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
                         </div>
-
-                        <div className="p-2 rounded bg-white border border-slate-200">
-                          <span className="text-[10px] text-slate-500 block uppercase font-mono">DOB</span>
-                          <span className="text-slate-700 font-mono truncate block">{pax.dob || "N/A"}</span>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Nationality</label>
+                          <input
+                            type="text"
+                            value={pax.nationality || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "nationality", e.target.value)}
+                            placeholder="Nationality"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Date of Birth</label>
+                          <input
+                            type="date"
+                            value={pax.dob || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "dob", e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Assigned Seat</label>
+                          <input
+                            type="text"
+                            value={pax.seatPreference || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "seatPreference", e.target.value)}
+                            placeholder="e.g. 14B / Window"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Meal Choice</label>
+                          <input
+                            type="text"
+                            value={pax.mealPreference || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "mealPreference", e.target.value)}
+                            placeholder="e.g. Vegan / Kosher"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-slate-500 uppercase font-mono block">E-Ticket Number</label>
+                          <input
+                            type="text"
+                            value={pax.eTicketNumber || ""}
+                            onChange={(e) => handleUpdatePassenger(idx, "eTicketNumber", e.target.value)}
+                            placeholder="e.g. ETKT-001-9428"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono text-cyan-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
                         </div>
                       </div>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+                          <div className="p-2 rounded bg-white border border-slate-200">
+                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport #</span>
+                            <span className="text-slate-800 font-bold font-mono truncate block">{pax.passportNumber || "On File"}</span>
+                          </div>
 
-                      {/* Seat, Meal, Special Assistance Preferences */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1">
-                        <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                          <Armchair className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                          <div className="truncate">
-                            <span className="text-[9px] text-slate-500 block uppercase font-mono">Assigned Seat</span>
-                            <span className="font-bold text-indigo-700 truncate block">{pax.seatPreference || "Auto-Assign"}</span>
+                          <div className="p-2 rounded bg-white border border-slate-200">
+                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport Expiry</span>
+                            <span className="text-emerald-700 font-semibold font-mono truncate block">{pax.passportExpiry || "2030-12-31"}</span>
+                          </div>
+
+                          <div className="p-2 rounded bg-white border border-slate-200">
+                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Nationality</span>
+                            <span className="text-slate-800 font-medium truncate block">{pax.nationality || "Confirmed"}</span>
+                          </div>
+
+                          <div className="p-2 rounded bg-white border border-slate-200">
+                            <span className="text-[10px] text-slate-500 block uppercase font-mono">DOB</span>
+                            <span className="text-slate-700 font-mono truncate block">{pax.dob || "N/A"}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                          <Utensils className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                          <div className="truncate">
-                            <span className="text-[9px] text-slate-500 block uppercase font-mono">Meal Preference</span>
-                            <span className="font-semibold text-amber-800 truncate block">{pax.mealPreference || "Standard Gourmet"}</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1">
+                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
+                            <Armchair className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                            <div className="truncate">
+                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Assigned Seat</span>
+                              <span className="font-bold text-indigo-700 truncate block">{pax.seatPreference || "Auto-Assign"}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
+                            <Utensils className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                            <div className="truncate">
+                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Meal Preference</span>
+                              <span className="font-semibold text-amber-800 truncate block">{pax.mealPreference || "Standard Gourmet"}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
+                            <HeartHandshake className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                            <div className="truncate">
+                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Special Assistance</span>
+                              <span className="font-medium text-emerald-700 truncate block">{pax.specialAssistance || "None"}</span>
+                            </div>
                           </div>
                         </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
 
-                        <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                          <HeartHandshake className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                          <div className="truncate">
-                            <span className="text-[9px] text-slate-500 block uppercase font-mono">Special Assistance</span>
-                            <span className="font-medium text-emerald-700 truncate block">{pax.specialAssistance || "None"}</span>
-                          </div>
+              {/* Add Passenger Action */}
+              <div className="pt-1 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(true);
+                    handleAddPassenger();
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 shadow-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>+ Add Another Passenger</span>
+                </button>
+              </div>
+            </div>
+
+            {/* SECTION 3: FLIGHT ITINERARY & MULTIPLE FLIGHT SEGMENTS */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Plane className="h-4 w-4 text-indigo-600" />
+                  Flight Itinerary & Route Segments ({editFlights.length} Flights)
+                </span>
+                <div className="flex items-center gap-2">
+                  {/* Trip Type badge / select */}
+                  {isEditing ? (
+                    <select
+                      value={editTripType}
+                      onChange={(e) => setEditTripType(e.target.value as any)}
+                      className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-slate-50 text-indigo-700 border border-indigo-300 cursor-pointer"
+                    >
+                      <option value="ROUND_TRIP">ROUND TRIP</option>
+                      <option value="ONE_WAY">ONE WAY</option>
+                      <option value="MULTI_CITY">MULTI CITY</option>
+                    </select>
+                  ) : (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">
+                      {editTripType}
+                    </span>
+                  )}
+
+                  <div className="flex items-center gap-1.5 font-mono">
+                    <span className="text-xs font-bold text-slate-900">
+                      {formatCurrency(editSalePrice || lead.salePrice || lead.dealValue, editCurrency || lead.currency)}
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-xs">
+                      MCO: +{formatCurrency(editMco || lead.mco || 0, editCurrency || lead.currency)}
+                    </span>
+                  </div>
+
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Edit Flights</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* PNR Code bar */}
+              <div className="p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <FileBadge className="h-4 w-4 text-indigo-600" />
+                  <span className="font-semibold text-slate-700 font-mono text-[11px]">PNR / Reservation Code:</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editPnrCode}
+                      onChange={(e) => setEditPnrCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. NX-PNR99"
+                      className="bg-white border border-indigo-300 rounded px-2 py-0.5 text-xs font-mono font-bold text-indigo-900 uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                  ) : (
+                    <span className="font-mono font-bold text-indigo-800 bg-white border border-indigo-200 px-2 py-0.5 rounded">
+                      {editPnrCode || booking?.pnrCode || "NX-PNR"}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-mono text-indigo-600">GDS Live Synced</span>
+              </div>
+
+              {/* List of Multiple Flight Segments */}
+              <div className="space-y-3">
+                {editFlights.map((flt, fIdx) => (
+                  <div key={flt.id || fIdx} className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
+                    {/* Flight Leg Header */}
+                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] font-bold">
+                          Flight Leg #{fIdx + 1}
+                        </span>
+                        <span className="font-semibold text-slate-900 font-mono text-[11px]">
+                          {flt.airline} ({flt.flightNumber || "TBD"})
+                        </span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-50 text-cyan-800 border border-cyan-200 font-medium">
+                          {flt.cabinClass}
+                        </span>
+                      </div>
+
+                      {isEditing && editFlights.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFlight(fIdx)}
+                          className="text-slate-400 hover:text-red-600 p-1 rounded transition"
+                          title="Remove this flight leg"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Flight Leg Fields: Edit Inputs vs View Summary */}
+                    {isEditing ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Origin (From)</label>
+                          <input
+                            type="text"
+                            value={flt.origin}
+                            onChange={(e) => handleUpdateFlight(fIdx, "origin", e.target.value)}
+                            placeholder="e.g. JFK (New York)"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Destination (To)</label>
+                          <input
+                            type="text"
+                            value={flt.destination}
+                            onChange={(e) => handleUpdateFlight(fIdx, "destination", e.target.value)}
+                            placeholder="e.g. LHR (London)"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Airline</label>
+                          <input
+                            type="text"
+                            value={flt.airline}
+                            onChange={(e) => handleUpdateFlight(fIdx, "airline", e.target.value)}
+                            placeholder="Airline Name"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Flight Number</label>
+                          <input
+                            type="text"
+                            value={flt.flightNumber}
+                            onChange={(e) => handleUpdateFlight(fIdx, "flightNumber", e.target.value)}
+                            placeholder="e.g. AA 100"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-indigo-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Date</label>
+                          <input
+                            type="date"
+                            value={flt.departureDate}
+                            onChange={(e) => handleUpdateFlight(fIdx, "departureDate", e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Time</label>
+                          <input
+                            type="text"
+                            value={flt.departureTime || ""}
+                            onChange={(e) => handleUpdateFlight(fIdx, "departureTime", e.target.value)}
+                            placeholder="08:30 AM"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Arrival Time</label>
+                          <input
+                            type="text"
+                            value={flt.arrivalTime || ""}
+                            onChange={(e) => handleUpdateFlight(fIdx, "arrivalTime", e.target.value)}
+                            placeholder="08:45 PM"
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Cabin Class</label>
+                          <select
+                            value={flt.cabinClass}
+                            onChange={(e) => handleUpdateFlight(fIdx, "cabinClass", e.target.value as any)}
+                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+                          >
+                            <option value="ECONOMY">Economy</option>
+                            <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                            <option value="BUSINESS">Business Class</option>
+                            <option value="FIRST">First Class</option>
+                          </select>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-0.5">
+                        <div className="flex items-center gap-2 font-mono">
+                          <span className="font-bold text-slate-900 text-xs sm:text-sm">{flt.origin}</span>
+                          <ArrowRight className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                          <span className="font-bold text-slate-900 text-xs sm:text-sm">{flt.destination}</span>
+                        </div>
+                        <div className="text-[11px] text-slate-600 font-mono flex items-center gap-2 flex-wrap">
+                          <span>📅 Departure: {flt.departureDate} {flt.departureTime ? `@ ${flt.departureTime}` : ""}</span>
+                          {flt.arrivalTime && <span>🛬 Arrival: {flt.arrivalTime}</span>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            )}
 
-            {/* SECTION 3: FLIGHT ITINERARY & ROUTING */}
-            {booking && (
-              <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Plane className="h-4 w-4 text-indigo-600" />
-                    Flight Itinerary & Routing
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
-                      {booking.tripType}
-                    </span>
-                    <span className="text-xs font-bold font-mono text-emerald-700">
-                      {formatCurrency(lead.dealValue, lead.currency)} Total Fare
-                    </span>
-                  </div>
-                </div>
+              {/* Add Flight Leg Button & Save Trigger */}
+              <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(true);
+                    handleAddFlight();
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 shadow-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>+ Add Another Flight Leg / Connection</span>
+                </button>
 
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                  <div>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">Routing</span>
-                    <div className="text-sm font-bold text-slate-900 font-mono flex items-center gap-2 mt-0.5">
-                      <span>{booking.origin}</span>
-                      <ArrowRight className="h-3.5 w-3.5 text-indigo-600" />
-                      <span>{booking.destination}</span>
-                    </div>
-                  </div>
-                  <div className="sm:text-right">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">Airline & Flight #</span>
-                    <div className="text-xs font-mono font-bold text-indigo-700 mt-0.5">
-                      {booking.airline} ({booking.flightNumber}) &bull; <span className="text-cyan-700">{booking.cabinClass}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="p-2 sm:p-2.5 rounded bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] text-slate-500 block font-mono">Departure Date</span>
-                    <span className="font-mono text-slate-800 font-semibold">{booking.departureDate}</span>
-                  </div>
-                  <div className="p-2 sm:p-2.5 rounded bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] text-slate-500 block font-mono">Return Date</span>
-                    <span className="font-mono text-slate-800 font-semibold">{booking.returnDate || "N/A (One Way)"}</span>
-                  </div>
-                </div>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleSaveDetails}
+                    disabled={isSavingDetails}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    <span>Save All Changes</span>
+                  </button>
+                )}
               </div>
-            )}
+            </div>
 
             {/* SECTION 4: FULLY EDITABLE TRAVEL EMAIL COMPOSER WITH RICH TEXT & IMAGE PASTE */}
             <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
