@@ -191,7 +191,14 @@ class EnterpriseCRMStore {
         lastPersistedAt: new Date().toISOString(),
       };
 
-      fs.writeFileSync(this.dbPath, JSON.stringify(snapshot, null, 2), "utf-8");
+      const tmpPath = path.join(dataDir, `kritya_crm_db_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.tmp`);
+      fs.writeFileSync(tmpPath, JSON.stringify(snapshot, null, 2), "utf-8");
+      try {
+        fs.renameSync(tmpPath, this.dbPath);
+      } catch {
+        fs.copyFileSync(tmpPath, this.dbPath);
+        fs.unlinkSync(tmpPath);
+      }
     } catch (err) {
       console.error("Failed to save CRM snapshot to persistent database:", err);
     }
@@ -790,6 +797,110 @@ class EnterpriseCRMStore {
   }
 
   // ----------------------------------------------------
+  // Dynamic Fingerprint & Query Remarks Logging
+  // ----------------------------------------------------
+  logLeadFingerprintEvent(
+    leadId: string,
+    actor: User,
+    event: string,
+    remark?: string,
+    metadata?: Record<string, unknown>,
+    isAutoLogged = false,
+    url?: string,
+    ipAddress?: string,
+    userAgent?: string
+  ): { success: boolean; lead?: Lead; error?: string } {
+    const lead = this.leads.find((l) => l.id === leadId);
+    if (!lead) return { success: false, error: "Lead booking not found." };
+
+    const timestamp = new Date().toISOString();
+    const finalRemark = (remark && remark.trim())
+      ? remark.trim()
+      : isAutoLogged
+      ? `[AUTO] Action '${event}' performed by ${actor.name} (${actor.role})`
+      : `Remark logged by ${actor.name} (${actor.role})`;
+
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: timestamp,
+      };
+    }
+
+    // Check for duplicate consecutive open logs within 5 seconds to avoid spamming
+    if (event === "BOOKING_WORKSPACE_OPENED" && lead.footprint.clickstream.length > 0) {
+      const last = lead.footprint.clickstream[0];
+      if (
+        last.event === "BOOKING_WORKSPACE_OPENED" &&
+        last.actorId === actor.id &&
+        Date.now() - new Date(last.timestamp).getTime() < 5000
+      ) {
+        return { success: true, lead };
+      }
+    }
+
+    lead.footprint.clickstream.unshift({
+      timestamp,
+      event,
+      url: url || `/leads/${lead.id}`,
+      remark: finalRemark,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      isAutoLogged,
+      metadata: {
+        ...metadata,
+        bookingNumber: lead.bookingNumber,
+        ipAddress: ipAddress || "127.0.0.1",
+        userAgent: userAgent || "Browser Client",
+      },
+    });
+
+    // Also record in Activity Log
+    this.logActivity({
+      entityType: "LEAD",
+      entityId: lead.id,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      action: event,
+      metadata: {
+        remark: finalRemark,
+        isAutoLogged,
+        ...metadata,
+      },
+    });
+
+    // Append to lead notes if manual remark
+    if (!isAutoLogged && remark && remark.trim()) {
+      const now = new Date();
+      const formattedNote = `[${now.toLocaleDateString()} ${now.toLocaleTimeString()} - ${actor.name} (${actor.role})]: ${remark.trim()}`;
+      lead.notes = lead.notes ? `${formattedNote}\n${lead.notes}` : formattedNote;
+    }
+
+    lead.updatedAt = timestamp;
+    this.saveToDatabase();
+
+    broadcastEvent({
+      type: "LEAD_TRANSITION",
+      tenantId: lead.tenantId,
+      actor: { id: actor.id, name: actor.name, role: actor.role },
+      payload: {
+        leadId: lead.id,
+        action: event,
+        remark: finalRemark,
+        isAutoLogged,
+      },
+    });
+
+    return { success: true, lead };
+  }
+
+  // ----------------------------------------------------
   // Lead Assignment & Bulk Reassignment (Admins & Managers)
   // ----------------------------------------------------
   assignLead(
@@ -820,6 +931,29 @@ class EnterpriseCRMStore {
     lead.assignedToName = targetAgent.name;
     lead.updatedAt = new Date().toISOString();
 
+    const assignRemark = `[AUTO] Booking reassigned to ${targetAgent.name} by ${actor.name} (${actor.role})`;
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: new Date().toISOString(),
+      };
+    }
+    lead.footprint.clickstream.unshift({
+      timestamp: new Date().toISOString(),
+      event: "LEAD_ASSIGNED",
+      url: `/leads/${lead.id}`,
+      remark: assignRemark,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      isAutoLogged: true,
+      metadata: { targetAgentId: targetAgent.id, targetAgentName: targetAgent.name, previousAgent: prevAgentName },
+    });
+
     this.logActivity({
       entityType: "LEAD",
       entityId: lead.id,
@@ -830,6 +964,7 @@ class EnterpriseCRMStore {
       fromState: prevAgentName,
       toState: targetAgent.name,
       metadata: {
+        remark: assignRemark,
         assignedToId: targetAgent.id,
         assignedToName: targetAgent.name,
         assignedToUsername: targetAgent.username,
@@ -1095,6 +1230,35 @@ class EnterpriseCRMStore {
 
     lead.updatedAt = new Date().toISOString();
 
+    const updateRemark = `[AUTO] Booking details updated by ${actor.name} (${actor.role})`;
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: new Date().toISOString(),
+      };
+    }
+    lead.footprint.clickstream.unshift({
+      timestamp: new Date().toISOString(),
+      event: "LEAD_DETAILS_UPDATED",
+      url: `/leads/${lead.id}`,
+      remark: updateRemark,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      isAutoLogged: true,
+      metadata: {
+        passengerCount: lead.bookingDetails?.passengers?.length || 0,
+        flightSegmentsCount: lead.bookingDetails?.flights?.length || 1,
+        dealValue: lead.dealValue,
+        salePrice: lead.salePrice,
+        mco: lead.mco,
+      },
+    });
+
     this.logActivity({
       entityType: "LEAD",
       entityId: lead.id,
@@ -1104,6 +1268,7 @@ class EnterpriseCRMStore {
       action: "LEAD_DETAILS_UPDATED",
       toState: lead.status,
       metadata: {
+        remark: updateRemark,
         bookingNumber: lead.bookingNumber,
         passengerCount: lead.bookingDetails?.passengers?.length || 0,
         flightSegmentsCount: lead.bookingDetails?.flights?.length || 1,
@@ -1384,6 +1549,34 @@ class EnterpriseCRMStore {
     }
     lead.updatedAt = new Date().toISOString();
 
+    const emailRemark = `[AUTO] Dispatched travel email '${template.title}' to ${finalRecipient} by ${actor.name} (${actor.role})`;
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: new Date().toISOString(),
+      };
+    }
+    lead.footprint.clickstream.unshift({
+      timestamp: new Date().toISOString(),
+      event: "TRAVEL_EMAIL_DISPATCHED",
+      url: `/leads/${lead.id}/email`,
+      remark: emailRemark,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      isAutoLogged: true,
+      metadata: {
+        from: fromEmail,
+        recipient: finalRecipient,
+        subject: finalSubject,
+        templateId,
+      },
+    });
+
     this.logActivity({
       entityType: "LEAD",
       entityId: lead.id,
@@ -1392,6 +1585,7 @@ class EnterpriseCRMStore {
       actorRole: actor.role,
       action: "TRAVEL_EMAIL_DISPATCHED",
       metadata: {
+        remark: emailRemark,
         from: fromEmail,
         templateTitle: template.title,
         recipient: finalRecipient,
@@ -1475,6 +1669,29 @@ class EnterpriseCRMStore {
     lead.status = targetStatus;
     lead.updatedAt = new Date().toISOString();
 
+    const transitionRemark = `[AUTO] Status transitioned from '${previousStatus}' to '${targetStatus}' by ${actor.name} (${actor.role})`;
+    if (!lead.footprint) {
+      lead.footprint = {
+        id: `fp-${Date.now()}`,
+        leadId: lead.id,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Web Client",
+        clickstream: [],
+        createdAt: new Date().toISOString(),
+      };
+    }
+    lead.footprint.clickstream.unshift({
+      timestamp: new Date().toISOString(),
+      event: `STATUS_${targetStatus}`,
+      url: `/leads/${lead.id}/status`,
+      remark: transitionRemark,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      isAutoLogged: true,
+      metadata: { from: previousStatus, to: targetStatus, ...metadata },
+    });
+
     // Log Activity
     this.logActivity({
       entityType: "LEAD",
@@ -1485,7 +1702,10 @@ class EnterpriseCRMStore {
       action: `TRANSITION_TO_${targetStatus}`,
       fromState: previousStatus,
       toState: targetStatus,
-      metadata,
+      metadata: {
+        remark: transitionRemark,
+        ...metadata,
+      },
     });
 
     this.logAudit({

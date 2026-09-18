@@ -9,7 +9,7 @@ import { ChargingView } from "@/components/dashboard/ChargingView";
 import { CSView } from "@/components/dashboard/CSView";
 import { SuperAdminView } from "@/components/dashboard/SuperAdminView";
 import { LeadIngestionModal } from "@/components/leads/LeadIngestionModal";
-import { LeadWorkspaceModal } from "@/components/leads/LeadWorkspaceModal";
+import { LeadWorkspaceModal, WorkspaceWindow } from "@/components/leads/LeadWorkspaceModal";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
 
 export default function DashboardPage() {
@@ -30,6 +30,7 @@ export default function DashboardPage() {
   // Split-pane & Full Workspace Modal
   const [selectedLeadId, setSelectedLeadId] = useState<string | undefined>(undefined);
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
+  const [workspaceInitialWindow, setWorkspaceInitialWindow] = useState<WorkspaceWindow>("overview");
   const [isIngestModalOpen, setIsIngestModalOpen] = useState(false);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
@@ -147,6 +148,7 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.success && data.lead) {
         setSelectedLeadId(data.lead.id);
+        setWorkspaceInitialWindow("overview");
         setIsWorkspaceModalOpen(true);
         setActiveView("sales");
       } else {
@@ -315,8 +317,9 @@ export default function DashboardPage() {
               leads={leads}
               currentUser={currentUser}
               users={users}
-              onSelectLead={(l) => {
+              onSelectLead={(l, win) => {
                 setSelectedLeadId(l.id);
+                setWorkspaceInitialWindow(win || "overview");
                 setIsWorkspaceModalOpen(true);
               }}
               selectedLeadId={selectedLeadId}
@@ -363,6 +366,7 @@ export default function DashboardPage() {
         lead={selectedLead}
         currentUser={currentUser}
         users={users}
+        initialWindow={workspaceInitialWindow}
         onClose={() => setIsWorkspaceModalOpen(false)}
         onTransition={handleTransitionLead}
         onRefresh={fetchData}

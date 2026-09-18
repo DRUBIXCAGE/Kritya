@@ -818,57 +818,75 @@ export function LeadDetailSplitPane({
             </div>
 
             <div className="space-y-2 relative before:absolute before:inset-0 before:left-2.5 before:w-0.5 before:bg-slate-800">
-              {lead.footprint.clickstream.map((evt, idx) => {
-                const isCardEvent = evt.event.startsWith("CARD_");
-                const isCardGrant = evt.event === "CARD_ACCESS_GRANTED_BY_MANAGER";
-                const isCardView = evt.event === "CARD_DETAILS_VIEWED";
-                const isCardExpiredEvt = evt.event === "CARD_ACCESS_EXPIRED";
-                const isCardConceal = evt.event === "CARD_DETAILS_CONCEALED";
+              {[...lead.footprint.clickstream]
+                .sort((a, b) => {
+                  const timeA = new Date(a.timestamp).getTime();
+                  const timeB = new Date(b.timestamp).getTime();
+                  return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+                })
+                .map((evt, idx) => {
+                  const isManualRemark = !evt.isAutoLogged && (Boolean(evt.remark) || evt.event === "QUERY_REMARK_RECORDED");
+                  const actorDisplayName = evt.actorName || (evt.isAutoLogged ? "System Sentinel" : (lead.assignedToName || "Sales Agent"));
+                  const actorDisplayRole = evt.actorRole || (evt.actorName ? "User" : "System");
+                  const remarkText = evt.remark || `Action '${evt.event.replace(/_/g, " ")}' recorded by ${actorDisplayName} (${actorDisplayRole})`;
 
-                let dotColor = "bg-indigo-500";
-                let cardBg = "bg-slate-950 border-slate-800/80";
-                let titleColor = "text-indigo-300";
+                  const isCardGrant = evt.event === "CARD_ACCESS_GRANTED_BY_MANAGER";
+                  const isCardView = evt.event === "CARD_DETAILS_VIEWED";
+                  const isCardExpiredEvt = evt.event === "CARD_ACCESS_EXPIRED";
+                  const isCardConceal = evt.event === "CARD_DETAILS_CONCEALED";
 
-                if (isCardGrant) {
-                  dotColor = "bg-emerald-400";
-                  cardBg = "bg-emerald-950/40 border-emerald-500/40";
-                  titleColor = "text-emerald-300";
-                } else if (isCardView) {
-                  dotColor = "bg-amber-400 animate-pulse";
-                  cardBg = "bg-amber-950/40 border-amber-500/40";
-                  titleColor = "text-amber-300";
-                } else if (isCardExpiredEvt) {
-                  dotColor = "bg-rose-400";
-                  cardBg = "bg-rose-950/40 border-rose-500/40";
-                  titleColor = "text-rose-300";
-                } else if (isCardConceal) {
-                  dotColor = "bg-slate-400";
-                  cardBg = "bg-slate-900 border-slate-700";
-                  titleColor = "text-slate-300";
-                }
+                  let dotColor = isManualRemark ? "bg-amber-400 ring-2 ring-amber-400/30" : "bg-indigo-500";
+                  let cardBg = isManualRemark ? "bg-amber-950/40 border-amber-500/40" : "bg-slate-950 border-slate-800/80";
+                  let titleColor = isManualRemark ? "text-amber-300" : "text-indigo-300";
 
-                return (
-                  <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
-                    <div
-                      className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-slate-900 ${dotColor}`}
-                    />
-                    <div className={`flex-1 p-2 rounded border ${cardBg}`}>
-                      <div className="flex items-center justify-between">
-                        <span className={`font-mono font-bold text-[11px] ${titleColor}`}>
-                          {evt.event}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400">{formatRelativeTime(evt.timestamp)}</span>
-                      </div>
-                      <div className="text-[10px] font-mono text-slate-300 mt-0.5">{evt.url}</div>
-                      {evt.metadata && (
-                        <div className="text-[10px] font-mono text-slate-400 mt-1 pt-1 border-t border-slate-800/60">
-                          {JSON.stringify(evt.metadata)}
+                  if (isCardGrant) {
+                    dotColor = "bg-emerald-400";
+                    cardBg = "bg-emerald-950/40 border-emerald-500/40";
+                    titleColor = "text-emerald-300";
+                  } else if (isCardView) {
+                    dotColor = "bg-amber-400 animate-pulse";
+                    cardBg = "bg-amber-950/40 border-amber-500/40";
+                    titleColor = "text-amber-300";
+                  } else if (isCardExpiredEvt) {
+                    dotColor = "bg-rose-400";
+                    cardBg = "bg-rose-950/40 border-rose-500/40";
+                    titleColor = "text-rose-300";
+                  } else if (isCardConceal) {
+                    dotColor = "bg-slate-400";
+                    cardBg = "bg-slate-900 border-slate-700";
+                    titleColor = "text-slate-300";
+                  }
+
+                  return (
+                    <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
+                      <div
+                        className={`absolute left-1 top-1.5 h-3 w-3 rounded-full border-2 border-slate-900 ${dotColor}`}
+                      />
+                      <div className={`flex-1 p-2.5 rounded border ${cardBg}`}>
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className={`font-mono font-bold text-[11px] ${titleColor}`}>
+                              {evt.event}
+                            </span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+                              Actor: <strong className="text-white">{actorDisplayName}</strong> ({actorDisplayRole})
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono text-slate-400">{formatRelativeTime(evt.timestamp)}</span>
                         </div>
-                      )}
+
+                        <div className="mt-1.5 p-1.5 rounded text-[11px] bg-slate-900/90 text-slate-200 border border-slate-800">
+                          <span>{remarkText}</span>
+                        </div>
+
+                        <div className="text-[10px] font-mono text-slate-400 mt-1 flex items-center justify-between">
+                          <span>Actor ID: {evt.actorId || "N/A"}</span>
+                          <span>{evt.url}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         )}

@@ -135,6 +135,11 @@ export interface ClickstreamEvent {
   url: string;
   dwellTimeSeconds?: number;
   metadata?: Record<string, unknown>;
+  remark?: string;
+  actorId?: string;
+  actorName?: string;
+  actorRole?: string;
+  isAutoLogged?: boolean;
 }
 
 export interface LeadFootprint {

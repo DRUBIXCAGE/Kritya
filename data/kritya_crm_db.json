@@ -428,7 +428,7 @@
       "authEmailSent": false,
       "authCallConfirmed": false,
       "createdAt": "2026-09-14T06:31:42.502Z",
-      "updatedAt": "2026-09-14T06:31:42.542Z",
+      "updatedAt": "2026-09-18T07:11:34.439Z",
       "footprint": {
         "id": "fp_lead_jk6xjtc",
         "leadId": "lead_jk6xjtc",
@@ -441,6 +441,141 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-18T07:11:34.439Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Closed booking workspace by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:11:32.382Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:04:37.215Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Closed booking workspace by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:04:11.798Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:55:54.978Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:52:47.777Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Rachel Vance (Operations Admin) (ADMIN)",
+            "actorId": "usr_admin",
+            "actorName": "Rachel Vance (Operations Admin)",
+            "actorRole": "ADMIN",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:51:21.384Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:46:14.442Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:45:27.146Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-14T06:26:42.502Z",
             "event": "ROUTE_SEARCH",
@@ -468,6 +603,45 @@
               "viewerEmail": "marcus.brooks@travelocase.com",
               "ipAddress": "::ffff:127.0.0.1",
               "userAgent": "Browser Client",
+              "cardLast4": "8382"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:45:24.081Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_jk6xjtc/pci-vault",
+            "metadata": {
+              "viewerName": "Marcus Brooks (Sales Director & Manager)",
+              "viewerRole": "SALES_MANAGER",
+              "viewerEmail": "marcus.brooks@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0",
+              "cardLast4": "8382"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:45:24.089Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_jk6xjtc/pci-vault",
+            "metadata": {
+              "viewerName": "Marcus Brooks (Sales Director & Manager)",
+              "viewerRole": "SALES_MANAGER",
+              "viewerEmail": "marcus.brooks@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0",
+              "cardLast4": "8382"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:45:28.806Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_jk6xjtc/pci-vault",
+            "metadata": {
+              "viewerName": "Marcus Brooks (Sales Director & Manager)",
+              "viewerRole": "SALES_MANAGER",
+              "viewerEmail": "marcus.brooks@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0",
               "cardLast4": "8382"
             }
           }
@@ -1020,7 +1194,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:00:29.315Z",
-      "updatedAt": "2026-09-11T10:00:30.220Z",
+      "updatedAt": "2026-09-18T07:12:37.978Z",
       "footprint": {
         "id": "fp_lead_dar1t6t",
         "leadId": "lead_dar1t6t",
@@ -1033,6 +1207,96 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-18T07:12:37.978Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Opened Overview Hub window by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:12:34.252Z",
+            "event": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Opened Add / Edit Booking & Flights window by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:12:28.025Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:54:07.671Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:52:15.096Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T06:51:42.128Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-11T09:55:29.315Z",
             "event": "ROUTE_SEARCH",
@@ -1754,6 +2018,279 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_bsh58zf",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:12:37.979Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+      "metadata": {
+        "remark": "Opened Add / Edit Booking & Flights window by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_qz40ery",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:12:34.252Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_z7se58p",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:12:28.025Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_z7uebjd",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:11:34.440Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_hh1ox5x",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:11:32.382Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_p8ezrmi",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:04:37.215Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_mwfl32a",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:04:11.799Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_31ifray",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:55:54.978Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_du49u2j",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:54:07.671Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_admin",
+      "actorName": "Rachel Vance (Operations Admin)",
+      "actorRole": "ADMIN",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Rachel Vance (Operations Admin) (ADMIN)",
+        "isAutoLogged": true
+      },
+      "id": "act_adj4at2",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:52:47.777Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_689gsju",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:52:15.097Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_pa3oxsw",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:51:42.128Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_3mb1zgk",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:51:21.387Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_hv638n1",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:46:14.442Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "SALES_MANAGER",
+        "cardLast4": "8382",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_4kqd499",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:45:28.806Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_mzlwsen",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:45:27.146Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "SALES_MANAGER",
+        "cardLast4": "8382",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_y0qhto4",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:45:24.089Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "SALES_MANAGER",
+        "cardLast4": "8382",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_bsmznrv",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T06:45:24.081Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_flight_03",
@@ -2784,6 +3321,60 @@
   ],
   "auditLogs": [
     {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_jk6xjtc:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Marcus Brooks (Sales Director & Manager)",
+        "actorRole": "SALES_MANAGER",
+        "leadId": "lead_jk6xjtc",
+        "cardLast4": "8382",
+        "timestamp": "2026-09-18T06:45:28.806Z"
+      },
+      "id": "aud_cyshvt7",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T06:45:28.806Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_jk6xjtc:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Marcus Brooks (Sales Director & Manager)",
+        "actorRole": "SALES_MANAGER",
+        "leadId": "lead_jk6xjtc",
+        "cardLast4": "8382",
+        "timestamp": "2026-09-18T06:45:24.089Z"
+      },
+      "id": "aud_iyg8xj3",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T06:45:24.090Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_jk6xjtc:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Marcus Brooks (Sales Director & Manager)",
+        "actorRole": "SALES_MANAGER",
+        "leadId": "lead_jk6xjtc",
+        "cardLast4": "8382",
+        "timestamp": "2026-09-18T06:45:24.081Z"
+      },
+      "id": "aud_odgtrn9",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T06:45:24.081Z"
+    },
+    {
       "actorId": "SYSTEM",
       "actorEmail": "security@kritya.crm",
       "action": "CARD_ACCESS_AUTO_REVOKED",
@@ -3797,5 +4388,5 @@
   ],
   "roundRobinIndex": 6,
   "lastBookingNumber": 1011,
-  "lastPersistedAt": "2026-09-14T13:46:45.772Z"
+  "lastPersistedAt": "2026-09-18T07:12:39.860Z"
 }

@@ -51,13 +51,24 @@ import {
   Save,
   Edit,
   RefreshCw,
+  ArrowLeft,
+  ChevronRight,
+  ExternalLink,
+  Sparkles,
+  LayoutDashboard,
+  MessageSquare,
+  Bot,
+  History,
 } from "lucide-react";
+
+export type WorkspaceWindow = "overview" | "email" | "booking_details" | "card_vault" | "audit";
 
 interface LeadWorkspaceModalProps {
   isOpen: boolean;
   lead: Lead | null;
   currentUser: User;
   users?: User[];
+  initialWindow?: WorkspaceWindow;
   onClose: () => void;
   onTransition: (leadId: string, targetStatus: LeadStatus) => Promise<void>;
   onRefresh: () => Promise<void>;
@@ -78,18 +89,116 @@ export function LeadWorkspaceModal({
   lead,
   currentUser,
   users = [],
+  initialWindow = "overview",
   onClose,
   onTransition,
   onRefresh,
   activityLogs,
 }: LeadWorkspaceModalProps) {
+  // Active Window / View in the Workspace
+  const [activeWindow, setActiveWindow] = useState<WorkspaceWindow>(initialWindow || "overview");
+
+  // Helper to log any workspace sub-window or user interaction into digital fingerprints
+  const logWorkspaceEvent = (event: string, remark: string, metadata?: Record<string, unknown>) => {
+    if (!lead?.id || !currentUser?.id) return;
+    fetch(`/api/leads/${lead.id}/fingerprint`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event,
+        actorId: currentUser.id,
+        actorName: currentUser.name,
+        actorRole: currentUser.role,
+        isAutoLogged: true,
+        remark,
+        metadata,
+      }),
+    })
+      .then(() => onRefresh())
+      .catch((err) => console.error("Auto-fingerprint error:", err));
+  };
+
+  // Sync activeWindow when initialWindow or lead changes
+  useEffect(() => {
+    if (isOpen) {
+      setActiveWindow(initialWindow || "overview");
+    }
+  }, [isOpen, initialWindow, lead?.id]);
+
+  // Query Remark State
+  const [quickRemark, setQuickRemark] = useState<string>("");
+  const [isLoggingRemark, setIsLoggingRemark] = useState<boolean>(false);
+  const [remarkSuccessMessage, setRemarkSuccessMessage] = useState<string | null>(null);
+
+  // Auto-log opening of the booking workspace into digital fingerprints if user hasn't entered a remark yet
+  useEffect(() => {
+    if (isOpen && lead?.id && currentUser?.id) {
+      fetch(`/api/leads/${lead.id}/fingerprint`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "BOOKING_WORKSPACE_OPENED",
+          actorId: currentUser.id,
+          actorName: currentUser.name,
+          actorRole: currentUser.role,
+          isAutoLogged: true,
+          remark: `Booking workspace opened by ${currentUser.name} (${currentUser.role})`,
+        }),
+      }).catch((err) => console.error("Auto-fingerprint error:", err));
+    }
+  }, [isOpen, lead?.id, currentUser?.id, currentUser?.name, currentUser?.role]);
+
+  // Window Switcher with Automatic Fingerprint Tracking
+  const handleSwitchWindow = (target: WorkspaceWindow) => {
+    if (target === activeWindow) return;
+    setActiveWindow(target);
+    const windowTitles: Record<WorkspaceWindow, string> = {
+      overview: "Overview Hub",
+      email: "Send Travel Mail",
+      booking_details: "Add / Edit Booking & Flights",
+      card_vault: "PCI Card Vault",
+      audit: "Audit & Telemetry",
+    };
+    logWorkspaceEvent(
+      `WORKSPACE_WINDOW_${target.toUpperCase()}`,
+      `Opened ${windowTitles[target] || target} window by ${currentUser.name} (${currentUser.role})`
+    );
+  };
+
+  // Close Workspace Handler with Action Logging
+  const handleCloseWorkspace = () => {
+    if (lead?.id && currentUser?.id) {
+      fetch(`/api/leads/${lead.id}/fingerprint`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "BOOKING_WORKSPACE_CLOSED",
+          actorId: currentUser.id,
+          actorName: currentUser.name,
+          actorRole: currentUser.role,
+          isAutoLogged: true,
+          remark: `Closed booking workspace by ${currentUser.name} (${currentUser.role})`,
+        }),
+      }).catch(() => {});
+    }
+    onClose();
+  };
+
+  // Cancel / Discard Edit Handler with Action Logging
+  const handleCancelEdit = () => {
+    logWorkspaceEvent(
+      "EDIT_CANCELLED_WITHOUT_SAVING",
+      `Exited edit details mode without saving changes by ${currentUser.name} (${currentUser.role})`
+    );
+    setActiveWindow("overview");
+  };
+
   const [isCardUnmasked, setIsCardUnmasked] = useState(false);
   const [isGrantingCard, setIsGrantingCard] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("flight_auth_01");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSentSuccess, setEmailSentSuccess] = useState(false);
-  const [mobileTab, setMobileTab] = useState<"booking" | "security">("booking");
 
   const canAssignLeads =
     currentUser.role === "SUPER_ADMIN" ||
@@ -111,7 +220,6 @@ export function LeadWorkspaceModal({
   const [customBody, setCustomBody] = useState<string>("");
 
   // Full Workspace Editing State
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSavingDetails, setIsSavingDetails] = useState<boolean>(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
 
@@ -478,6 +586,40 @@ export function LeadWorkspaceModal({
     }
   };
 
+  // Manual Query Remark Logger to Digital Fingerprints
+  const handleLogRemark = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!quickRemark.trim() || !lead) return;
+    setIsLoggingRemark(true);
+    setRemarkSuccessMessage(null);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}/fingerprint`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "QUERY_REMARK_RECORDED",
+          remark: quickRemark.trim(),
+          actorId: currentUser.id,
+          isAutoLogged: false,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert("Failed to log remark: " + (data.error || "Unknown error"));
+      } else {
+        setQuickRemark("");
+        setRemarkSuccessMessage("✓ Remark added to digital fingerprint timeline!");
+        setTimeout(() => setRemarkSuccessMessage(null), 3500);
+        await onRefresh();
+      }
+    } catch (err) {
+      console.error("Failed to log query remark:", err);
+      alert("Error logging remark");
+    } finally {
+      setIsLoggingRemark(false);
+    }
+  };
+
   // Save All Workspace Details
   const handleSaveDetails = async () => {
     if (!lead) return;
@@ -524,7 +666,6 @@ export function LeadWorkspaceModal({
         setSaveSuccessMessage("✓ All booking details & flights saved successfully!");
         setTimeout(() => setSaveSuccessMessage(null), 4000);
         await onRefresh();
-        setIsEditing(false);
       }
     } catch (err) {
       console.error("Failed to update workspace details:", err);
@@ -537,26 +678,33 @@ export function LeadWorkspaceModal({
   // Multi-Flight Operations
   const handleAddFlight = () => {
     const last = editFlights[editFlights.length - 1];
-    setEditFlights((prev) => [
-      ...prev,
-      {
-        id: `flt_${Date.now()}_${prev.length + 1}`,
-        airline: last?.airline || "American Airlines",
-        flightNumber: "",
-        origin: last?.destination || "JFK",
-        destination: "",
-        departureDate: last?.departureDate || new Date().toISOString().split("T")[0],
-        departureTime: "10:00 AM",
-        arrivalDate: last?.departureDate || new Date().toISOString().split("T")[0],
-        arrivalTime: "02:30 PM",
-        cabinClass: last?.cabinClass || "ECONOMY",
-      },
-    ]);
+    const newLeg: FlightSegment = {
+      id: `flt_${Date.now()}_${editFlights.length + 1}`,
+      airline: last?.airline || "American Airlines",
+      flightNumber: "",
+      origin: last?.destination || "JFK",
+      destination: "",
+      departureDate: last?.departureDate || new Date().toISOString().split("T")[0],
+      departureTime: "10:00 AM",
+      arrivalDate: last?.departureDate || new Date().toISOString().split("T")[0],
+      arrivalTime: "02:30 PM",
+      cabinClass: last?.cabinClass || "ECONOMY",
+    };
+    setEditFlights((prev) => [...prev, newLeg]);
+    logWorkspaceEvent(
+      "FLIGHT_LEG_ADDED",
+      `Added new flight leg #${editFlights.length + 1} (${newLeg.origin} -> Pending) to draft itinerary by ${currentUser.name} (${currentUser.role})`
+    );
   };
 
   const handleRemoveFlight = (idx: number) => {
     if (editFlights.length <= 1) return;
+    const removed = editFlights[idx];
     setEditFlights((prev) => prev.filter((_, i) => i !== idx));
+    logWorkspaceEvent(
+      "FLIGHT_LEG_REMOVED",
+      `Removed flight leg #${idx + 1} (${removed?.origin || "?"} -> ${removed?.destination || "?"}) by ${currentUser.name} (${currentUser.role})`
+    );
   };
 
   const handleUpdateFlight = (idx: number, field: keyof FlightSegment, val: string) => {
@@ -569,27 +717,34 @@ export function LeadWorkspaceModal({
 
   // Passenger Manifest Operations
   const handleAddPassenger = () => {
-    setEditPassengers((prev) => [
-      ...prev,
-      {
-        id: `pax_${Date.now()}_${prev.length + 1}`,
-        fullName: "",
-        type: "ADULT",
-        gender: "MALE",
-        passportNumber: "",
-        passportExpiry: "",
-        nationality: "USA",
-        dob: "",
-        seatPreference: "Auto-Assign",
-        mealPreference: "Standard Gourmet",
-        specialAssistance: "None",
-      },
-    ]);
+    const newPax: Passenger = {
+      id: `pax_${Date.now()}_${editPassengers.length + 1}`,
+      fullName: "",
+      type: "ADULT",
+      gender: "MALE",
+      passportNumber: "",
+      passportExpiry: "",
+      nationality: "USA",
+      dob: "",
+      seatPreference: "Auto-Assign",
+      mealPreference: "Standard Gourmet",
+      specialAssistance: "None",
+    };
+    setEditPassengers((prev) => [...prev, newPax]);
+    logWorkspaceEvent(
+      "PASSENGER_ADDED",
+      `Added new passenger slot #${editPassengers.length + 1} to manifest by ${currentUser.name} (${currentUser.role})`
+    );
   };
 
   const handleRemovePassenger = (idx: number) => {
     if (editPassengers.length <= 1) return;
+    const removed = editPassengers[idx];
     setEditPassengers((prev) => prev.filter((_, i) => i !== idx));
+    logWorkspaceEvent(
+      "PASSENGER_REMOVED",
+      `Removed passenger #${idx + 1} (${removed?.fullName || "Unnamed"}) from manifest by ${currentUser.name} (${currentUser.role})`
+    );
   };
 
   const handleUpdatePassenger = (idx: number, field: keyof Passenger, val: string) => {
@@ -600,13 +755,20 @@ export function LeadWorkspaceModal({
     });
   };
 
+  const isConfirmed = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
+  const primaryOrigin = editFlights[0]?.origin || booking?.origin || "JFK";
+  const primaryDest = editFlights[editFlights.length - 1]?.destination || booking?.destination || "LHR";
+  const primaryAirline = editFlights[0]?.airline || booking?.airline || "American Airlines";
+  const primaryDate = editFlights[0]?.departureDate || booking?.departureDate || "Pending";
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col sm:p-2 md:p-4 sm:items-center sm:justify-center bg-slate-900/60 backdrop-blur-sm overflow-hidden">
-      <div className="relative w-full max-w-7xl h-full sm:h-[94vh] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-white shadow-2xl flex flex-col text-slate-900 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col sm:p-2 md:p-4 sm:items-center sm:justify-center bg-slate-900/60 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200">
+      <div className="relative w-full max-w-7xl h-full sm:h-[94vh] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-slate-100/90 shadow-2xl flex flex-col text-slate-900 overflow-hidden">
+        
         {/* ========================================================================= */}
-        {/* TOP BAR: Header Details, PNR, Status Dropdown, Quick Status Actions, Close */}
+        {/* TOP BAR: Header Details, PNR, Status Dropdown, Quick Actions, Close        */}
         {/* ========================================================================= */}
-        <div className="p-3 sm:p-4 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+        <div className="p-3 sm:p-4 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0 shadow-xs">
           {/* Customer & Flight PNR Info */}
           <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20">
@@ -633,7 +795,7 @@ export function LeadWorkspaceModal({
                   <Mail className="h-3 w-3 text-slate-400" />
                   {editEmail || lead.email}
                 </span>
-                {lead.company && (
+                {(editCompany || lead.company) && (
                   <>
                     <span className="hidden sm:inline text-slate-300">&bull;</span>
                     <span className="text-slate-600 hidden sm:flex items-center gap-1">
@@ -651,7 +813,7 @@ export function LeadWorkspaceModal({
 
             {/* Mobile Close Button in Header Corner */}
             <button
-              onClick={onClose}
+              onClick={handleCloseWorkspace}
               className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition sm:hidden shrink-0"
               title="Close Workspace Window"
             >
@@ -661,7 +823,6 @@ export function LeadWorkspaceModal({
 
           {/* Quick Actions & Status Changer */}
           <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-200">
-            {/* Agent Selector Dropdown for Admin & Managers */}
             {canAssignLeads && (
               <div className="flex items-center gap-1.5 bg-indigo-50/70 border border-indigo-200 rounded-lg px-2.5 py-1.5 text-xs">
                 <span className="text-[10px] sm:text-[11px] font-semibold text-indigo-700 uppercase font-mono flex items-center gap-1">
@@ -706,44 +867,11 @@ export function LeadWorkspaceModal({
               </select>
             </div>
 
-            {/* Edit / Save Workspace Toggle Button */}
-            {!isEditing ? (
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition shadow-xs active:scale-95"
-                title="Edit customer details, passenger manifest, and add multiple flights"
-              >
-                <Edit className="h-3.5 w-3.5" />
-                <span>Edit Workspace</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={handleSaveDetails}
-                  disabled={isSavingDetails}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md transition active:scale-95 disabled:opacity-50"
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  <span>{isSavingDetails ? "Saving..." : "Save All Changes"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  disabled={isSavingDetails}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-200 transition"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-
             {/* Quick Button: Mark as SALE / Dispatch to Charging */}
             {lead.status !== "SALE" && lead.status !== "CHARGING" && lead.status !== "SUCCESS" && (
               <button
                 onClick={() => handleStatusChange("SALE")}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs shadow-md shadow-emerald-600/25 transition active:scale-95"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs shadow-md shadow-emerald-600/25 transition active:scale-95 cursor-pointer"
               >
                 <CheckCircle className="h-3.5 w-3.5" />
                 <span>Mark SALE</span>
@@ -752,8 +880,8 @@ export function LeadWorkspaceModal({
 
             {/* Close Full Window Button (Desktop) */}
             <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition hidden sm:block"
+              onClick={handleCloseWorkspace}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition hidden sm:block cursor-pointer"
               title="Close Workspace Window"
             >
               <X className="h-5 w-5" />
@@ -770,819 +898,713 @@ export function LeadWorkspaceModal({
             </div>
             <button
               onClick={() => setSaveSuccessMessage(null)}
-              className="text-emerald-700 text-[11px] hover:underline font-mono"
+              className="text-emerald-700 text-[11px] hover:underline font-mono cursor-pointer"
             >
               Dismiss
             </button>
           </div>
         )}
 
-        {/* Mobile Tab Switcher for small screens (< lg) */}
-        <div className="lg:hidden flex border-b border-slate-200 bg-slate-100 p-1 shrink-0">
-          <button
-            type="button"
-            onClick={() => setMobileTab("booking")}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
-              mobileTab === "booking"
-                ? "bg-indigo-600 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Plane className="h-3.5 w-3.5" />
-            <span>Booking & Manifest</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileTab("security")}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
-              mobileTab === "security"
-                ? "bg-indigo-600 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <CreditCard className="h-3.5 w-3.5" />
-            <span>Card Vault & Audit</span>
-          </button>
+        {/* ========================================================================= */}
+        {/* SUB-WINDOW NAVIGATION BAR: Breadcrumb & Window Switcher                    */}
+        {/* ========================================================================= */}
+        <div className="bg-white border-b border-slate-200 px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+            <button
+              onClick={() => handleSwitchWindow("overview")}
+              className={`flex items-center gap-1.5 font-bold px-2.5 py-1 rounded-md transition cursor-pointer ${
+                activeWindow === "overview"
+                  ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  : "text-slate-600 hover:text-indigo-600 hover:bg-slate-50"
+              }`}
+            >
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              <span>Overview</span>
+            </button>
+
+            <span className="text-slate-300">/</span>
+
+            {activeWindow !== "overview" && (
+              <button
+                onClick={() => handleSwitchWindow("overview")}
+                className="flex items-center gap-1 text-slate-500 hover:text-indigo-600 font-semibold px-1.5 py-0.5 rounded transition text-[11px] cursor-pointer"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                <span>Back to Overview</span>
+              </button>
+            )}
+
+            {activeWindow === "email" && (
+              <span className="flex items-center gap-1.5 font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md text-[11px]">
+                <Mail className="h-3 w-3" />
+                <span>Send Travel Mail</span>
+              </span>
+            )}
+
+            {activeWindow === "booking_details" && (
+              <span className="flex items-center gap-1.5 font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-md text-[11px]">
+                <Plane className="h-3 w-3" />
+                <span>Edit Booking & Flights</span>
+              </span>
+            )}
+
+            {activeWindow === "card_vault" && (
+              <span className="flex items-center gap-1.5 font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded-md text-[11px]">
+                <CreditCard className="h-3 w-3" />
+                <span>PCI Card Vault</span>
+              </span>
+            )}
+
+            {activeWindow === "audit" && (
+              <span className="flex items-center gap-1.5 font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md text-[11px]">
+                <Clock className="h-3 w-3" />
+                <span>Audit & Telemetry</span>
+              </span>
+            )}
+          </div>
+
+          {/* Window Quick Switcher Buttons in Sub-Bar */}
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+            <button
+              onClick={() => handleSwitchWindow("email")}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                activeWindow === "email"
+                  ? "bg-purple-600 text-white shadow-xs font-bold"
+                  : "bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200"
+              }`}
+            >
+              <Mail className="h-3 w-3" />
+              <span>Send Mail</span>
+            </button>
+
+            <button
+              onClick={() => handleSwitchWindow("booking_details")}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                activeWindow === "booking_details"
+                  ? "bg-indigo-600 text-white shadow-xs font-bold"
+                  : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"
+              }`}
+            >
+              <Edit className="h-3 w-3" />
+              <span>Edit Details</span>
+            </button>
+
+            <button
+              onClick={() => handleSwitchWindow("card_vault")}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                activeWindow === "card_vault"
+                  ? "bg-cyan-700 text-white shadow-xs font-bold"
+                  : "bg-cyan-50 text-cyan-800 hover:bg-cyan-100 border border-cyan-200"
+              }`}
+            >
+              <CreditCard className="h-3 w-3" />
+              <span>Card Vault</span>
+            </button>
+
+            {canViewFootprint && (
+              <button
+                onClick={() => handleSwitchWindow("audit")}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                  activeWindow === "audit"
+                    ? "bg-slate-800 text-white shadow-xs font-bold"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
+                }`}
+              >
+                <Globe className="h-3 w-3" />
+                <span>Audit</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ========================================================================= */}
-        {/* MAIN BODY: 2-Column High-Density Enterprise Layout                        */}
+        {/* WINDOW 1: SIMPLIFIED WORKSPACE OVERVIEW HUB (DEFAULT)                      */}
         {/* ========================================================================= */}
-        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 overflow-hidden">
-          {/* ----------------------------------------------------------------------- */}
-          {/* LEFT PANE (7 cols): Contact Details, Passenger Manifest, Email Hub      */}
-          {/* ----------------------------------------------------------------------- */}
-          <div
-            className={`lg:col-span-7 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto touch-scroll bg-white ${
-              mobileTab === "security" ? "hidden lg:block" : "block"
-            }`}
-          >
-            {/* SECTION 1: CUSTOMER CONTACT DETAILS (IN-PLACE EDITABLE) */}
-            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <UserCheck className="h-4 w-4 text-cyan-600" />
-                  Primary Customer & Contact Information
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200">
-                    Verified Account
+        {activeWindow === "overview" && (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 touch-scroll">
+            {/* HERO ACTION LAUNCH BAR: Interactive buttons to open focused windows */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Window Button 1: Send Mail */}
+              <button
+                type="button"
+                onClick={() => handleSwitchWindow("email")}
+                className="group p-4 rounded-xl bg-gradient-to-br from-purple-50 via-white to-purple-50/40 border-2 border-purple-200 hover:border-purple-500 hover:shadow-lg transition-all duration-200 text-left flex flex-col justify-between cursor-pointer"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="h-10 w-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-600/20 group-hover:scale-110 transition-transform">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300">
+                    {lead.authEmailSent ? "✓ Mail Sent" : "Ready"}
                   </span>
-                  {!isEditing ? (
-                    <button
-                      type="button"
-                      onClick={() => setIsEditing(true)}
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
-                    >
-                      <Edit className="h-3 w-3" />
-                      <span>Edit</span>
-                    </button>
-                  ) : (
-                    <span className="text-[10px] font-mono text-purple-700 font-bold bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">
-                      EDITING
-                    </span>
-                  )}
                 </div>
-              </div>
-
-              {isEditing ? (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Full Name</label>
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        placeholder="Passenger / Account Name"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Email Address</label>
-                      <input
-                        type="email"
-                        value={editEmail}
-                        onChange={(e) => setEditEmail(e.target.value)}
-                        placeholder="customer@email.com"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-indigo-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Phone Number</label>
-                      <input
-                        type="text"
-                        value={editPhone}
-                        onChange={(e) => setEditPhone(e.target.value)}
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Company / Org</label>
-                      <input
-                        type="text"
-                        value={editCompany}
-                        onChange={(e) => setEditCompany(e.target.value)}
-                        placeholder="Individual or Corporate Account"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
-                      />
-                    </div>
+                <div className="mt-3">
+                  <div className="font-bold text-slate-900 text-sm group-hover:text-purple-700 transition-colors flex items-center gap-1">
+                    <span>Send Travel Mail</span>
+                    <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
                   </div>
-
-                {/* Financial & MCO Commission Calculator Block */}
-                <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-50/60 via-purple-50/40 to-emerald-50/60 border border-indigo-200/80 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                      <DollarSign className="h-4 w-4 text-emerald-600" />
-                      Fare Pricing & Agent MCO Commission Calculator
-                    </span>
-                    <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2 py-0.5 rounded-full shadow-xs">
-                      MCO = Sale Price − Ticket Price
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
-                        Sale Price (Agent Quote)
-                      </label>
-                      <input
-                        type="number"
-                        value={editSalePrice || ""}
-                        onChange={(e) => handleSalePriceChange(Number(e.target.value))}
-                        placeholder="Enter Sale Price"
-                        className="w-full bg-white border border-indigo-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-indigo-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
-                        Ticket Price (Ingested from Site)
-                      </label>
-                      <input
-                        type="number"
-                        value={editTicketPrice || ""}
-                        onChange={(e) => handleTicketPriceChange(Number(e.target.value))}
-                        placeholder="Ingested Ticket Price"
-                        className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-emerald-800 uppercase block font-semibold mb-0.5 flex items-center justify-between">
-                        <span>MCO (Agent Earned)</span>
-                        <span className="text-[9px] text-emerald-600 font-mono">Auto Calc</span>
-                      </label>
-                      <input
-                        type="number"
-                        value={editMco}
-                        onChange={(e) => handleMcoChange(Number(e.target.value))}
-                        placeholder="Agent MCO"
-                        className="w-full bg-emerald-50/80 border border-emerald-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-extrabold text-emerald-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-xs"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">Currency</label>
-                      <select
-                        value={editCurrency}
-                        onChange={(e) => setEditCurrency(e.target.value)}
-                        className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-xs"
-                      >
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="CAD">CAD ($)</option>
-                        <option value="AUD">AUD ($)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-indigo-900 bg-white/70 border border-indigo-100 rounded-lg px-2.5 py-1.5">
-                    <span className="flex items-center gap-1 font-mono">
-                      <span>💡 <strong>MCO:</strong> {formatCurrency(editSalePrice, editCurrency)} (Sale) − {formatCurrency(editTicketPrice, editCurrency)} (Ticket) =</span>
-                      <strong className={`font-extrabold text-xs ${editMco >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
-                        {editMco >= 0 ? `+${formatCurrency(editMco, editCurrency)}` : `-${formatCurrency(Math.abs(editMco), editCurrency)}`}
-                      </strong>
-                    </span>
-                    <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-1.5 py-0.5 rounded">
-                      Actual amount earned by agent
-                    </span>
-                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                    Compose & dispatch card auth, e-ticket itinerary, or follow-up email.
+                  </p>
                 </div>
-              </div>
+              </button>
+
+              {/* Window Button 2: Add / Edit Booking Details */}
+              <button
+                type="button"
+                onClick={() => handleSwitchWindow("booking_details")}
+                className="group p-4 rounded-xl bg-gradient-to-br from-indigo-50 via-white to-indigo-50/40 border-2 border-indigo-200 hover:border-indigo-500 hover:shadow-lg transition-all duration-200 text-left flex flex-col justify-between cursor-pointer"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20 group-hover:scale-110 transition-transform">
+                    <Plane className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300">
+                    {editFlights.length} Legs &bull; {editPassengers.length} Pax
+                  </span>
+                </div>
+                <div className="mt-3">
+                  <div className="font-bold text-slate-900 text-sm group-hover:text-indigo-700 transition-colors flex items-center gap-1">
+                    <span>Add / Edit Booking Details</span>
+                    <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                    Edit flights, passenger manifest, contact info & pricing/MCO.
+                  </p>
+                </div>
+              </button>
+
+              {/* Window Button 3: PCI Card Vault */}
+              <button
+                type="button"
+                onClick={() => handleSwitchWindow("card_vault")}
+                className="group p-4 rounded-xl bg-gradient-to-br from-cyan-50 via-white to-cyan-50/40 border-2 border-cyan-200 hover:border-cyan-500 hover:shadow-lg transition-all duration-200 text-left flex flex-col justify-between cursor-pointer"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="h-10 w-10 rounded-xl bg-cyan-700 text-white flex items-center justify-center shadow-md shadow-cyan-700/20 group-hover:scale-110 transition-transform">
+                    <CreditCard className="h-5 w-5" />
+                  </div>
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                    isCardActive 
+                      ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                      : "bg-slate-100 text-slate-700 border-slate-300"
+                  }`}>
+                    {isCardActive ? "3-Min Active" : `Masked (•••• ${last4})`}
+                  </span>
+                </div>
+                <div className="mt-3">
+                  <div className="font-bold text-slate-900 text-sm group-hover:text-cyan-800 transition-colors flex items-center gap-1">
+                    <span>PCI Card Vault</span>
+                    <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                    Secure card view, manager clearance & 3-minute access timer.
+                  </p>
+                </div>
+              </button>
+
+              {/* Window Button 4: Audit Trail & Telemetry (Manager/Admin) */}
+              {canViewFootprint ? (
+                <button
+                  type="button"
+                  onClick={() => handleSwitchWindow("audit")}
+                  className="group p-4 rounded-xl bg-gradient-to-br from-slate-100 via-white to-slate-100/60 border-2 border-slate-200 hover:border-slate-500 hover:shadow-lg transition-all duration-200 text-left flex flex-col justify-between cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="h-10 w-10 rounded-xl bg-slate-800 text-white flex items-center justify-center shadow-md shadow-slate-800/20 group-hover:scale-110 transition-transform">
+                      <ShieldCheck className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300">
+                      {activityLogs.length} Events
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <div className="font-bold text-slate-900 text-sm group-hover:text-slate-800 transition-colors flex items-center gap-1">
+                      <span>Audit & Footprint</span>
+                      <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                      Inspect IP clickstream, telemetry events & activity audit trail.
+                    </p>
+                  </div>
+                </button>
               ) : (
-                <div className="space-y-2.5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 text-xs">
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Full Name / Account</span>
-                      <span className="font-semibold text-slate-900 mt-0.5 block truncate">{editName || lead.name}</span>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-left flex flex-col justify-between">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="h-10 w-10 rounded-xl bg-slate-200 text-slate-400 flex items-center justify-center">
+                      <Lock className="h-5 w-5" />
                     </div>
-
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Email Address</span>
-                      <span className="font-semibold text-indigo-700 mt-0.5 block truncate">{editEmail || lead.email}</span>
-                    </div>
-
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Phone Number</span>
-                      <span className="font-semibold text-slate-800 mt-0.5 block">{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
-                    </div>
-
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Company / Account</span>
-                      <span className="font-semibold text-slate-700 mt-0.5 block truncate">{editCompany || lead.company || "Individual Client"}</span>
-                    </div>
-
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Assigned Sales Agent</span>
-                      <span className="font-semibold text-indigo-700 mt-0.5 block">{lead.assignedToName || "Unassigned Pool"}</span>
-                    </div>
-
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-500 block font-mono uppercase">Created Date</span>
-                      <span className="font-mono text-slate-700 mt-0.5 block text-[11px]">{formatDate(lead.createdAt)}</span>
-                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                      Agent Restricted
+                    </span>
                   </div>
-
-                  {/* Prominent Financial Breakdown & MCO Earnings Display */}
-                  {(() => {
-                    const isConfirmed = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
-                    const hasSalePrice = typeof editSalePrice === "number" && editSalePrice > 0;
-                    return (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                          <span className="text-[10px] text-slate-500 font-mono uppercase block">
-                            {isConfirmed ? "Confirmed Sale Price" : "Sale Price (Agent Quote)"}
-                          </span>
-                          <span className="text-base font-mono font-extrabold text-slate-900 mt-0.5 block">
-                            {hasSalePrice
-                              ? formatCurrency(editSalePrice, editCurrency || lead.currency)
-                              : isConfirmed
-                              ? formatCurrency(lead.salePrice || lead.dealValue || 0, editCurrency || lead.currency)
-                              : (
-                                <span className="text-amber-700 text-xs font-semibold">Awaiting Agent Quote</span>
-                              )}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            {isConfirmed ? "Settled total charged" : hasSalePrice ? "Quoted by sales agent" : "Enter in edit mode to calculate MCO"}
-                          </span>
-                        </div>
-
-                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                          <span className="text-[10px] text-slate-500 font-mono uppercase block">Ticket Price (Ingested from Site)</span>
-                          <span className="text-base font-mono font-bold text-slate-700 mt-0.5 block">
-                            {formatCurrency(editTicketPrice || lead.ticketPrice || 0, editCurrency || lead.currency)}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">Net airline fare cost</span>
-                        </div>
-
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-300 shadow-xs">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-emerald-800 font-mono font-bold uppercase block">
-                              Agent MCO (Earned)
-                            </span>
-                            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold">
-                              Agent Profit
-                            </span>
-                          </div>
-                          <span className="text-base font-mono font-extrabold text-emerald-800 mt-0.5 block">
-                            {hasSalePrice || isConfirmed
-                              ? `+${formatCurrency(editMco || lead.mco || 0, editCurrency || lead.currency)}`
-                              : <span className="text-slate-400 text-xs">-- (Awaiting Sale Price)</span>}
-                          </span>
-                          <span className="text-[10px] text-emerald-700 font-semibold font-mono">
-                            {hasSalePrice || isConfirmed
-                              ? "Actual amount earned by agent"
-                              : "Auto-calculated once sale price is entered"}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                  <div className="mt-3">
+                    <div className="font-bold text-slate-400 text-sm">Audit & Security</div>
+                    <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                      Telemetry & audit logs are restricted to Manager / Admin roles.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* SECTION 2: PASSENGER MANIFEST & TRAVEL DOCUMENTS (IN-PLACE EDITABLE) */}
-            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Users className="h-4 w-4 text-indigo-600" />
-                  Complete Passenger Manifest ({editPassengers.length} Pax)
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
-                    E-Ticket Ready
+            {/* DASHBOARD CARDS GRID: Clean, organized booking overview */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              
+              {/* Card 1: Route & Flight Segments (7 cols) */}
+              <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Plane className="h-4 w-4 text-indigo-600" />
+                    Flight Route & Schedule ({editFlights.length} Segments)
                   </span>
-                  {!isEditing && (
-                    <button
-                      type="button"
-                      onClick={() => setIsEditing(true)}
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
-                    >
-                      <Edit className="h-3 w-3" />
-                      <span>Edit Pax</span>
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setActiveWindow("booking_details")}
+                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                  >
+                    <Edit className="h-3 w-3" />
+                    <span>Edit Flights &rarr;</span>
+                  </button>
                 </div>
-              </div>
 
-              <div className="space-y-3">
-                {editPassengers.map((pax, idx) => (
-                  <div key={pax.id || idx} className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
-                    {/* Passenger Header Banner */}
-                    <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-1.5">
-                      <div className="font-bold text-slate-900 flex items-center gap-2 flex-wrap">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] border border-indigo-200">
+                {/* Primary Route Banner */}
+                <div className="p-3.5 rounded-xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <span className="text-[10px] font-mono text-indigo-300 block uppercase">Origin</span>
+                      <span className="text-xl font-mono font-extrabold tracking-tight">{primaryOrigin}</span>
+                    </div>
+                    <div className="flex flex-col items-center px-2">
+                      <span className="text-[10px] font-mono text-indigo-300 uppercase">{editTripType}</span>
+                      <ArrowRight className="h-5 w-5 text-indigo-300 animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono text-indigo-300 block uppercase">Destination</span>
+                      <span className="text-xl font-mono font-extrabold tracking-tight">{primaryDest}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-[10px] font-mono text-indigo-300 block uppercase">{primaryAirline}</span>
+                    <span className="text-xs font-mono font-bold text-white block">{primaryDate}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/20 text-white mt-1 inline-block">
+                      PNR: {editPnrCode || booking?.pnrCode || "NX-PNR"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Multi-leg list */}
+                <div className="space-y-2 pt-1">
+                  {editFlights.map((flt, idx) => (
+                    <div key={flt.id || idx} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
                           {idx + 1}
                         </span>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={pax.fullName}
-                            onChange={(e) => handleUpdatePassenger(idx, "fullName", e.target.value)}
-                            placeholder="Passenger Full Name"
-                            className="bg-white border border-slate-300 rounded px-2 py-0.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        ) : (
-                          <span className="text-xs sm:text-sm text-slate-900">{pax.fullName || "Unnamed Passenger"}</span>
-                        )}
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-indigo-700 border border-slate-200">
-                          {pax.type}
-                        </span>
-                        {pax.gender && (
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200 hidden sm:inline">
-                            {pax.gender}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {isEditing && editPassengers.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemovePassenger(idx)}
-                            className="text-slate-400 hover:text-red-600 p-1 rounded transition"
-                            title="Remove this passenger"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                        {pax.eTicketNumber && !isEditing && (
-                          <div className="text-right font-mono text-[10px] sm:text-[11px] text-cyan-800 flex items-center gap-1">
-                            <FileBadge className="h-3.5 w-3.5 text-cyan-600" />
-                            <span>{pax.eTicketNumber}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Passenger Detail Inputs vs View Cards */}
-                    {isEditing ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1 text-[11px]">
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Pax Type</label>
-                          <select
-                            value={pax.type}
-                            onChange={(e) => handleUpdatePassenger(idx, "type", e.target.value as any)}
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          >
-                            <option value="ADULT">Adult</option>
-                            <option value="CHILD">Child</option>
-                            <option value="INFANT">Infant</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport #</label>
-                          <input
-                            type="text"
-                            value={pax.passportNumber}
-                            onChange={(e) => handleUpdatePassenger(idx, "passportNumber", e.target.value)}
-                            placeholder="Passport Number"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport Expiry</label>
-                          <input
-                            type="date"
-                            value={pax.passportExpiry || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "passportExpiry", e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Nationality</label>
-                          <input
-                            type="text"
-                            value={pax.nationality || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "nationality", e.target.value)}
-                            placeholder="Nationality"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Date of Birth</label>
-                          <input
-                            type="date"
-                            value={pax.dob || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "dob", e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Assigned Seat</label>
-                          <input
-                            type="text"
-                            value={pax.seatPreference || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "seatPreference", e.target.value)}
-                            placeholder="e.g. 14B / Window"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">Meal Choice</label>
-                          <input
-                            type="text"
-                            value={pax.mealPreference || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "mealPreference", e.target.value)}
-                            placeholder="e.g. Vegan / Kosher"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-slate-500 uppercase font-mono block">E-Ticket Number</label>
-                          <input
-                            type="text"
-                            value={pax.eTicketNumber || ""}
-                            onChange={(e) => handleUpdatePassenger(idx, "eTicketNumber", e.target.value)}
-                            placeholder="e.g. ETKT-001-9428"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono text-cyan-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
-                          <div className="p-2 rounded bg-white border border-slate-200">
-                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport #</span>
-                            <span className="text-slate-800 font-bold font-mono truncate block">{pax.passportNumber || "On File"}</span>
-                          </div>
-
-                          <div className="p-2 rounded bg-white border border-slate-200">
-                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Passport Expiry</span>
-                            <span className="text-emerald-700 font-semibold font-mono truncate block">{pax.passportExpiry || "2030-12-31"}</span>
-                          </div>
-
-                          <div className="p-2 rounded bg-white border border-slate-200">
-                            <span className="text-[10px] text-slate-500 block uppercase font-mono">Nationality</span>
-                            <span className="text-slate-800 font-medium truncate block">{pax.nationality || "Confirmed"}</span>
-                          </div>
-
-                          <div className="p-2 rounded bg-white border border-slate-200">
-                            <span className="text-[10px] text-slate-500 block uppercase font-mono">DOB</span>
-                            <span className="text-slate-700 font-mono truncate block">{pax.dob || "N/A"}</span>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1">
-                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                            <Armchair className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                            <div className="truncate">
-                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Assigned Seat</span>
-                              <span className="font-bold text-indigo-700 truncate block">{pax.seatPreference || "Auto-Assign"}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                            <Utensils className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                            <div className="truncate">
-                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Meal Preference</span>
-                              <span className="font-semibold text-amber-800 truncate block">{pax.mealPreference || "Standard Gourmet"}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 p-2 rounded bg-white border border-slate-200 text-slate-700">
-                            <HeartHandshake className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                            <div className="truncate">
-                              <span className="text-[9px] text-slate-500 block uppercase font-mono">Special Assistance</span>
-                              <span className="font-medium text-emerald-700 truncate block">{pax.specialAssistance || "None"}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Add Passenger Action */}
-              <div className="pt-1 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditing(true);
-                    handleAddPassenger();
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 shadow-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>+ Add Another Passenger</span>
-                </button>
-              </div>
-            </div>
-
-            {/* SECTION 3: FLIGHT ITINERARY & MULTIPLE FLIGHT SEGMENTS */}
-            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Plane className="h-4 w-4 text-indigo-600" />
-                  Flight Itinerary & Route Segments ({editFlights.length} Flights)
-                </span>
-                <div className="flex items-center gap-2">
-                  {/* Trip Type badge / select */}
-                  {isEditing ? (
-                    <select
-                      value={editTripType}
-                      onChange={(e) => setEditTripType(e.target.value as any)}
-                      className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-slate-50 text-indigo-700 border border-indigo-300 cursor-pointer"
-                    >
-                      <option value="ROUND_TRIP">ROUND TRIP</option>
-                      <option value="ONE_WAY">ONE WAY</option>
-                      <option value="MULTI_CITY">MULTI CITY</option>
-                    </select>
-                  ) : (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">
-                      {editTripType}
-                    </span>
-                  )}
-
-                  <div className="flex items-center gap-1.5 font-mono">
-                    <span className="text-xs font-bold text-slate-900">
-                      {formatCurrency(editSalePrice || lead.salePrice || lead.dealValue, editCurrency || lead.currency)}
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-xs">
-                      MCO: +{formatCurrency(editMco || lead.mco || 0, editCurrency || lead.currency)}
-                    </span>
-                  </div>
-
-                  {!isEditing && (
-                    <button
-                      type="button"
-                      onClick={() => setIsEditing(true)}
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 ml-1"
-                    >
-                      <Edit className="h-3 w-3" />
-                      <span>Edit Flights</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* PNR Code bar */}
-              <div className="p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-200 flex flex-wrap items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <FileBadge className="h-4 w-4 text-indigo-600" />
-                  <span className="font-semibold text-slate-700 font-mono text-[11px]">PNR / Reservation Code:</span>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editPnrCode}
-                      onChange={(e) => setEditPnrCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. NX-PNR99"
-                      className="bg-white border border-indigo-300 rounded px-2 py-0.5 text-xs font-mono font-bold text-indigo-900 uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    />
-                  ) : (
-                    <span className="font-mono font-bold text-indigo-800 bg-white border border-indigo-200 px-2 py-0.5 rounded">
-                      {editPnrCode || booking?.pnrCode || "NX-PNR"}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] font-mono text-indigo-600">GDS Live Synced</span>
-              </div>
-
-              {/* List of Multiple Flight Segments */}
-              <div className="space-y-3">
-                {editFlights.map((flt, fIdx) => (
-                  <div key={flt.id || fIdx} className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs">
-                    {/* Flight Leg Header */}
-                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-200">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] font-bold">
-                          Flight Leg #{fIdx + 1}
-                        </span>
-                        <span className="font-semibold text-slate-900 font-mono text-[11px]">
-                          {flt.airline} ({flt.flightNumber || "TBD"})
-                        </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-50 text-cyan-800 border border-cyan-200 font-medium">
+                        <span className="font-bold text-slate-800 font-mono">{flt.origin} &rarr; {flt.destination}</span>
+                        <span className="text-[11px] text-slate-500 font-mono">({flt.airline} {flt.flightNumber})</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">
                           {flt.cabinClass}
                         </span>
                       </div>
-
-                      {isEditing && editFlights.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveFlight(fIdx)}
-                          className="text-slate-400 hover:text-red-600 p-1 rounded transition"
-                          title="Remove this flight leg"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      )}
+                      <div className="text-[11px] text-slate-600 font-mono">
+                        📅 {flt.departureDate} {flt.departureTime ? `@ ${flt.departureTime}` : ""}
+                      </div>
                     </div>
-
-                    {/* Flight Leg Fields: Edit Inputs vs View Summary */}
-                    {isEditing ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1">
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Origin (From)</label>
-                          <input
-                            type="text"
-                            value={flt.origin}
-                            onChange={(e) => handleUpdateFlight(fIdx, "origin", e.target.value)}
-                            placeholder="e.g. JFK (New York)"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Destination (To)</label>
-                          <input
-                            type="text"
-                            value={flt.destination}
-                            onChange={(e) => handleUpdateFlight(fIdx, "destination", e.target.value)}
-                            placeholder="e.g. LHR (London)"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Airline</label>
-                          <input
-                            type="text"
-                            value={flt.airline}
-                            onChange={(e) => handleUpdateFlight(fIdx, "airline", e.target.value)}
-                            placeholder="Airline Name"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Flight Number</label>
-                          <input
-                            type="text"
-                            value={flt.flightNumber}
-                            onChange={(e) => handleUpdateFlight(fIdx, "flightNumber", e.target.value)}
-                            placeholder="e.g. AA 100"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-indigo-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Date</label>
-                          <input
-                            type="date"
-                            value={flt.departureDate}
-                            onChange={(e) => handleUpdateFlight(fIdx, "departureDate", e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Time</label>
-                          <input
-                            type="text"
-                            value={flt.departureTime || ""}
-                            onChange={(e) => handleUpdateFlight(fIdx, "departureTime", e.target.value)}
-                            placeholder="08:30 AM"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Arrival Time</label>
-                          <input
-                            type="text"
-                            value={flt.arrivalTime || ""}
-                            onChange={(e) => handleUpdateFlight(fIdx, "arrivalTime", e.target.value)}
-                            placeholder="08:45 PM"
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Cabin Class</label>
-                          <select
-                            value={flt.cabinClass}
-                            onChange={(e) => handleUpdateFlight(fIdx, "cabinClass", e.target.value as any)}
-                            className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-                          >
-                            <option value="ECONOMY">Economy</option>
-                            <option value="PREMIUM_ECONOMY">Premium Economy</option>
-                            <option value="BUSINESS">Business Class</option>
-                            <option value="FIRST">First Class</option>
-                          </select>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-0.5">
-                        <div className="flex items-center gap-2 font-mono">
-                          <span className="font-bold text-slate-900 text-xs sm:text-sm">{flt.origin}</span>
-                          <ArrowRight className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                          <span className="font-bold text-slate-900 text-xs sm:text-sm">{flt.destination}</span>
-                        </div>
-                        <div className="text-[11px] text-slate-600 font-mono flex items-center gap-2 flex-wrap">
-                          <span>📅 Departure: {flt.departureDate} {flt.departureTime ? `@ ${flt.departureTime}` : ""}</span>
-                          {flt.arrivalTime && <span>🛬 Arrival: {flt.arrivalTime}</span>}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
-              {/* Add Flight Leg Button & Save Trigger */}
-              <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditing(true);
-                    handleAddFlight();
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 shadow-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>+ Add Another Flight Leg / Connection</span>
-                </button>
+              {/* Card 2: Fare Pricing & MCO Profit (5 cols) */}
+              <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                      Fare Pricing & Agent Commission
+                    </span>
+                    <button
+                      onClick={() => setActiveWindow("booking_details")}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Adjust &rarr;</span>
+                    </button>
+                  </div>
 
-                {isEditing && (
+                  <div className="grid grid-cols-2 gap-2.5 pt-3">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 font-mono uppercase block">
+                        {isConfirmed ? "Sale Price" : "Sale Price (Agent Quote)"}
+                      </span>
+                      <span className="text-base font-mono font-extrabold text-slate-900 mt-0.5 block">
+                        {editSalePrice > 0 || isConfirmed
+                          ? formatCurrency(editSalePrice || lead.salePrice || lead.dealValue, editCurrency || lead.currency)
+                          : <span className="text-amber-700 text-xs font-semibold">Awaiting Quote</span>}
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] text-slate-500 font-mono uppercase block">Ticket Price (Site Cost)</span>
+                      <span className="text-base font-mono font-bold text-slate-700 mt-0.5 block">
+                        {formatCurrency(editTicketPrice || lead.ticketPrice || 0, editCurrency || lead.currency)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Highlighted MCO Profit Banner */}
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-300 shadow-xs mt-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-emerald-800 font-mono font-bold uppercase block">
+                        Agent MCO (Earned)
+                      </span>
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold">
+                        Agent Profit
+                      </span>
+                    </div>
+                    <span className="text-lg font-mono font-extrabold text-emerald-800 mt-0.5 block">
+                      {editSalePrice > 0 || isConfirmed
+                        ? `+${formatCurrency(editMco || lead.mco || 0, editCurrency || lead.currency)}`
+                        : <span className="text-slate-400 text-xs font-normal">-- (Enter quote in Edit Details)</span>}
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-semibold font-mono">
+                      MCO = Sale Price − Ticket Price (Earned by agent)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
                   <button
-                    type="button"
-                    onClick={handleSaveDetails}
-                    disabled={isSavingDetails}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50"
+                    onClick={() => setActiveWindow("booking_details")}
+                    className="w-full py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
                   >
-                    <Save className="h-3.5 w-3.5" />
-                    <span>Save All Changes</span>
+                    <Edit3 className="h-3.5 w-3.5" />
+                    <span>Open Price & MCO Calculator &rarr;</span>
                   </button>
-                )}
+                </div>
+              </div>
+
+              {/* Card 3: Passenger Manifest Summary (7 cols) */}
+              <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Users className="h-4 w-4 text-indigo-600" />
+                    Passenger Manifest ({editPassengers.length} Travelers)
+                  </span>
+                  <button
+                    onClick={() => setActiveWindow("booking_details")}
+                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Add / Edit Pax &rarr;</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {editPassengers.map((pax, idx) => (
+                    <div key={pax.id || idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <span className="font-bold text-slate-900 block">{pax.fullName || "Passenger Name Pending"}</span>
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            Type: {pax.type} &bull; Seat: {pax.seatPreference || "Auto"} &bull; Meal: {pax.mealPreference || "Standard"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right font-mono text-[11px]">
+                        <span className="text-slate-600 block">Passport: {pax.passportNumber || "On File"}</span>
+                        {pax.eTicketNumber && (
+                          <span className="text-cyan-800 font-bold text-[10px] flex items-center gap-1">
+                            <FileBadge className="h-3 w-3 text-cyan-600 inline" />
+                            {pax.eTicketNumber}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 4: Customer Details & Card Snapshot (5 cols) */}
+              <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <UserCheck className="h-4 w-4 text-cyan-600" />
+                    Primary Customer & Security
+                  </span>
+                  <button
+                    onClick={() => setActiveWindow("booking_details")}
+                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                  >
+                    <Edit className="h-3 w-3" />
+                    <span>Edit Contact &rarr;</span>
+                  </button>
+                </div>
+
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-mono text-[10px] uppercase">Client Name</span>
+                    <span className="font-bold text-slate-900">{editName || lead.name}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-mono text-[10px] uppercase">Email</span>
+                    <span className="font-mono text-indigo-700 font-semibold truncate max-w-[200px]">{editEmail || lead.email}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-mono text-[10px] uppercase">Phone</span>
+                    <span className="font-mono text-slate-800 font-semibold">{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-mono text-[10px] uppercase">Assigned Agent</span>
+                    <span className="font-semibold text-indigo-700">{lead.assignedToName || "Unassigned Pool"}</span>
+                  </div>
+                </div>
+
+                {/* Card Snapshot Bar */}
+                <div className="p-3 rounded-lg bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-cyan-400" />
+                    <div>
+                      <span className="text-[10px] font-mono text-slate-300 block uppercase">Payment Method</span>
+                      <span className="font-mono text-xs font-bold text-indigo-200">
+                        {isCardUnmasked && isAuthorizedToUnmask ? (card?.cardNumber || `4532 •••• •••• ${last4}`) : `•••• •••• •••• ${last4}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setActiveWindow("card_vault")}
+                    className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold shadow-xs transition"
+                  >
+                    Open Vault &rarr;
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* SECTION 4: FULLY EDITABLE TRAVEL EMAIL COMPOSER WITH RICH TEXT & IMAGE PASTE */}
-            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Mail className="h-4 w-4 text-purple-600" />
-                  Travel Email Editor & Dispatcher
-                </span>
+            {/* ========================================================================= */}
+            {/* DIGITAL FINGERPRINTS & QUERY REMARKS SECTION                              */}
+            {/* ========================================================================= */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleResetTemplateDefaults}
-                    className="flex items-center gap-1 text-[11px] text-indigo-700 hover:text-indigo-800 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded transition font-medium"
-                    title="Reset subject & body to template defaults"
-                  >
-                    <RotateCcw className="h-3 w-3" />
-                    <span className="hidden sm:inline">Reset Defaults</span>
-                  </button>
-                  <span className="text-[10px] font-mono text-purple-700 font-medium">
-                    {lead.authEmailSent ? "✓ Sent" : "Ready"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Mandatory Official Sender Info Bar */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-200 text-xs">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-slate-600">From Official Address:</span>
-                    <span className="px-2 py-0.5 rounded bg-white font-mono font-bold text-indigo-700 border border-indigo-200 text-[11px]">
-                      {OFFICIAL_SENDER_EMAIL}
+                  <div className="h-7 w-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
+                    <History className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">
+                      Digital Fingerprints & Query Remarks Feed
                     </span>
-                    <span className="text-[10px] text-indigo-900/80">({OFFICIAL_SENDER_NAME})</span>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Every opening and action is automatically fingerprinted &bull; Add query remarks below
+                    </span>
                   </div>
                 </div>
-                <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1 font-semibold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  SPF / DKIM Secured
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                    {lead.footprint?.clickstream?.length || 0} Fingerprint Entries
+                  </span>
+                  {lead.footprint?.ipAddress && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                      IP: {lead.footprint.ipAddress}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Template Selector Tabs */}
+              {/* Remark Success Banner */}
+              {remarkSuccessMessage && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-lg flex items-center justify-between animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span>{remarkSuccessMessage}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Interactive Query Remark Composer */}
+              <form onSubmit={handleLogRemark} className="p-3 rounded-xl bg-gradient-to-r from-purple-50/50 via-indigo-50/40 to-slate-50 border border-purple-200/80 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                    <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
+                    <span>Enter Query / Action Remark</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    Actor: <strong className="text-slate-800">{currentUser.name}</strong> ({currentUser.role})
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    type="text"
+                    value={quickRemark}
+                    onChange={(e) => setQuickRemark(e.target.value)}
+                    placeholder="Enter remark for this inquiry query (e.g., 'Discussed business class upgrade with client on phone')..."
+                    className="flex-1 bg-white border border-purple-300 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoggingRemark || !quickRemark.trim()}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition active:scale-95 shrink-0 cursor-pointer"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>{isLoggingRemark ? "Logging..." : "Log Query Remark"}</span>
+                  </button>
+                </div>
+                <div className="text-[10px] text-slate-500 flex items-center justify-between font-mono">
+                  <span>💡 If you do not enter a remark when opening/viewing, an auto-log entry is automatically created.</span>
+                  <span>Press Enter to Submit</span>
+                </div>
+              </form>
+
+              {/* Fingerprints & Remarks Timeline - LATEST ON TOP */}
+              <div className="space-y-2 pt-1 max-h-72 overflow-y-auto pr-1">
+                {(!lead.footprint?.clickstream || lead.footprint.clickstream.length === 0) ? (
+                  <div className="p-4 text-center text-xs text-slate-400 font-mono bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                    No fingerprint events recorded yet.
+                  </div>
+                ) : (
+                  [...lead.footprint.clickstream]
+                    .sort((a, b) => {
+                      const timeA = new Date(a.timestamp).getTime();
+                      const timeB = new Date(b.timestamp).getTime();
+                      return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+                    })
+                    .map((evt, idx) => {
+                      const isManualRemark = !evt.isAutoLogged && (Boolean(evt.remark) || evt.event === "QUERY_REMARK_RECORDED");
+                      const actorDisplayName = evt.actorName || (evt.isAutoLogged ? "System Sentinel" : (lead.assignedToName || "Sales Agent"));
+                      const actorDisplayRole = evt.actorRole || (evt.actorName ? "User" : "System");
+                      const remarkText = evt.remark || `Action '${evt.event.replace(/_/g, " ")}' recorded by ${actorDisplayName} (${actorDisplayRole})`;
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-3 rounded-xl border transition text-xs space-y-2 ${
+                            isManualRemark
+                              ? "bg-amber-50/80 border-amber-300 shadow-2xs"
+                              : "bg-slate-50/90 border-slate-200 hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-1.5">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {isManualRemark ? (
+                                <span className="flex items-center gap-1 text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-md bg-amber-200/90 text-amber-900 border border-amber-300">
+                                  <MessageSquare className="h-3 w-3 text-amber-700" />
+                                  Agent Remark
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 border border-slate-300">
+                                  <Bot className="h-3 w-3 text-indigo-600" />
+                                  Auto Logged
+                                </span>
+                              )}
+
+                              <span className="font-mono font-bold text-[11px] text-slate-900">
+                                {evt.event.replace(/_/g, " ")}
+                              </span>
+
+                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                Actor: <strong className="text-slate-900">{actorDisplayName}</strong> ({actorDisplayRole})
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+                              <span title={evt.timestamp}>{formatDate(evt.timestamp)} &bull; {formatRelativeTime(evt.timestamp)}</span>
+                            </div>
+                          </div>
+
+                          <div className={`p-2.5 rounded-lg text-xs leading-relaxed font-medium ${
+                            isManualRemark
+                              ? "bg-white border border-amber-300 text-amber-950 font-semibold shadow-2xs"
+                              : "bg-white/90 border border-slate-200 text-slate-800"
+                          }`}>
+                            <div className="flex items-start gap-2">
+                              {isManualRemark ? (
+                                <MessageSquare className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+                              ) : (
+                                <Bot className="h-3.5 w-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                              )}
+                              <span className="flex-1">{remarkText}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* WINDOW 2: DEDICATED SEND TRAVEL MAIL WINDOW                                */}
+        {/* ========================================================================= */}
+        {activeWindow === "email" && (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 touch-scroll bg-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchWindow("overview")}
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  title="Back to Overview"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-purple-600" />
+                    Send Travel Email & Itinerary
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Dispatches official branded email to customer with booking reference <strong className="text-indigo-700 font-mono">{bookingRef}</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleResetTemplateDefaults}
+                className="flex items-center gap-1.5 text-xs text-indigo-700 hover:text-indigo-800 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg transition font-medium cursor-pointer"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Reset to Default Template</span>
+              </button>
+            </div>
+
+            {/* Mandatory Official Sender Info Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-200 text-xs">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-slate-600">From Official Sender:</span>
+                  <span className="px-2 py-0.5 rounded bg-white font-mono font-bold text-indigo-700 border border-indigo-200 text-[11px]">
+                    {OFFICIAL_SENDER_EMAIL}
+                  </span>
+                  <span className="text-[10px] text-indigo-900/80">({OFFICIAL_SENDER_NAME})</span>
+                </div>
+              </div>
+              <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1 font-semibold">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                SPF / DKIM Authenticated
+              </div>
+            </div>
+
+            {/* Template Selector Tabs */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Select Email Template Preset:</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                 {PREDEFINED_EMAIL_TEMPLATES.map((t) => (
                   <button
                     key={t.id}
                     type="button"
                     onClick={() => setSelectedTemplateId(t.id)}
-                    className={`p-2 rounded-lg text-left text-xs border transition ${
+                    className={`p-2.5 rounded-xl text-left text-xs border transition ${
                       selectedTemplateId === t.id
                         ? "bg-purple-50 text-purple-900 border-purple-400 font-bold shadow-xs"
                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
@@ -1593,186 +1615,688 @@ export function LeadWorkspaceModal({
                   </button>
                 ))}
               </div>
+            </div>
 
-              {/* Editable Fields: Recipient Email, Subject, and Rich Text Body */}
-              <div className="p-3 sm:p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
-                {/* 1. Editable Recipient Email */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
-                    <span className="flex items-center gap-1">
-                      <Mail className="h-3.5 w-3.5 text-indigo-600" />
-                      To (Recipient Customer Email):
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">Editable</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
-                    required
-                    placeholder="Enter customer recipient email..."
-                    className="w-full rounded-md bg-white border border-slate-300 px-3 py-1.5 text-xs text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-
-                {/* 2. Editable Email Subject with Booking ID Enforcement */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[11px] font-semibold text-slate-700 flex items-center gap-1">
-                      <Edit3 className="h-3.5 w-3.5 text-indigo-600" />
-                      Subject Line (Must include Booking ID):
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleInsertBookingIdPrefix}
-                      className="text-[10px] font-mono text-cyan-800 hover:text-cyan-900 bg-cyan-50 border border-cyan-300 px-1.5 py-0.5 rounded transition font-medium"
-                      title="Ensure Booking ID tag is inserted in subject"
-                    >
-                      + Ensure [Booking ID: {bookingRef}]
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={customSubject}
-                    onChange={(e) => setCustomSubject(e.target.value)}
-                    required
-                    placeholder="Enter email subject..."
-                    className="w-full rounded-md bg-white border border-slate-300 px-3 py-1.5 text-xs text-indigo-900 font-semibold focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-
-                {/* 3. Rich Text Email Body with Image Paste Support */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
-                    <span>Message Body (Rich Text Tools & Image Paste Enabled):</span>
-                    <span className="text-[10px] font-mono text-indigo-600">Ctrl+V to paste screenshots</span>
-                  </label>
-                  <RichTextEmailEditor
-                    value={customBody}
-                    onChange={setCustomBody}
-                    minHeight="180px"
-                    maxHeight="320px"
-                  />
-                </div>
+            {/* Editable Fields: Recipient Email, Subject, and Rich Text Body */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              {/* 1. Editable Recipient Email */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <Mail className="h-3.5 w-3.5 text-indigo-600" />
+                    To (Recipient Customer Email):
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">Must be valid email</span>
+                </label>
+                <input
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  required
+                  placeholder="Enter customer recipient email..."
+                  className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
               </div>
 
-              {/* Send Button */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1">
-                {emailSentSuccess ? (
-                  <span className="text-xs font-mono text-emerald-700 flex items-center gap-1 font-semibold">
-                    <CheckCircle2 className="h-4 w-4 shrink-0" /> Email Dispatched to {recipientEmail}!
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-slate-500 truncate">
-                    Dispatches to <strong className="text-slate-800">{recipientEmail || lead.email}</strong>.
-                  </span>
-                )}
+              {/* 2. Editable Email Subject with Booking ID Enforcement */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1">
+                    <Edit3 className="h-3.5 w-3.5 text-indigo-600" />
+                    Subject Line (Auto-includes Booking ID):
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleInsertBookingIdPrefix}
+                    className="text-[10px] font-mono text-cyan-800 hover:text-cyan-900 bg-cyan-50 border border-cyan-300 px-2 py-0.5 rounded transition font-medium"
+                  >
+                    + Ensure [Booking ID: {bookingRef}]
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={customSubject}
+                  onChange={(e) => setCustomSubject(e.target.value)}
+                  required
+                  placeholder="Enter email subject..."
+                  className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-indigo-900 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
 
+              {/* 3. Rich Text Email Body with Image Paste Support */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                  <span>Message Body (Rich Text Tools & Screenshot Paste Enabled):</span>
+                  <span className="text-[10px] font-mono text-indigo-600">Press Ctrl+V to paste flight screenshots</span>
+                </label>
+                <RichTextEmailEditor
+                  value={customBody}
+                  onChange={setCustomBody}
+                  minHeight="220px"
+                  maxHeight="380px"
+                />
+              </div>
+            </div>
+
+            {/* Send Button Action Bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+              {emailSentSuccess ? (
+                <span className="text-xs font-mono text-emerald-700 flex items-center gap-1.5 font-semibold bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" /> 
+                  Email Dispatched Successfully to {recipientEmail}!
+                </span>
+              ) : (
+                <span className="text-xs text-slate-500 truncate">
+                  Ready to dispatch to <strong className="text-slate-800">{recipientEmail || lead.email || "customer"}</strong>
+                </span>
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchWindow("overview")}
+                  className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                >
+                  Done & Return to Overview
+                </button>
                 <button
                   disabled={isSendingEmail}
                   onClick={handleSendEmail}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 sm:py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold text-xs shadow-md transition active:scale-95 shrink-0"
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs shadow-md transition active:scale-95 shrink-0 cursor-pointer"
                 >
                   <Send className="h-3.5 w-3.5" />
-                  <span>{isSendingEmail ? "Dispatching..." : "Send Travel Email"}</span>
+                  <span>{isSendingEmail ? "Dispatching Email..." : "Send Travel Email"}</span>
                 </button>
               </div>
             </div>
           </div>
+        )}
 
-          {/* ----------------------------------------------------------------------- */}
-          {/* RIGHT PANE (5 cols): Card Vault, Digital Footprint, Activity Trail      */}
-          {/* ----------------------------------------------------------------------- */}
-          <div
-            className={`lg:col-span-5 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto touch-scroll bg-slate-50/70 ${
-              mobileTab === "booking" ? "hidden lg:block" : "block"
-            }`}
-          >
-            {/* SECTION 5: PCI CARD SECURITY VAULT */}
-            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
+        {/* ========================================================================= */}
+        {/* WINDOW 3: DEDICATED ADD / EDIT BOOKING DETAILS WINDOW                      */}
+        {/* ========================================================================= */}
+        {activeWindow === "booking_details" && (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 touch-scroll bg-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  title="Back to Overview (Cancel)"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Plane className="h-4 w-4 text-indigo-600" />
+                    Edit Booking Details, Flights & Passengers
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Modify contact information, pricing quote & MCO, multi-leg flights, and passenger manifest.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveDetails}
+                  disabled={isSavingDetails}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition active:scale-95 disabled:opacity-50 cursor-pointer"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  <span>{isSavingDetails ? "Saving Details..." : "Save All Changes"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* SECTION 1: CUSTOMER CONTACT DETAILS */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <UserCheck className="h-4 w-4 text-cyan-600" />
+                Primary Customer & Account Information
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+                <div>
+                  <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Full Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Passenger / Account Name"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Email Address</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    placeholder="customer@email.com"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-indigo-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Phone Number</label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Company / Org</label>
+                  <input
+                    type="text"
+                    value={editCompany}
+                    onChange={(e) => setEditCompany(e.target.value)}
+                    placeholder="Individual or Corporate"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 2: FINANCIAL PRICING & MCO COMMISSION CALCULATOR */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-50/60 via-purple-50/40 to-emerald-50/60 border border-indigo-200/80 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <CreditCard className="h-4 w-4 text-cyan-600" />
-                  PCI Card Vault (Partially Masked)
+                <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                  <DollarSign className="h-4 w-4 text-emerald-600" />
+                  Fare Pricing & Agent MCO Commission Calculator
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-cyan-800 border border-slate-200 font-bold">
-                  {card?.cardType || "VISA"}
+                <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2 py-0.5 rounded-full">
+                  MCO = Sale Price − Ticket Price
                 </span>
               </div>
 
-              {/* 3-Minute Active Visibility Countdown Widget */}
-              {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
-                <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-300 text-xs flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span className="font-semibold text-emerald-900">
-                      {isSalesAgent ? "Card Access Active (3-Min Window)" : `Clearance Active for ${lead.assignedToName || "Agent"}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 font-mono font-bold text-xs px-2.5 py-1 rounded bg-white text-emerald-800 border border-emerald-300 shadow-2xs">
-                    <Clock className="h-3.5 w-3.5 text-emerald-600 animate-spin" />
-                    <span>{Math.floor(remainingCardSeconds / 60)}:{(remainingCardSeconds % 60).toString().padStart(2, "0")}</span>
-                    <span className="text-[10px] text-emerald-600 font-normal">remaining</span>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+                <div>
+                  <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
+                    Sale Price (Agent Quote)
+                  </label>
+                  <input
+                    type="number"
+                    value={editSalePrice || ""}
+                    onChange={(e) => handleSalePriceChange(Number(e.target.value))}
+                    placeholder="Enter Sale Price"
+                    className="w-full bg-white border border-indigo-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-indigo-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
+                  />
                 </div>
-              )}
 
-              {/* 3-Minute Access Expired Banner */}
-              {isCardExpired && (
-                <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs flex items-center justify-between text-rose-800 shadow-xs">
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <Clock className="h-4 w-4 text-rose-600 shrink-0" />
-                    <span>Card access expired (3-minute authorization elapsed)</span>
+                <div>
+                  <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">
+                    Ticket Price (Cost)
+                  </label>
+                  <input
+                    type="number"
+                    value={editTicketPrice || ""}
+                    onChange={(e) => handleTicketPriceChange(Number(e.target.value))}
+                    placeholder="Ingested Ticket Price"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-emerald-800 uppercase block font-semibold mb-0.5 flex items-center justify-between">
+                    <span>MCO (Agent Earned)</span>
+                    <span className="text-[9px] text-emerald-600 font-mono">Auto Calc</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={editMco}
+                    onChange={(e) => handleMcoChange(Number(e.target.value))}
+                    placeholder="Agent MCO"
+                    className="w-full bg-emerald-50/80 border border-emerald-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-extrabold text-emerald-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-slate-700 uppercase block font-semibold mb-0.5">Currency</label>
+                  <select
+                    value={editCurrency}
+                    onChange={(e) => setEditCurrency(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-xs"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="CAD">CAD ($)</option>
+                    <option value="AUD">AUD ($)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-indigo-900 bg-white/70 border border-indigo-100 rounded-lg px-2.5 py-1.5">
+                <span className="flex items-center gap-1 font-mono">
+                  <span>💡 <strong>MCO:</strong> {formatCurrency(editSalePrice, editCurrency)} (Sale) − {formatCurrency(editTicketPrice, editCurrency)} (Ticket) =</span>
+                  <strong className={`font-extrabold text-xs ${editMco >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                    {editMco >= 0 ? `+${formatCurrency(editMco, editCurrency)}` : `-${formatCurrency(Math.abs(editMco), editCurrency)}`}
+                  </strong>
+                </span>
+                <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100/70 px-1.5 py-0.5 rounded">
+                  Actual amount earned by agent
+                </span>
+              </div>
+            </div>
+
+            {/* SECTION 3: FLIGHT SEGMENTS & ROUTE */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Plane className="h-4 w-4 text-indigo-600" />
+                  Flight Itinerary & Segments ({editFlights.length} Legs)
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <select
+                    value={editTripType}
+                    onChange={(e) => setEditTripType(e.target.value as any)}
+                    className="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-white text-indigo-700 border border-indigo-300 cursor-pointer"
+                  >
+                    <option value="ROUND_TRIP">ROUND TRIP</option>
+                    <option value="ONE_WAY">ONE WAY</option>
+                    <option value="MULTI_CITY">MULTI CITY</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    value={editPnrCode}
+                    onChange={(e) => setEditPnrCode(e.target.value.toUpperCase())}
+                    placeholder="PNR CODE"
+                    className="bg-white border border-indigo-300 rounded px-2 py-1 text-xs font-mono font-bold text-indigo-900 uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500 max-w-[120px]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {editFlights.map((flt, fIdx) => (
+                  <div key={flt.id || fIdx} className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5 text-xs shadow-xs">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                      <span className="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] font-bold">
+                        Flight Leg #{fIdx + 1}
+                      </span>
+                      {editFlights.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFlight(fIdx)}
+                          className="text-slate-400 hover:text-red-600 p-1 rounded transition cursor-pointer"
+                          title="Remove this flight leg"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Origin (From)</label>
+                        <input
+                          type="text"
+                          value={flt.origin}
+                          onChange={(e) => handleUpdateFlight(fIdx, "origin", e.target.value)}
+                          placeholder="e.g. JFK (New York)"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Destination (To)</label>
+                        <input
+                          type="text"
+                          value={flt.destination}
+                          onChange={(e) => handleUpdateFlight(fIdx, "destination", e.target.value)}
+                          placeholder="e.g. LHR (London)"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Airline</label>
+                        <input
+                          type="text"
+                          value={flt.airline}
+                          onChange={(e) => handleUpdateFlight(fIdx, "airline", e.target.value)}
+                          placeholder="Airline Name"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Flight Number</label>
+                        <input
+                          type="text"
+                          value={flt.flightNumber}
+                          onChange={(e) => handleUpdateFlight(fIdx, "flightNumber", e.target.value)}
+                          placeholder="e.g. AA 100"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-indigo-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Date</label>
+                        <input
+                          type="date"
+                          value={flt.departureDate}
+                          onChange={(e) => handleUpdateFlight(fIdx, "departureDate", e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Departure Time</label>
+                        <input
+                          type="text"
+                          value={flt.departureTime || ""}
+                          onChange={(e) => handleUpdateFlight(fIdx, "departureTime", e.target.value)}
+                          placeholder="08:30 AM"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Arrival Time</label>
+                        <input
+                          type="text"
+                          value={flt.arrivalTime || ""}
+                          onChange={(e) => handleUpdateFlight(fIdx, "arrivalTime", e.target.value)}
+                          placeholder="08:45 PM"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-500 uppercase block font-semibold mb-0.5">Cabin Class</label>
+                        <select
+                          value={flt.cabinClass}
+                          onChange={(e) => handleUpdateFlight(fIdx, "cabinClass", e.target.value as any)}
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+                        >
+                          <option value="ECONOMY">Economy</option>
+                          <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                          <option value="BUSINESS">Business Class</option>
+                          <option value="FIRST">First Class</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 font-bold">
-                    Re-mask Enforced
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddFlight}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>+ Add Another Flight Leg / Connection</span>
+              </button>
+            </div>
+
+            {/* SECTION 4: PASSENGER MANIFEST */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-indigo-600" />
+                Passenger Manifest ({editPassengers.length} Travelers)
+              </span>
+
+              <div className="space-y-3">
+                {editPassengers.map((pax, idx) => (
+                  <div key={pax.id || idx} className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5 text-xs shadow-xs">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
+                          {idx + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={pax.fullName}
+                          onChange={(e) => handleUpdatePassenger(idx, "fullName", e.target.value)}
+                          placeholder="Passenger Full Name"
+                          className="bg-slate-50 border border-slate-300 rounded px-2 py-0.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      {editPassengers.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePassenger(idx)}
+                          className="text-slate-400 hover:text-red-600 p-1 rounded transition cursor-pointer"
+                          title="Remove passenger"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1 text-[11px]">
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Pax Type</label>
+                        <select
+                          value={pax.type}
+                          onChange={(e) => handleUpdatePassenger(idx, "type", e.target.value as any)}
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        >
+                          <option value="ADULT">Adult</option>
+                          <option value="CHILD">Child</option>
+                          <option value="INFANT">Infant</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport #</label>
+                        <input
+                          type="text"
+                          value={pax.passportNumber}
+                          onChange={(e) => handleUpdatePassenger(idx, "passportNumber", e.target.value)}
+                          placeholder="Passport Number"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Passport Expiry</label>
+                        <input
+                          type="date"
+                          value={pax.passportExpiry || ""}
+                          onChange={(e) => handleUpdatePassenger(idx, "passportExpiry", e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Nationality</label>
+                        <input
+                          type="text"
+                          value={pax.nationality || ""}
+                          onChange={(e) => handleUpdatePassenger(idx, "nationality", e.target.value)}
+                          placeholder="Nationality"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Assigned Seat</label>
+                        <input
+                          type="text"
+                          value={pax.seatPreference || ""}
+                          onChange={(e) => handleUpdatePassenger(idx, "seatPreference", e.target.value)}
+                          placeholder="e.g. 14B / Window"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">Meal Choice</label>
+                        <input
+                          type="text"
+                          value={pax.mealPreference || ""}
+                          onChange={(e) => handleUpdatePassenger(idx, "mealPreference", e.target.value)}
+                          placeholder="e.g. Vegan / Kosher"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-slate-500 uppercase font-mono block">E-Ticket Number</label>
+                        <input
+                          type="text"
+                          value={pax.eTicketNumber || ""}
+                          onChange={(e) => handleUpdatePassenger(idx, "eTicketNumber", e.target.value)}
+                          placeholder="e.g. ETKT-001-9428"
+                          className="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs font-mono text-cyan-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddPassenger}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>+ Add Another Passenger</span>
+              </button>
+            </div>
+
+            {/* Sticky Save Bar */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+              >
+                Cancel & Return
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveDetails}
+                disabled={isSavingDetails}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                <Save className="h-3.5 w-3.5" />
+                <span>{isSavingDetails ? "Saving All Details..." : "Save All Details"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* WINDOW 4: DEDICATED PCI CARD VAULT & CLEARANCE WINDOW                      */}
+        {/* ========================================================================= */}
+        {activeWindow === "card_vault" && (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 touch-scroll bg-white">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchWindow("overview")}
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  title="Back to Overview"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-cyan-600" />
+                    PCI Card Security Vault & Payment Clearance
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Complies with PCI-DSS card masking standards and logs all views into the digital audit trail.
+                  </p>
+                </div>
+              </div>
+
+              <span className="text-xs font-mono px-2.5 py-1 rounded bg-slate-100 text-cyan-800 border border-slate-300 font-bold">
+                {card?.cardType || "VISA"}
+              </span>
+            </div>
+
+            {/* 3-Minute Active Visibility Countdown Widget */}
+            {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-xs flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="font-semibold text-emerald-900">
+                    {isSalesAgent ? "Card Access Active (3-Minute Window)" : `Clearance Active for ${lead.assignedToName || "Agent"}`}
                   </span>
                 </div>
-              )}
-
-              {/* Masked Card Visual Card */}
-              <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-950 border border-slate-700 text-xs space-y-3 text-white shadow-md">
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
-                  <span>CARDHOLDER</span>
-                  <span>{card?.cardType}</span>
+                <div className="flex items-center gap-1.5 font-mono font-bold text-xs px-3 py-1 rounded-lg bg-white text-emerald-800 border border-emerald-300 shadow-2xs">
+                  <Clock className="h-3.5 w-3.5 text-emerald-600 animate-spin" />
+                  <span>{Math.floor(remainingCardSeconds / 60)}:{(remainingCardSeconds % 60).toString().padStart(2, "0")}</span>
+                  <span className="text-[10px] text-emerald-600 font-normal">remaining</span>
                 </div>
-                <div className="text-sm sm:text-base font-bold text-white tracking-wider truncate">
-                  {card?.cardholderName || lead.name.toUpperCase()}
-                </div>
+              </div>
+            )}
 
-                <div className="flex items-center justify-between pt-1">
-                  <div>
-                    <span className="text-[10px] font-mono text-slate-400 block">CARD NUMBER</span>
-                    <div className="text-sm sm:text-base font-mono font-bold tracking-widest text-indigo-300">
-                      {isCardUnmasked && isAuthorizedToUnmask ? (
-                        card?.cardNumber || `4532 8901 2948 ${last4}`
-                      ) : (
-                        `•••• •••• •••• ${last4}`
-                      )}
-                    </div>
+            {/* 3-Minute Access Expired Banner */}
+            {isCardExpired && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs flex items-center justify-between text-rose-800 shadow-xs">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <Clock className="h-4 w-4 text-rose-600 shrink-0" />
+                  <span>Card access expired (3-minute authorization elapsed)</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 font-bold">
+                  Re-mask Enforced
+                </span>
+              </div>
+            )}
+
+            {/* Masked Card Visual Card Graphic */}
+            <div className="max-w-md mx-auto p-5 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 border border-slate-700 text-xs space-y-4 text-white shadow-xl">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
+                <span className="tracking-widest">TRAVELOCASE VAULT</span>
+                <span className="font-bold text-cyan-300">{card?.cardType || "VISA"}</span>
+              </div>
+              
+              <div className="text-sm sm:text-base font-bold text-white tracking-wider truncate pt-2">
+                {card?.cardholderName || lead.name.toUpperCase()}
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <div>
+                  <span className="text-[10px] font-mono text-slate-400 block">CARD NUMBER</span>
+                  <div className="text-base sm:text-lg font-mono font-bold tracking-widest text-indigo-300">
+                    {isCardUnmasked && isAuthorizedToUnmask ? (
+                      card?.cardNumber || `4532 8901 2948 ${last4}`
+                    ) : (
+                      `•••• •••• •••• ${last4}`
+                    )}
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] font-mono text-slate-400 block">EXP / CVV</span>
-                    <div className="text-xs font-mono font-bold text-slate-200">
-                      {isCardUnmasked && isAuthorizedToUnmask ? (
-                        `${card?.expiryMonth || "08"}/${card?.expiryYear || "2028"} (CVV: ${card?.cvv || "891"})`
-                      ) : (
-                        `••/•• (CVV: •••)`
-                      )}
-                    </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-mono text-slate-400 block">EXP / CVV</span>
+                  <div className="text-xs font-mono font-bold text-slate-200">
+                    {isCardUnmasked && isAuthorizedToUnmask ? (
+                      `${card?.expiryMonth || "08"}/${card?.expiryYear || "2028"} (CVV: ${card?.cvv || "891"})`
+                    ) : (
+                      `••/•• (CVV: •••)`
+                    )}
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Unmask / Reveal Button */}
+            {/* Unmask / Reveal Button */}
+            <div className="max-w-md mx-auto space-y-2">
               {isAuthorizedToUnmask ? (
                 <div className="space-y-1.5">
                   <button
                     onClick={handleRevealCard}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow transition active:scale-95"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition active:scale-95 cursor-pointer"
                   >
                     {isCardUnmasked ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     <span>{isCardUnmasked ? "Hide Unmasked Card (Logged)" : "Reveal Unmasked Card (Logged to Footprint)"}</span>
@@ -1782,20 +2306,20 @@ export function LeadWorkspaceModal({
                   </p>
                 </div>
               ) : (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs space-y-2">
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-2">
                   <div className="flex items-center gap-1.5 text-amber-800 font-bold">
                     <Lock className="h-4 w-4" />
                     <span>Card Partially Hidden for Sales Agent</span>
                   </div>
                   <p className="text-[11px] text-slate-700 leading-relaxed">
-                    Card numbers and CVV are masked. Send authentication email to the customer, confirm on call, then request <strong>Sales Manager</strong> clearance for a 3-minute view window.
+                    Card numbers and CVV are masked. Send authentication email to customer, verify on call, then request <strong>Sales Manager</strong> clearance for a 3-minute view window.
                   </p>
                 </div>
               )}
 
               {/* Manager Grant Authority Panel */}
               {isManagerOrAdmin && (!card?.isAccessGrantedToAgent || remainingCardSeconds === 0) && (
-                <div className="p-3 rounded-lg bg-indigo-50 border border-indigo-200 space-y-2 text-xs">
+                <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-indigo-900 flex items-center gap-1.5">
                       <Unlock className="h-4 w-4 text-indigo-600" />
@@ -1804,110 +2328,147 @@ export function LeadWorkspaceModal({
                     <span className="text-[10px] font-mono text-indigo-700 font-semibold">Manager Role</span>
                   </div>
                   <p className="text-[11px] text-slate-700">
-                    Grant <strong>3-minute temporary card access</strong> to assigned agent (<strong>{lead.assignedToName || "Sales Agent"}</strong>). All views and expirations will be logged in fingerprinting.
+                    Grant <strong>3-minute temporary card access</strong> to assigned agent (<strong>{lead.assignedToName || "Sales Agent"}</strong>).
                   </p>
                   <button
                     disabled={isGrantingCard}
                     onClick={handleGrantCardClearance}
-                    className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow transition active:scale-95 flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <CheckCircle className="h-3.5 w-3.5" />
                     <span>{isGrantingCard ? "Authorizing 3-Min Access..." : (isCardExpired ? "Renew 3-Minute Clearance for Agent" : "Grant 3-Minute Card Access to Agent")}</span>
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        )}
 
-              {card?.isAccessGrantedToAgent && remainingCardSeconds !== null && remainingCardSeconds > 0 && (
-                <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-center text-xs font-mono text-emerald-800 font-semibold flex items-center justify-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>3-Minute Manager Clearance Granted by {card.grantedByManagerName || "Sales Director"}</span>
+        {/* ========================================================================= */}
+        {/* WINDOW 5: DEDICATED AUDIT TRAIL & TELEMETRY WINDOW (MANAGER/ADMIN)         */}
+        {/* ========================================================================= */}
+        {activeWindow === "audit" && canViewFootprint && (
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 touch-scroll bg-white">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchWindow("overview")}
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  title="Back to Overview"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-purple-600" />
+                    Digital Footprint & Audit Telemetry
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Permanent immutable audit records, IP telemetry clickstream, and actor query remarks.
+                  </p>
                 </div>
+              </div>
+
+              {lead.footprint?.ipAddress && (
+                <span className="text-xs font-mono px-2.5 py-1 rounded bg-purple-50 text-purple-800 border border-purple-200 font-bold">
+                  IP: {lead.footprint.ipAddress}
+                </span>
               )}
             </div>
 
-            {/* SECTION 6: DIGITAL FOOTPRINT (STRICTLY HIDDEN FOR SALES AGENTS) */}
-            {canViewFootprint && lead.footprint && (
-              <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
-                    <Globe className="h-4 w-4 text-purple-600" />
-                    Digital Footprint & Fingerprinting Telemetry (Manager/Admin Only)
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500">{lead.footprint.ipAddress}</span>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Digital Footprint Clickstream */}
+              {lead.footprint && (
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                      <Globe className="h-4 w-4 text-purple-600" />
+                      Fingerprints & Clickstream Telemetry
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-200">
+                      {lead.footprint.clickstream?.length || 0} Events
+                    </span>
+                  </div>
 
-                <div className="space-y-2 relative before:absolute before:inset-0 before:left-2.5 before:w-0.5 before:bg-slate-200">
-                  {lead.footprint.clickstream.map((evt, idx) => {
-                    const isCardEvent = evt.event.startsWith("CARD_");
-                    const isCardGrant = evt.event === "CARD_ACCESS_GRANTED_BY_MANAGER";
-                    const isCardView = evt.event === "CARD_DETAILS_VIEWED";
-                    const isCardExpiredEvt = evt.event === "CARD_ACCESS_EXPIRED";
-                    const isCardConceal = evt.event === "CARD_DETAILS_CONCEALED";
+                  <div className="space-y-2.5 relative before:absolute before:inset-0 before:left-2.5 before:w-0.5 before:bg-slate-200 max-h-96 overflow-y-auto pr-1">
+                    {[...lead.footprint.clickstream]
+                      .sort((a, b) => {
+                        const timeA = new Date(a.timestamp).getTime();
+                        const timeB = new Date(b.timestamp).getTime();
+                        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+                      })
+                      .map((evt, idx) => {
+                        const isManualRemark = !evt.isAutoLogged && (Boolean(evt.remark) || evt.event === "QUERY_REMARK_RECORDED");
+                        const actorDisplayName = evt.actorName || (evt.isAutoLogged ? "System Sentinel" : (lead.assignedToName || "Sales Agent"));
+                        const actorDisplayRole = evt.actorRole || (evt.actorName ? "User" : "System");
+                        const remarkText = evt.remark || `Action '${evt.event.replace(/_/g, " ")}' recorded by ${actorDisplayName} (${actorDisplayRole})`;
 
-                    let dotColor = "bg-indigo-500";
-                    let cardBg = "bg-slate-50 border-slate-200";
-                    let titleColor = "text-indigo-700";
+                        return (
+                          <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
+                            <div className={`absolute left-1 top-1.5 h-3 w-3 rounded-full border-2 border-white ${
+                              isManualRemark ? "bg-amber-500 ring-2 ring-amber-200" : "bg-indigo-500"
+                            }`} />
+                            <div className={`flex-1 p-2.5 rounded-lg border ${
+                              isManualRemark ? "bg-amber-50/80 border-amber-300 shadow-2xs" : "bg-white border-slate-200"
+                            }`}>
+                              <div className="flex flex-wrap items-center justify-between gap-1">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {isManualRemark ? (
+                                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 border border-amber-300">
+                                      Agent Remark
+                                    </span>
+                                  ) : (
+                                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-200 text-slate-700">
+                                      Auto
+                                    </span>
+                                  )}
+                                  <span className="font-mono font-bold text-[11px] text-slate-900">{evt.event}</span>
+                                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                    Actor: <strong>{actorDisplayName}</strong> ({actorDisplayRole})
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-slate-500">{formatDate(evt.timestamp)} &bull; {formatRelativeTime(evt.timestamp)}</span>
+                              </div>
 
-                    if (isCardGrant) {
-                      dotColor = "bg-emerald-500";
-                      cardBg = "bg-emerald-50/80 border-emerald-300";
-                      titleColor = "text-emerald-800";
-                    } else if (isCardView) {
-                      dotColor = "bg-amber-500 animate-pulse";
-                      cardBg = "bg-amber-50/80 border-amber-300";
-                      titleColor = "text-amber-800";
-                    } else if (isCardExpiredEvt) {
-                      dotColor = "bg-rose-500";
-                      cardBg = "bg-rose-50/80 border-rose-300";
-                      titleColor = "text-rose-800";
-                    } else if (isCardConceal) {
-                      dotColor = "bg-slate-500";
-                      cardBg = "bg-slate-100 border-slate-300";
-                      titleColor = "text-slate-800";
-                    }
+                              <div className={`mt-1.5 p-2 rounded text-[11px] leading-relaxed font-medium ${
+                                isManualRemark ? "bg-white border border-amber-300 text-amber-950 font-semibold shadow-2xs" : "bg-slate-50 text-slate-700 border border-slate-200"
+                              }`}>
+                                <div className="flex items-start gap-1.5">
+                                  {isManualRemark ? (
+                                    <MessageSquare className="h-3 w-3 text-amber-600 shrink-0 mt-0.5" />
+                                  ) : (
+                                    <Bot className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
+                                  )}
+                                  <span>{remarkText}</span>
+                                </div>
+                              </div>
 
-                    return (
-                      <div key={idx} className="relative flex items-start gap-3 pl-6 text-xs">
-                        <div
-                          className={`absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-white ${dotColor}`}
-                        />
-                        <div className={`flex-1 p-2 rounded border ${cardBg}`}>
-                          <div className="flex items-center justify-between">
-                            <span className={`font-mono font-bold text-[11px] ${titleColor}`}>
-                              {evt.event}
-                            </span>
-                            <span className="text-[10px] font-mono text-slate-500">{formatRelativeTime(evt.timestamp)}</span>
-                          </div>
-                          <div className="text-[10px] font-mono text-slate-700 mt-0.5">{evt.url}</div>
-                          {evt.metadata && (
-                            <div className="text-[10px] font-mono text-slate-600 mt-1 pt-1 border-t border-slate-200/80">
-                              {JSON.stringify(evt.metadata)}
+                              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 mt-1">
+                                <span>Actor ID: <strong className="text-slate-700">{evt.actorId || "N/A"}</strong></span>
+                                <span>{evt.url}</span>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* SECTION 7: AUDIT TRAIL (STRICTLY HIDDEN FOR SALES AGENTS) */}
-            {canViewAuditLogs && (
-              <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-indigo-600" />
-                    Lead Audit Trail ({activityLogs.length}) (Manager/Admin Only)
-                  </span>
-                </div>
+              {/* Activity Audit Trail */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Clock className="h-4 w-4 text-indigo-600" />
+                  Lead Audit Trail Logs ({activityLogs.length})
+                </span>
 
-                <div className="space-y-2 max-h-52 overflow-y-auto">
+                <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
                   {activityLogs.length === 0 ? (
-                    <div className="p-3 text-center text-xs text-slate-400 font-mono">No activity logged yet</div>
+                    <div className="p-6 text-center text-xs text-slate-400 font-mono">No activity logged yet</div>
                   ) : (
                     activityLogs.map((log) => (
-                      <div key={log.id} className="p-2.5 rounded bg-slate-50 border border-slate-200 text-xs">
+                      <div key={log.id} className="p-2.5 rounded-lg bg-white border border-slate-200 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-indigo-700 font-mono text-[11px]">{log.action}</span>
                           <span className="text-[10px] font-mono text-slate-500">{formatRelativeTime(log.createdAt)}</span>
@@ -1920,9 +2481,9 @@ export function LeadWorkspaceModal({
                   )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

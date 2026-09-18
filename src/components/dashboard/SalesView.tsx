@@ -31,6 +31,7 @@ import {
   ChevronDown,
   BarChart3,
   EyeOff,
+  Edit,
 } from "lucide-react";
 
 import { AgentMonthlyPerformanceCard } from "./AgentMonthlyPerformanceCard";
@@ -39,7 +40,7 @@ interface SalesViewProps {
   leads: Lead[];
   currentUser: User;
   users?: User[];
-  onSelectLead: (lead: Lead) => void;
+  onSelectLead: (lead: Lead, windowType?: "overview" | "email" | "booking_details" | "card_vault" | "audit") => void;
   selectedLeadId?: string;
   onOpenIngestModal: () => void;
   onTransitionLead: (leadId: string, targetStatus: LeadStatus) => Promise<void>;
@@ -716,15 +717,45 @@ export function SalesView({
                       </div>
                     </td>
                     <td className="py-2.5 px-3 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectLead(lead);
-                        }}
-                        className="px-2.5 py-1 text-[11px] font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition shadow-xs"
-                      >
-                        Open Workspace &rarr;
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectLead(lead, "email");
+                          }}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 rounded-md border border-purple-200 transition shadow-2xs flex items-center gap-1"
+                          title="Open Send Travel Email window"
+                        >
+                          <Mail className="h-3 w-3" />
+                          <span className="hidden xl:inline">Send Mail</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectLead(lead, "booking_details");
+                          }}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition shadow-2xs flex items-center gap-1"
+                          title="Open Add / Edit Booking Details window"
+                        >
+                          <Edit className="h-3 w-3" />
+                          <span className="hidden xl:inline">Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectLead(lead, "overview");
+                          }}
+                          className="px-2.5 py-1 text-[10px] sm:text-[11px] font-bold text-slate-800 hover:text-indigo-900 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-300 transition shadow-2xs flex items-center gap-1"
+                          title="Open Workspace Overview Hub"
+                        >
+                          <span>Workspace &rarr;</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
