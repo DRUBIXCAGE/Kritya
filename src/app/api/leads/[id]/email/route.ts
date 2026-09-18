@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { crmStore } from "@/lib/store";
 import { OFFICIAL_SENDER_EMAIL } from "@/lib/templates";
+import { sendEmailViaSMTP } from "@/lib/smtp";
 
 export async function POST(
   req: NextRequest,
@@ -25,6 +26,16 @@ export async function POST(
 
     if (!result.success) {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    }
+
+    // Dispatch via SMTP transport (live relay if configured, simulation logged otherwise)
+    const targetRecipient = recipientEmail || result.lead?.email;
+    if (targetRecipient) {
+      await sendEmailViaSMTP({
+        to: targetRecipient,
+        subject: subject || result.email?.subject || `Flight Itinerary Confirmation`,
+        html: emailBody || result.email?.body || "",
+      });
     }
 
     return NextResponse.json({ success: true, email: result.email, lead: result.lead });

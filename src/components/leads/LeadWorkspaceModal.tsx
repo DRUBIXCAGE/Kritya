@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Lead, User, LeadStatus, FlightSegment, Passenger } from "@/types";
 import { LeadStatusChip } from "@/components/common/StatusChip";
 import { formatCurrency, formatRelativeTime, formatDate } from "@/lib/utils";
@@ -113,9 +113,7 @@ export function LeadWorkspaceModal({
         remark,
         metadata,
       }),
-    })
-      .then(() => onRefresh())
-      .catch((err) => console.error("Auto-fingerprint error:", err));
+    }).catch((err) => console.error("Auto-fingerprint error:", err));
   };
 
   // Sync activeWindow when initialWindow or lead changes
@@ -274,9 +272,14 @@ export function LeadWorkspaceModal({
   // Passenger Manifest Fields
   const [editPassengers, setEditPassengers] = useState<Passenger[]>([]);
 
-  // Sync lead values to edit state whenever lead changes
+  // Track loaded lead ID to prevent background poll / event renders from overwriting user typing
+  const loadedLeadIdRef = useRef<string | null>(null);
+
+  // Sync lead values to edit state ONLY when opening or switching to a new lead
   useEffect(() => {
-    if (lead) {
+    if (lead && lead.id !== loadedLeadIdRef.current) {
+      loadedLeadIdRef.current = lead.id;
+
       setEditName(lead.name || "");
       setEditEmail(lead.email || "");
       setEditPhone(lead.phone || "");
@@ -284,8 +287,6 @@ export function LeadWorkspaceModal({
 
       const isConfirmed = ["SALE", "CHARGING", "SUCCESS"].includes(lead.status);
       const tp = lead.ticketPrice ?? 0;
-      // No default values: only ticket price was ingested from site.
-      // Agent enters sale price unless it's already set or is a confirmed sale.
       const sp = (typeof lead.salePrice === "number" && lead.salePrice > 0)
         ? lead.salePrice
         : (isConfirmed ? (lead.dealValue || tp) : 0);
@@ -322,20 +323,32 @@ export function LeadWorkspaceModal({
         ]);
       }
     }
-  }, [lead]);
+  }, [lead?.id]);
 
-  // Sync email template values whenever template or lead changes
+  // Track email sync state so user email edits are NOT wiped out on background refreshes
+  const emailSyncedLeadIdRef = useRef<string | null>(null);
+  const emailSyncedTemplateIdRef = useRef<string | null>(null);
+
+  // Sync email template values whenever template changes or a new lead is loaded
   useEffect(() => {
     if (lead) {
-      const template =
-        PREDEFINED_EMAIL_TEMPLATES.find((t) => t.id === selectedTemplateId) ||
-        PREDEFINED_EMAIL_TEMPLATES[0];
-      const preview = renderEmailTemplate(template, lead, currentUser.name);
-      setCustomSubject(preview.subject);
-      setCustomBody(preview.body);
-      setRecipientEmail(lead.email);
+      const isNewLead = lead.id !== emailSyncedLeadIdRef.current;
+      const isNewTemplate = selectedTemplateId !== emailSyncedTemplateIdRef.current;
+
+      if (isNewLead || isNewTemplate) {
+        emailSyncedLeadIdRef.current = lead.id;
+        emailSyncedTemplateIdRef.current = selectedTemplateId;
+
+        const template =
+          PREDEFINED_EMAIL_TEMPLATES.find((t) => t.id === selectedTemplateId) ||
+          PREDEFINED_EMAIL_TEMPLATES[0];
+        const preview = renderEmailTemplate(template, lead, currentUser.name);
+        setCustomSubject(preview.subject);
+        setCustomBody(preview.body);
+        setRecipientEmail(lead.email || "");
+      }
     }
-  }, [lead, selectedTemplateId, currentUser.name]);
+  }, [lead?.id, selectedTemplateId, currentUser.name]);
 
   // 3-Minute Card Visibility Countdown Timer State
   const [remainingCardSeconds, setRemainingCardSeconds] = useState<number | null>(null);
@@ -663,6 +676,9 @@ export function LeadWorkspaceModal({
       if (!data.success) {
         alert("Failed to save changes: " + data.error);
       } else {
+        if (data.lead) {
+          loadedLeadIdRef.current = data.lead.id;
+        }
         setSaveSuccessMessage("✓ All booking details & flights saved successfully!");
         setTimeout(() => setSaveSuccessMessage(null), 4000);
         await onRefresh();

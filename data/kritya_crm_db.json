@@ -384,7 +384,7 @@
       "email": "arthur.pendelton@oxford-research.ac.uk",
       "phone": "+44 1865 270000",
       "company": "University of Oxford",
-      "status": "NEW",
+      "status": "AUTHENTICATION_SENT",
       "ticketPrice": 4200,
       "dealValue": 0,
       "currency": "USD",
@@ -418,10 +418,10 @@
         "cvv": "712",
         "cardType": "VISA"
       },
-      "authEmailSent": false,
+      "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-18T07:38:48.047Z",
-      "updatedAt": "2026-09-18T07:38:48.127Z",
+      "updatedAt": "2026-09-18T10:15:24.309Z",
       "footprint": {
         "id": "fp_lead_1e2blki",
         "leadId": "lead_1e2blki",
@@ -434,6 +434,142 @@
         "utmMedium": "direct_booking",
         "utmCampaign": "travelocase_flights",
         "clickstream": [
+          {
+            "timestamp": "2026-09-18T10:15:24.309Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:14:50.090Z",
+            "event": "TRAVEL_EMAIL_DISPATCHED",
+            "url": "/leads/lead_1e2blki/email",
+            "remark": "[AUTO] Dispatched travel email 'Flight Authorization & Card Verification Request' to drubixcage@gmail.com by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "from": "ticketing@travelocase.com",
+              "recipient": "drubixcage@gmail.com",
+              "subject": "[Booking ID: #1013] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Pendelton",
+              "templateId": "flight_auth_01"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:14:27.946Z",
+            "event": "WORKSPACE_WINDOW_EMAIL",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:14:17.286Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:13:05.162Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:09:55.492Z",
+            "event": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Add / Edit Booking & Flights window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:09:53.763Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:09:22.460Z",
+            "event": "WORKSPACE_WINDOW_EMAIL",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T10:09:22.448Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-18T07:38:48.127Z",
             "event": "LEAD_ASSIGNED",
@@ -2322,6 +2458,145 @@
   "activityLogs": [
     {
       "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_aaorc7f",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:15:24.310Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "TRAVEL_EMAIL_DISPATCHED",
+      "metadata": {
+        "remark": "[AUTO] Dispatched travel email 'Flight Authorization & Card Verification Request' to drubixcage@gmail.com by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "from": "ticketing@travelocase.com",
+        "templateTitle": "Flight Authorization & Card Verification Request",
+        "recipient": "drubixcage@gmail.com",
+        "subject": "[Booking ID: #1013] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Pendelton",
+        "isCustomized": true
+      },
+      "id": "act_bh2f0ro",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:14:50.091Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_EMAIL",
+      "metadata": {
+        "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_wn2a35n",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:14:27.946Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_jsfjbbi",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:14:17.287Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_vv8t2g1",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:13:05.163Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+      "metadata": {
+        "remark": "Opened Add / Edit Booking & Flights window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_xwzheo5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:09:55.492Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_5022eik",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:09:53.763Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_EMAIL",
+      "metadata": {
+        "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_c1er0g4",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:09:22.460Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_its27in",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T10:09:22.448Z"
+    },
+    {
+      "entityType": "LEAD",
       "entityId": "lead_dar1t6t",
       "actorId": "usr_sales_agent1",
       "actorName": "Sarah Chen (Senior Flight Specialist)",
@@ -3702,6 +3977,23 @@
     {
       "actorId": "usr_sales_mgr",
       "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "TRAVEL_CONFIRMATION_EMAIL_DISPATCHED",
+      "resource": "Lead:lead_1e2blki",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "from": "ticketing@travelocase.com",
+        "templateId": "flight_auth_01",
+        "recipient": "drubixcage@gmail.com",
+        "subject": "[Booking ID: #1013] Urgent: Card Authorization & Flight Itinerary Confirmation for Sir Arthur Pendelton"
+      },
+      "id": "aud_18slf9p",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T10:14:50.091Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
       "action": "LEAD_ASSIGNED",
       "resource": "Lead:lead_1e2blki",
       "ipAddress": "127.0.0.1",
@@ -5043,5 +5335,5 @@
   ],
   "roundRobinIndex": 6,
   "lastBookingNumber": 1013,
-  "lastPersistedAt": "2026-09-18T07:55:17.562Z"
+  "lastPersistedAt": "2026-09-18T10:15:26.566Z"
 }
