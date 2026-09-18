@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!targetAgentId) {
+    if (targetAgentId === undefined) {
       return NextResponse.json(
         { success: false, error: "targetAgentId is required." },
         { status: 400 }

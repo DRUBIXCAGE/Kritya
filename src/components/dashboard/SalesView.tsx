@@ -144,8 +144,13 @@ export function SalesView({
         return false;
       }
 
-      // 1. Status Filter
-      const matchesStatus = filterStatus === "ALL" || lead.status === filterStatus;
+      // 1. Status Filter (Supports UNASSIGNED queue from travelocase.com)
+      let matchesStatus = true;
+      if (filterStatus === "UNASSIGNED") {
+        matchesStatus = !lead.assignedToId || lead.assignedToId === "UNASSIGNED";
+      } else if (filterStatus !== "ALL") {
+        matchesStatus = lead.status === filterStatus;
+      }
 
       // 2. Search Query
       const q = searchQuery.toLowerCase().trim();
@@ -199,11 +204,12 @@ export function SalesView({
 
       return matchesStatus && matchesSearch && matchesDate;
     });
-  }, [leads, filterStatus, searchQuery, datePreset, dateField, customStartDate, customEndDate]);
+  }, [leads, filterStatus, searchQuery, datePreset, dateField, customStartDate, customEndDate, currentUser]);
 
   const totalPipeline = leads.reduce((sum, l) => sum + l.dealValue, 0);
   const salesWonCount = leads.filter((l) => l.status === "SALE" || l.status === "SUCCESS").length;
   const authPendingCount = leads.filter((l) => l.status === "AUTHENTICATION_SENT" || l.status === "FOLLOW_UP").length;
+  const unassignedCount = leads.filter((l) => !l.assignedToId || l.assignedToId === "UNASSIGNED").length;
 
   const handleResetFilters = () => {
     setFilterStatus("ALL");
@@ -349,17 +355,31 @@ export function SalesView({
 
         {/* Stage Filter Buttons */}
         <div className="flex items-center gap-1 text-xs overflow-x-auto no-scrollbar touch-scroll max-w-full pb-1 md:pb-0">
-          {["ALL", "NEW", "FOLLOW_UP", "AUTHENTICATION_SENT", "QUALIFIED", "SALE", "CHARGING", "CANCELLED"].map((st) => (
+          {[
+            { id: "ALL", label: "ALL" },
+            ...(canAssignLeads ? [{ id: "UNASSIGNED", label: `UNASSIGNED (${unassignedCount})` }] : []),
+            { id: "NEW", label: "NEW" },
+            { id: "FOLLOW_UP", label: "FOLLOW_UP" },
+            { id: "AUTHENTICATION_SENT", label: "AUTHENTICATION_SENT" },
+            { id: "QUALIFIED", label: "QUALIFIED" },
+            { id: "SALE", label: "SALE" },
+            { id: "CHARGING", label: "CHARGING" },
+            { id: "CANCELLED", label: "CANCELLED" },
+          ].map((st) => (
             <button
-              key={st}
-              onClick={() => setFilterStatus(st)}
+              key={st.id}
+              onClick={() => setFilterStatus(st.id)}
               className={`px-2.5 py-1 rounded text-xs font-medium transition whitespace-nowrap shrink-0 ${
-                filterStatus === st
-                  ? "bg-indigo-600 text-white shadow-xs font-bold"
+                filterStatus === st.id
+                  ? st.id === "UNASSIGNED"
+                    ? "bg-amber-600 text-white shadow-xs font-bold ring-2 ring-amber-300"
+                    : "bg-indigo-600 text-white shadow-xs font-bold"
+                  : st.id === "UNASSIGNED" && unassignedCount > 0
+                  ? "bg-amber-100 text-amber-900 border border-amber-300 font-bold hover:bg-amber-200 animate-pulse"
                   : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200"
               }`}
             >
-              {st}
+              {st.label}
             </button>
           ))}
         </div>
@@ -510,6 +530,35 @@ export function SalesView({
               Deselect All
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Unassigned Ingestion Alert for Sales Managers & Admins */}
+      {canAssignLeads && unassignedCount > 0 && filterStatus !== "UNASSIGNED" && (
+        <div className="mx-3 my-2.5 p-3 rounded-xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-amber-200/80 text-amber-900 shrink-0">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-amber-950 flex flex-wrap items-center gap-1.5">
+                <span>⚡ {unassignedCount} Unassigned Booking{unassignedCount > 1 ? "s" : ""} Ingested from travelocase.com</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 border border-amber-300 font-bold">
+                  Sales Manager Action Required
+                </span>
+              </h4>
+              <p className="text-[11px] text-amber-800">
+                Bookings submitted on <strong>travelocase.com</strong> arrive unassigned. Assign to agents to initiate follow-ups.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFilterStatus("UNASSIGNED")}
+            className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow transition active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+          >
+            Review & Assign ({unassignedCount})
+          </button>
         </div>
       )}
 
@@ -682,14 +731,14 @@ export function SalesView({
                             value={lead.assignedToId || "UNASSIGNED"}
                             disabled={assigningLeadId === lead.id}
                             onChange={(e) => handleSingleAssignLead(lead.id, e.target.value)}
-                            className={`text-xs rounded-md px-2 py-1 font-medium transition cursor-pointer border focus:outline-none focus:ring-1 focus:ring-indigo-500 max-w-[160px] ${
+                            className={`text-xs rounded-md px-2 py-1 font-medium transition cursor-pointer border focus:outline-none focus:ring-1 focus:ring-indigo-500 max-w-[170px] ${
                               lead.assignedToId
-                                ? "bg-slate-50 border-slate-300 text-indigo-700 hover:border-indigo-500"
-                                : "bg-amber-50 border-amber-300 text-amber-800 font-semibold hover:border-amber-500"
+                                ? "bg-slate-50 border-slate-300 text-indigo-700 hover:border-indigo-500 font-semibold"
+                                : "bg-amber-100/90 border-amber-400 text-amber-950 font-bold hover:border-amber-600 shadow-xs"
                             }`}
                           >
-                            <option value="UNASSIGNED" className="bg-white text-slate-500">
-                              Unassigned Pool
+                            <option value="UNASSIGNED" className="bg-amber-50 text-amber-900 font-bold">
+                              ⚠️ Unassigned (travelocase.com)
                             </option>
                             {salesAgents.map((ag) => (
                               <option key={ag.id} value={ag.id} className="bg-white text-slate-800">
@@ -703,7 +752,11 @@ export function SalesView({
                         </div>
                       ) : (
                         <span className="text-slate-800 font-medium">
-                          {lead.assignedToName || <span className="text-slate-400 italic">Unassigned Pool</span>}
+                          {lead.assignedToName || (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded shadow-2xs">
+                              ⚠️ Unassigned Pool
+                            </span>
+                          )}
                         </span>
                       )}
                     </td>

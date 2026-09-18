@@ -186,13 +186,16 @@ export function LeadIngestionModal({ isOpen, onClose, onSuccess }: LeadIngestion
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-slate-900 flex flex-wrap items-center gap-2">
-                Flight Booking & Card Lead Ingestion
+                travelocase.com Booking Ingestion & Webhook Simulation
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                  Unassigned by Default
+                </span>
                 <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
                   PCI Masked
                 </span>
               </h2>
               <p className="text-[11px] sm:text-xs text-slate-600">
-                Captures passenger manifests, flight routing, and payment details with automatic agent card masking.
+                Connected to booking portal <strong>travelocase.com</strong>. Customer bookings are automatically ingested into the CRM unassigned queue for Sales Manager assignment.
               </p>
             </div>
           </div>

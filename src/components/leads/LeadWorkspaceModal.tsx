@@ -805,8 +805,8 @@ export function LeadWorkspaceModal({
                   </>
                 )}
                 <span className="hidden md:inline text-slate-300">&bull;</span>
-                <span className="text-indigo-700 font-medium hidden md:inline">
-                  Assigned: {lead.assignedToName || "Pool"}
+                <span className={`font-medium hidden md:inline ${lead.assignedToName ? "text-indigo-700" : "text-amber-800 font-bold"}`}>
+                  Assigned: {lead.assignedToName || "⚠️ Unassigned (travelocase.com)"}
                 </span>
               </div>
             </div>
@@ -824,19 +824,27 @@ export function LeadWorkspaceModal({
           {/* Quick Actions & Status Changer */}
           <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-200">
             {canAssignLeads && (
-              <div className="flex items-center gap-1.5 bg-indigo-50/70 border border-indigo-200 rounded-lg px-2.5 py-1.5 text-xs">
-                <span className="text-[10px] sm:text-[11px] font-semibold text-indigo-700 uppercase font-mono flex items-center gap-1">
-                  <UserCheck className="h-3 w-3 text-indigo-600" />
+              <div className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs border ${
+                lead.assignedToId
+                  ? "bg-indigo-50/70 border-indigo-200"
+                  : "bg-amber-100/90 border-amber-400 shadow-xs"
+              }`}>
+                <span className={`text-[10px] sm:text-[11px] font-bold uppercase font-mono flex items-center gap-1 ${
+                  lead.assignedToId ? "text-indigo-700" : "text-amber-950"
+                }`}>
+                  <UserCheck className="h-3 w-3" />
                   Agent:
                 </span>
                 <select
                   value={lead.assignedToId || "UNASSIGNED"}
                   disabled={isAssigning}
                   onChange={(e) => handleAssignLead(e.target.value)}
-                  className="bg-transparent text-xs text-indigo-900 font-semibold focus:outline-none cursor-pointer max-w-[150px] sm:max-w-[170px]"
+                  className={`bg-transparent text-xs font-bold focus:outline-none cursor-pointer max-w-[150px] sm:max-w-[180px] ${
+                    lead.assignedToId ? "text-indigo-900" : "text-amber-950"
+                  }`}
                 >
-                  <option value="UNASSIGNED" className="bg-white text-slate-500">
-                    Unassigned Pool
+                  <option value="UNASSIGNED" className="bg-amber-50 text-amber-900 font-bold">
+                    ⚠️ Unassigned (travelocase.com)
                   </option>
                   {salesAgents.map((ag) => (
                     <option key={ag.id} value={ag.id} className="bg-white text-slate-800">
@@ -845,7 +853,7 @@ export function LeadWorkspaceModal({
                   ))}
                 </select>
                 {isAssigning && (
-                  <span className="text-[10px] text-indigo-600 animate-pulse font-mono">...</span>
+                  <span className="text-[10px] text-indigo-600 animate-pulse font-mono font-bold">...</span>
                 )}
               </div>
             )}
@@ -1360,7 +1368,9 @@ export function LeadWorkspaceModal({
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500 font-mono text-[10px] uppercase">Assigned Agent</span>
-                    <span className="font-semibold text-indigo-700">{lead.assignedToName || "Unassigned Pool"}</span>
+                    <span className={`font-semibold ${lead.assignedToName ? "text-indigo-700 font-bold" : "text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded text-[11px] font-bold"}`}>
+                      {lead.assignedToName || "⚠️ Unassigned (travelocase.com)"}
+                    </span>
                   </div>
                 </div>
 

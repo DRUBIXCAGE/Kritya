@@ -7,7 +7,8 @@ export type EventType =
   | "CUSTOMER_CREATED"
   | "TICKET_CREATED"
   | "TICKET_UPDATED"
-  | "AUDIT_LOGGED";
+  | "AUDIT_LOGGED"
+  | "CHAT_MESSAGE_SENT";
 
 export interface SystemEvent {
   id: string;

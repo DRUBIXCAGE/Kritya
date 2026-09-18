@@ -374,6 +374,293 @@
   ],
   "leads": [
     {
+      "id": "lead_1e2blki",
+      "bookingNumber": 1013,
+      "bookingId": "#1013",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+      "name": "Sir Arthur Pendelton",
+      "email": "arthur.pendelton@oxford-research.ac.uk",
+      "phone": "+44 1865 270000",
+      "company": "University of Oxford",
+      "status": "NEW",
+      "ticketPrice": 4200,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1013 submitted on travelocase.com (Unassigned - Pending Sales Manager Assignment). Ingested Ticket Price: $4200.",
+      "bookingDetails": {
+        "origin": "LHR (London Heathrow)",
+        "destination": "DEL (New Delhi Indira Gandhi)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-10",
+        "returnDate": "2026-11-25",
+        "airline": "Air India",
+        "flightNumber": "AI-162",
+        "cabinClass": "BUSINESS",
+        "passengers": [
+          {
+            "id": "pax_test_1",
+            "fullName": "Sir Arthur Pendelton",
+            "passportNumber": "GB99201923",
+            "dob": "1978-04-12",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1013",
+        "ticketPrice": 4200
+      },
+      "cardDetails": {
+        "cardholderName": "ARTHUR PENDELTON",
+        "cardNumber": "4532982187349912",
+        "expiryMonth": "11",
+        "expiryYear": "2028",
+        "cvv": "712",
+        "cardType": "VISA"
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-18T07:38:48.047Z",
+      "updatedAt": "2026-09-18T07:38:48.127Z",
+      "footprint": {
+        "id": "fp_lead_1e2blki",
+        "leadId": "lead_1e2blki",
+        "ipAddress": "198.51.100.128",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://www.travelocase.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "travelocase_web",
+        "utmMedium": "direct_booking",
+        "utmCampaign": "travelocase_flights",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-18T07:38:48.127Z",
+            "event": "LEAD_ASSIGNED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "[AUTO] Booking assigned to Sarah Chen (Senior Flight Specialist) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "targetAgentId": "usr_sales_agent1",
+              "targetAgentName": "Sarah Chen (Senior Flight Specialist)",
+              "previousAgent": "Unassigned (travelocase.com Pool)"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:38:48.047Z",
+            "event": "ONLINE_BOOKING_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/confirmation",
+            "dwellTimeSeconds": 0,
+            "remark": "[AUTO] Flight booking #1013 submitted online on travelocase.com (Unassigned - Pending Sales Manager Assignment). Raw Ingested Ticket Price: $4200",
+            "actorId": "system_travelocase_webhook",
+            "actorName": "travelocase.com Webhook",
+            "actorRole": "SYSTEM",
+            "isAutoLogged": true,
+            "metadata": {
+              "portal": "travelocase.com",
+              "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+              "ticketPrice": 4200,
+              "pnr": "TC-1013",
+              "assignmentStatus": "Unassigned Pool"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:38:03.047Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/payment",
+            "dwellTimeSeconds": 30,
+            "remark": "[AUTO] Customer entered payment authorization on travelocase.com secure checkout",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-09-18T07:36:48.047Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "https://www.travelocase.com/checkout/passengers",
+            "dwellTimeSeconds": 75,
+            "remark": "[AUTO] Passenger manifest completed for Sir Arthur Pendelton",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-09-18T07:33:48.047Z",
+            "event": "ROUTE_SEARCH",
+            "url": "https://www.travelocase.com/flights/LHR%20(London%20Heathrow)-DEL%20(New%20Delhi%20Indira%20Gandhi)",
+            "dwellTimeSeconds": 45,
+            "remark": "[AUTO] Customer searched flight routes on travelocase.com",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          }
+        ],
+        "createdAt": "2026-09-18T07:38:48.047Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_1e2blki",
+        "leadId": "lead_1e2blki",
+        "email": "arthur.pendelton@oxford-research.ac.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "oxford-research.ac.uk",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.oxford-research.ac.uk ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@oxford-research.ac.uk",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-18T07:38:48.047Z"
+        },
+        "verifiedAt": "2026-09-18T07:38:48.047Z"
+      }
+    },
+    {
+      "id": "lead_pwc9byn",
+      "bookingNumber": 1012,
+      "bookingId": "#1012",
+      "tenantId": "tenant_travelocase",
+      "name": "Sir Arthur Pendelton",
+      "email": "arthur.pendelton@oxford-research.ac.uk",
+      "phone": "+44 1865 270000",
+      "company": "University of Oxford",
+      "status": "NEW",
+      "ticketPrice": 4200,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "Flight inquiry booking #1012 submitted on travelocase.com (Unassigned - Pending Sales Manager Assignment). Ingested Ticket Price: $4200.",
+      "bookingDetails": {
+        "origin": "LHR (London Heathrow)",
+        "destination": "DEL (New Delhi Indira Gandhi)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-10",
+        "returnDate": "2026-11-25",
+        "airline": "Air India",
+        "flightNumber": "AI-162",
+        "cabinClass": "BUSINESS",
+        "passengers": [
+          {
+            "id": "pax_test_1",
+            "fullName": "Sir Arthur Pendelton",
+            "passportNumber": "GB99201923",
+            "dob": "1978-04-12",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1012",
+        "ticketPrice": 4200
+      },
+      "cardDetails": {
+        "cardholderName": "ARTHUR PENDELTON",
+        "cardNumber": "4532982187349912",
+        "expiryMonth": "11",
+        "expiryYear": "2028",
+        "cvv": "712",
+        "cardType": "VISA"
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-09-18T07:38:26.171Z",
+      "updatedAt": "2026-09-18T07:38:26.171Z",
+      "footprint": {
+        "id": "fp_lead_pwc9byn",
+        "leadId": "lead_pwc9byn",
+        "ipAddress": "198.51.100.47",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://www.travelocase.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "travelocase_web",
+        "utmMedium": "direct_booking",
+        "utmCampaign": "travelocase_flights",
+        "clickstream": [
+          {
+            "timestamp": "2026-09-18T07:38:26.171Z",
+            "event": "ONLINE_BOOKING_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/confirmation",
+            "dwellTimeSeconds": 0,
+            "remark": "[AUTO] Flight booking #1012 submitted online on travelocase.com (Unassigned - Pending Sales Manager Assignment). Raw Ingested Ticket Price: $4200",
+            "actorId": "system_travelocase_webhook",
+            "actorName": "travelocase.com Webhook",
+            "actorRole": "SYSTEM",
+            "isAutoLogged": true,
+            "metadata": {
+              "portal": "travelocase.com",
+              "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+              "ticketPrice": 4200,
+              "pnr": "TC-1012",
+              "assignmentStatus": "Unassigned Pool"
+            }
+          },
+          {
+            "timestamp": "2026-09-18T07:37:41.171Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/payment",
+            "dwellTimeSeconds": 30,
+            "remark": "[AUTO] Customer entered payment authorization on travelocase.com secure checkout",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-09-18T07:36:26.171Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "https://www.travelocase.com/checkout/passengers",
+            "dwellTimeSeconds": 75,
+            "remark": "[AUTO] Passenger manifest completed for Sir Arthur Pendelton",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-09-18T07:33:26.171Z",
+            "event": "ROUTE_SEARCH",
+            "url": "https://www.travelocase.com/flights/LHR%20(London%20Heathrow)-DEL%20(New%20Delhi%20Indira%20Gandhi)",
+            "dwellTimeSeconds": 45,
+            "remark": "[AUTO] Customer searched flight routes on travelocase.com",
+            "actorId": "customer_web_session",
+            "actorName": "Sir Arthur Pendelton",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          }
+        ],
+        "createdAt": "2026-09-18T07:38:26.171Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_pwc9byn",
+        "leadId": "lead_pwc9byn",
+        "email": "arthur.pendelton@oxford-research.ac.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "oxford-research.ac.uk",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.oxford-research.ac.uk ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@oxford-research.ac.uk",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-09-18T07:38:26.171Z"
+        },
+        "verifiedAt": "2026-09-18T07:38:26.171Z"
+      }
+    },
+    {
       "id": "lead_jk6xjtc",
       "bookingNumber": 1011,
       "bookingId": "#1011",
@@ -1194,7 +1481,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:00:29.315Z",
-      "updatedAt": "2026-09-18T07:12:37.978Z",
+      "updatedAt": "2026-09-18T07:39:38.419Z",
       "footprint": {
         "id": "fp_lead_dar1t6t",
         "leadId": "lead_dar1t6t",
@@ -1207,6 +1494,21 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-18T07:39:38.419Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_dar1t6t",
+            "remark": "Closed booking workspace by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1006,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-18T07:12:37.978Z",
             "event": "WORKSPACE_WINDOW_OVERVIEW",
@@ -2018,6 +2320,83 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_dar1t6t",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)",
+        "isAutoLogged": true
+      },
+      "id": "act_4p4wp06",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:39:38.419Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ASSIGNED",
+      "fromState": "Unassigned (travelocase.com Pool)",
+      "toState": "Sarah Chen (Senior Flight Specialist)",
+      "metadata": {
+        "remark": "[AUTO] Booking assigned to Sarah Chen (Senior Flight Specialist) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "assignedToUsername": "sarah.chen",
+        "assignedById": "usr_sales_mgr",
+        "assignedByName": "Marcus Brooks (Sales Director & Manager)",
+        "assignedByRole": "SALES_MANAGER"
+      },
+      "id": "act_dwod08f",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:38:48.127Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "system_travelocase_webhook",
+      "actorName": "travelocase.com Webhook Ingestion",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED_FROM_TRAVELOCASE",
+      "toState": "NEW",
+      "metadata": {
+        "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+        "airline": "Air India",
+        "authenticityScore": 100,
+        "assignedTo": "Unassigned (Sales Manager Queue)",
+        "ticketPrice": 4200,
+        "portal": "travelocase.com"
+      },
+      "id": "act_p91r08p",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:38:48.047Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_pwc9byn",
+      "actorId": "system_travelocase_webhook",
+      "actorName": "travelocase.com Webhook Ingestion",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED_FROM_TRAVELOCASE",
+      "toState": "NEW",
+      "metadata": {
+        "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+        "airline": "Air India",
+        "authenticityScore": 100,
+        "assignedTo": "Unassigned (Sales Manager Queue)",
+        "ticketPrice": 4200,
+        "portal": "travelocase.com"
+      },
+      "id": "act_hzekq5q",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-18T07:38:26.171Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_dar1t6t",
@@ -3323,6 +3702,57 @@
     {
       "actorId": "usr_sales_mgr",
       "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "LEAD_ASSIGNED",
+      "resource": "Lead:lead_1e2blki",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "leadId": "lead_1e2blki",
+        "bookingNumber": 1013,
+        "assignedToId": "usr_sales_agent1",
+        "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+        "previousAgent": "Unassigned (travelocase.com Pool)",
+        "assignedBy": "Marcus Brooks (Sales Director & Manager)"
+      },
+      "id": "aud_um84lqj",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T07:38:48.127Z"
+    },
+    {
+      "actorEmail": "webhook@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_1e2blki",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "arthur.pendelton@oxford-research.ac.uk",
+        "source": "travelocase.com",
+        "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+        "assignedTo": "Unassigned Pool"
+      },
+      "id": "aud_cdtyy3w",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T07:38:48.047Z"
+    },
+    {
+      "actorEmail": "webhook@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_pwc9byn",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "arthur.pendelton@oxford-research.ac.uk",
+        "source": "travelocase.com",
+        "route": "LHR (London Heathrow) -> DEL (New Delhi Indira Gandhi)",
+        "assignedTo": "Unassigned Pool"
+      },
+      "id": "aud_1246d9o",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-18T07:38:26.171Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
       "action": "CARD_DETAILS_VIEWED",
       "resource": "Lead:lead_jk6xjtc:CardVault",
       "ipAddress": "::ffff:127.0.0.1",
@@ -4386,7 +4816,232 @@
       "timestamp": "2026-09-10T16:20:00Z"
     }
   ],
+  "chatMessages": [
+    {
+      "id": "msg_init_1",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_superadmin",
+      "senderName": "Alex Thorne (Super Admin)",
+      "senderRole": "SUPER_ADMIN",
+      "channelId": "general",
+      "messageType": "SYSTEM_ANNOUNCEMENT",
+      "content": "📢 Welcome team to the updated Q3 travelocase routing protocols. Sales Managers, please monitor the new unassigned online bookings queue.",
+      "readBy": [
+        "usr_superadmin",
+        "usr_sales_agent1"
+      ],
+      "createdAt": "2026-09-18T03:42:37.904Z"
+    },
+    {
+      "id": "msg_init_2",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_mgr",
+      "senderName": "Marcus Brooks (Sales Manager)",
+      "senderRole": "SALES_MANAGER",
+      "channelId": "sales-operations",
+      "messageType": "HIERARCHY_UPDATE",
+      "content": "Team: Today all unassigned bookings from travelocase.com will be distributed by 10:00 AM. Ensure passenger passport numbers and net fare quotes are verified before email confirmation.",
+      "readBy": [
+        "usr_sales_mgr",
+        "usr_sales_agent1"
+      ],
+      "createdAt": "2026-09-18T05:42:37.904Z"
+    },
+    {
+      "id": "msg_init_3",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Sales Agent)",
+      "senderRole": "SALES_AGENT",
+      "recipientId": "usr_sales_mgr",
+      "recipientName": "Marcus Brooks (Sales Manager)",
+      "messageType": "APPROVAL_REQUEST",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "leadPnr": "NX-78429",
+      "leadDealValue": 12500,
+      "content": "Hi Marcus, for Booking #1001 (Lord Harrison Sterling), the customer is requesting a $500 discount on the business class route. Can you approve this MCO adjustment?",
+      "readBy": [
+        "usr_sales_agent1",
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:12:37.904Z"
+    },
+    {
+      "id": "msg_init_4",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_mgr",
+      "senderName": "Marcus Brooks (Sales Manager)",
+      "senderRole": "SALES_MANAGER",
+      "recipientId": "usr_sales_agent1",
+      "recipientName": "Sarah Chen (Sales Agent)",
+      "messageType": "APPROVAL_RESPONSE",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "content": "✅ Approved Sarah! Go ahead and update the quote on Booking #1001, and proceed with dispatching the travel confirmation email.",
+      "readBy": [
+        "usr_sales_mgr",
+        "usr_sales_agent1"
+      ],
+      "createdAt": "2026-09-18T07:27:37.904Z"
+    },
+    {
+      "id": "msg_73nqx37mu6nmvfh",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Senior Flight Specialist)",
+      "senderRole": "SALES_AGENT",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "channelId": "sales-operations",
+      "messageType": "TEXT",
+      "content": "Reviewing unassigned bookings from travelocase.com now. Ready for route quotes!",
+      "readBy": [
+        "usr_sales_agent1",
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:46:15.581Z"
+    },
+    {
+      "id": "msg_y7ula1amu6nmvhb",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Senior Flight Specialist)",
+      "senderRole": "SALES_AGENT",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "recipientId": "usr_sales_mgr",
+      "recipientName": "Marcus Brooks (Sales Director & Manager)",
+      "messageType": "APPROVAL_REQUEST",
+      "content": "Marcus, urgent card clearance needed for customer on Booking #1001. Can you grant 3-minute access?",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "leadPnr": "NX-78429",
+      "readBy": [
+        "usr_sales_agent1",
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:46:15.647Z"
+    },
+    {
+      "id": "msg_oop41rxmu6nmvjq",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_mgr",
+      "senderName": "Marcus Brooks (Sales Director & Manager)",
+      "senderRole": "SALES_MANAGER",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "recipientId": "usr_sales_agent1",
+      "recipientName": "Sarah Chen (Senior Flight Specialist)",
+      "messageType": "APPROVAL_RESPONSE",
+      "content": "Card access clearance granted for 3 minutes for Booking #1001. Proceed with transaction verification.",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "readBy": [
+        "usr_sales_mgr",
+        "usr_sales_agent1"
+      ],
+      "createdAt": "2026-09-18T07:46:15.734Z"
+    },
+    {
+      "id": "msg_2mwarwcmu6nmvm7",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_superadmin",
+      "senderName": "Alex Thorne (Super Admin)",
+      "senderRole": "SUPER_ADMIN",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "channelId": "hierarchy-broadcasts",
+      "messageType": "HIERARCHY_UPDATE",
+      "content": "📢 Executive Update: Travelocase routing integration active. Sales Managers and Charging Operators please align on handoff SLA thresholds.",
+      "readBy": [
+        "usr_superadmin"
+      ],
+      "createdAt": "2026-09-18T07:46:15.823Z"
+    },
+    {
+      "id": "msg_p6qxaoamu6no27x",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Senior Flight Specialist)",
+      "senderRole": "SALES_AGENT",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "recipientId": "usr_sales_mgr",
+      "recipientName": "Marcus Brooks (Sales Director & Manager)",
+      "messageType": "TEXT",
+      "content": "request",
+      "readBy": [
+        "usr_sales_agent1",
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:47:11.037Z"
+    },
+    {
+      "id": "msg_x5yyua2mu6ny7g1",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Senior Flight Specialist)",
+      "senderRole": "SALES_AGENT",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "channelId": "sales-operations",
+      "messageType": "TEXT",
+      "content": "Reviewing unassigned bookings from travelocase.com now. Ready for route quotes!",
+      "readBy": [
+        "usr_sales_agent1",
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:55:04.369Z"
+    },
+    {
+      "id": "msg_9wzw3wbmu6ny7gk",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_agent1",
+      "senderName": "Sarah Chen (Senior Flight Specialist)",
+      "senderRole": "SALES_AGENT",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+      "recipientId": "usr_sales_mgr",
+      "recipientName": "Marcus Brooks (Sales Director & Manager)",
+      "messageType": "APPROVAL_REQUEST",
+      "content": "Marcus, urgent card clearance needed for customer on Booking #1001. Can you grant 3-minute access?",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "leadPnr": "NX-78429",
+      "readBy": [
+        "usr_sales_agent1"
+      ],
+      "createdAt": "2026-09-18T07:55:04.388Z"
+    },
+    {
+      "id": "msg_9xtjv5emu6ny7h7",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_sales_mgr",
+      "senderName": "Marcus Brooks (Sales Director & Manager)",
+      "senderRole": "SALES_MANAGER",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "recipientId": "usr_sales_agent1",
+      "recipientName": "Sarah Chen (Senior Flight Specialist)",
+      "messageType": "APPROVAL_RESPONSE",
+      "content": "Card access clearance granted for 3 minutes for Booking #1001. Proceed with transaction verification.",
+      "leadId": "lead_1",
+      "leadBookingNumber": 1001,
+      "readBy": [
+        "usr_sales_mgr"
+      ],
+      "createdAt": "2026-09-18T07:55:04.411Z"
+    },
+    {
+      "id": "msg_unxbdwxmu6ny7hn",
+      "tenantId": "tenant_travelocase",
+      "senderId": "usr_superadmin",
+      "senderName": "Alex Thorne (Super Admin)",
+      "senderRole": "SUPER_ADMIN",
+      "senderAvatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      "channelId": "hierarchy-broadcasts",
+      "messageType": "HIERARCHY_UPDATE",
+      "content": "📢 Executive Update: Travelocase routing integration active. Sales Managers and Charging Operators please align on handoff SLA thresholds.",
+      "readBy": [
+        "usr_superadmin"
+      ],
+      "createdAt": "2026-09-18T07:55:04.427Z"
+    }
+  ],
   "roundRobinIndex": 6,
-  "lastBookingNumber": 1011,
-  "lastPersistedAt": "2026-09-18T07:12:39.860Z"
+  "lastBookingNumber": 1013,
+  "lastPersistedAt": "2026-09-18T07:55:17.562Z"
 }

@@ -21,6 +21,7 @@ import {
   Lock,
   UserPlus,
   LogOut,
+  MessageSquare,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -29,6 +30,8 @@ interface NavbarProps {
   onSelectUser: (user: User) => void;
   onOpenIngestModal: () => void;
   onOpenCreateUserModal?: () => void;
+  onOpenChat?: () => void;
+  unreadChatCount?: number;
   onLogout?: () => void;
   activeView: string;
   setActiveView: (view: string) => void;
@@ -43,6 +46,8 @@ export function Navbar({
   onSelectUser,
   onOpenIngestModal,
   onOpenCreateUserModal,
+  onOpenChat,
+  unreadChatCount = 0,
   onLogout,
   activeView,
   setActiveView,
@@ -212,6 +217,23 @@ export function Navbar({
               </span>
             )}
           </div>
+
+          {/* Team & Hierarchy Chat Button */}
+          {onOpenChat && (
+            <button
+              onClick={onOpenChat}
+              className="relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-xs transition active:scale-95 shrink-0 cursor-pointer"
+              title="Open Internal Team & Hierarchy Chat"
+            >
+              <MessageSquare className="h-3.5 w-3.5 text-indigo-600" />
+              <span className="hidden md:inline">Team Chat</span>
+              {unreadChatCount > 0 && (
+                <span className="bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full shadow-xs animate-pulse">
+                  {unreadChatCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Ingest Lead button (Visible for Managers and Admins) */}
           {isManagerOrAdmin && (

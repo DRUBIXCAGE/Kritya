@@ -14,6 +14,9 @@ import {
   Role,
   FlightBooking,
   CardDetails,
+  ChatMessage,
+  ChatChannel,
+  ChatMessageType,
 } from "@/types";
 import {
   INITIAL_USERS,
@@ -33,6 +36,91 @@ import {
   OFFICIAL_SENDER_EMAIL,
 } from "./templates";
 
+export const INITIAL_CHAT_CHANNELS: ChatChannel[] = [
+  {
+    id: "general",
+    name: "general-hq",
+    description: "Company-wide announcements & cross-departmental operations",
+  },
+  {
+    id: "sales-operations",
+    name: "sales-operations",
+    description: "Sales floor, booking quotes, client follow-ups & MCO approvals",
+    department: "SALES",
+  },
+  {
+    id: "charging-escalations",
+    name: "charging-escalations",
+    description: "PCI transactions, fraud checks, refunds & merchant clearance",
+    department: "CHARGING",
+  },
+  {
+    id: "hierarchy-broadcasts",
+    name: "hierarchy-broadcasts",
+    description: "Executive announcements, shift handoffs & organizational updates",
+    minRole: "SALES_MANAGER",
+  },
+];
+
+export const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
+  {
+    id: "msg_init_1",
+    tenantId: "tenant_travelocase",
+    senderId: "usr_superadmin",
+    senderName: "Alex Thorne (Super Admin)",
+    senderRole: "SUPER_ADMIN",
+    channelId: "general",
+    messageType: "SYSTEM_ANNOUNCEMENT",
+    content: "📢 Welcome team to the updated Q3 travelocase routing protocols. Sales Managers, please monitor the new unassigned online bookings queue.",
+    readBy: ["usr_superadmin"],
+    createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+  },
+  {
+    id: "msg_init_2",
+    tenantId: "tenant_travelocase",
+    senderId: "usr_sales_mgr",
+    senderName: "Marcus Brooks (Sales Manager)",
+    senderRole: "SALES_MANAGER",
+    channelId: "sales-operations",
+    messageType: "HIERARCHY_UPDATE",
+    content: "Team: Today all unassigned bookings from travelocase.com will be distributed by 10:00 AM. Ensure passenger passport numbers and net fare quotes are verified before email confirmation.",
+    readBy: ["usr_sales_mgr"],
+    createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+  },
+  {
+    id: "msg_init_3",
+    tenantId: "tenant_travelocase",
+    senderId: "usr_sales_agent1",
+    senderName: "Sarah Chen (Sales Agent)",
+    senderRole: "SALES_AGENT",
+    recipientId: "usr_sales_mgr",
+    recipientName: "Marcus Brooks (Sales Manager)",
+    messageType: "APPROVAL_REQUEST",
+    leadId: "lead_1",
+    leadBookingNumber: 1001,
+    leadPnr: "NX-78429",
+    leadDealValue: 12500,
+    content: "Hi Marcus, for Booking #1001 (Lord Harrison Sterling), the customer is requesting a $500 discount on the business class route. Can you approve this MCO adjustment?",
+    readBy: ["usr_sales_agent1"],
+    createdAt: new Date(Date.now() - 1800000).toISOString(),
+  },
+  {
+    id: "msg_init_4",
+    tenantId: "tenant_travelocase",
+    senderId: "usr_sales_mgr",
+    senderName: "Marcus Brooks (Sales Manager)",
+    senderRole: "SALES_MANAGER",
+    recipientId: "usr_sales_agent1",
+    recipientName: "Sarah Chen (Sales Agent)",
+    messageType: "APPROVAL_RESPONSE",
+    leadId: "lead_1",
+    leadBookingNumber: 1001,
+    content: "✅ Approved Sarah! Go ahead and update the quote on Booking #1001, and proceed with dispatching the travel confirmation email.",
+    readBy: ["usr_sales_mgr"],
+    createdAt: new Date(Date.now() - 900000).toISOString(),
+  },
+];
+
 interface DatabaseSnapshot {
   users: User[];
   leads: Lead[];
@@ -41,6 +129,7 @@ interface DatabaseSnapshot {
   tickets: Ticket[];
   activityLogs: ActivityLog[];
   auditLogs: AuditLog[];
+  chatMessages?: ChatMessage[];
   roundRobinIndex: number;
   lastBookingNumber?: number;
   lastPersistedAt: string;
@@ -55,6 +144,7 @@ class EnterpriseCRMStore {
   private tickets: Ticket[] = JSON.parse(JSON.stringify(INITIAL_TICKETS));
   private activityLogs: ActivityLog[] = JSON.parse(JSON.stringify(INITIAL_ACTIVITY_LOGS));
   private auditLogs: AuditLog[] = JSON.parse(JSON.stringify(INITIAL_AUDIT_LOGS));
+  private chatMessages: ChatMessage[] = JSON.parse(JSON.stringify(INITIAL_CHAT_MESSAGES));
   private roundRobinIndex = 0;
   private lastBookingNumber = 1005;
 
@@ -84,6 +174,9 @@ class EnterpriseCRMStore {
         if (parsed.tickets && Array.isArray(parsed.tickets)) this.tickets = parsed.tickets;
         if (parsed.activityLogs && Array.isArray(parsed.activityLogs)) this.activityLogs = parsed.activityLogs;
         if (parsed.auditLogs && Array.isArray(parsed.auditLogs)) this.auditLogs = parsed.auditLogs;
+        if (parsed.chatMessages && Array.isArray(parsed.chatMessages) && parsed.chatMessages.length > 0) {
+          this.chatMessages = parsed.chatMessages;
+        }
         if (parsed.users && Array.isArray(parsed.users)) this.users = parsed.users;
         if (typeof parsed.roundRobinIndex === "number") this.roundRobinIndex = parsed.roundRobinIndex;
         if (typeof parsed.lastBookingNumber === "number") {
@@ -186,6 +279,7 @@ class EnterpriseCRMStore {
         tickets: this.tickets,
         activityLogs: this.activityLogs,
         auditLogs: this.auditLogs,
+        chatMessages: this.chatMessages,
         roundRobinIndex: this.roundRobinIndex,
         lastBookingNumber: this.lastBookingNumber,
         lastPersistedAt: new Date().toISOString(),
@@ -906,7 +1000,7 @@ class EnterpriseCRMStore {
   assignLead(
     actor: User,
     leadId: string,
-    targetAgentId: string
+    targetAgentId: string | null
   ): { success: boolean; lead?: Lead; error?: string } {
     // 1. Permission check: Only Super Admin, Admin, and Managers can assign leads
     if (
@@ -923,15 +1017,22 @@ class EnterpriseCRMStore {
     const lead = this.leads.find((l) => l.id === leadId);
     if (!lead) return { success: false, error: "Lead booking not found." };
 
-    const targetAgent = this.users.find((u) => u.id === targetAgentId);
-    if (!targetAgent) return { success: false, error: "Target agent not found." };
+    const isUnassigning = !targetAgentId || targetAgentId === "UNASSIGNED";
+    let targetAgent: User | undefined = undefined;
+    if (!isUnassigning) {
+      targetAgent = this.users.find((u) => u.id === targetAgentId);
+      if (!targetAgent) return { success: false, error: "Target agent not found." };
+    }
 
-    const prevAgentName = lead.assignedToName || "Unassigned";
-    lead.assignedToId = targetAgent.id;
-    lead.assignedToName = targetAgent.name;
+    const prevAgentName = lead.assignedToName || "Unassigned (travelocase.com Pool)";
+    lead.assignedToId = targetAgent ? targetAgent.id : undefined;
+    lead.assignedToName = targetAgent ? targetAgent.name : undefined;
     lead.updatedAt = new Date().toISOString();
 
-    const assignRemark = `[AUTO] Booking reassigned to ${targetAgent.name} by ${actor.name} (${actor.role})`;
+    const assignRemark = isUnassigning
+      ? `[AUTO] Booking returned to Unassigned Pool by ${actor.name} (${actor.role})`
+      : `[AUTO] Booking assigned to ${targetAgent!.name} by ${actor.name} (${actor.role})`;
+
     if (!lead.footprint) {
       lead.footprint = {
         id: `fp-${Date.now()}`,
@@ -944,14 +1045,18 @@ class EnterpriseCRMStore {
     }
     lead.footprint.clickstream.unshift({
       timestamp: new Date().toISOString(),
-      event: "LEAD_ASSIGNED",
+      event: isUnassigning ? "LEAD_UNASSIGNED" : "LEAD_ASSIGNED",
       url: `/leads/${lead.id}`,
       remark: assignRemark,
       actorId: actor.id,
       actorName: actor.name,
       actorRole: actor.role,
       isAutoLogged: true,
-      metadata: { targetAgentId: targetAgent.id, targetAgentName: targetAgent.name, previousAgent: prevAgentName },
+      metadata: {
+        targetAgentId: targetAgent ? targetAgent.id : null,
+        targetAgentName: targetAgent ? targetAgent.name : "Unassigned",
+        previousAgent: prevAgentName,
+      },
     });
 
     this.logActivity({
@@ -960,14 +1065,14 @@ class EnterpriseCRMStore {
       actorId: actor.id,
       actorName: actor.name,
       actorRole: actor.role,
-      action: "LEAD_ASSIGNED",
+      action: isUnassigning ? "LEAD_UNASSIGNED" : "LEAD_ASSIGNED",
       fromState: prevAgentName,
-      toState: targetAgent.name,
+      toState: targetAgent ? targetAgent.name : "Unassigned",
       metadata: {
         remark: assignRemark,
-        assignedToId: targetAgent.id,
-        assignedToName: targetAgent.name,
-        assignedToUsername: targetAgent.username,
+        assignedToId: targetAgent?.id || null,
+        assignedToName: targetAgent?.name || "Unassigned",
+        assignedToUsername: targetAgent?.username || null,
         assignedById: actor.id,
         assignedByName: actor.name,
         assignedByRole: actor.role,
@@ -977,15 +1082,15 @@ class EnterpriseCRMStore {
     this.logAudit({
       actorId: actor.id,
       actorEmail: actor.email,
-      action: "LEAD_ASSIGNED",
+      action: isUnassigning ? "LEAD_UNASSIGNED" : "LEAD_ASSIGNED",
       resource: `Lead:${lead.id}`,
       ipAddress: "127.0.0.1",
       status: "SUCCESS",
       payload: {
         leadId: lead.id,
         bookingNumber: lead.bookingNumber,
-        assignedToId: targetAgent.id,
-        assignedToName: targetAgent.name,
+        assignedToId: targetAgent?.id || null,
+        assignedToName: targetAgent?.name || "Unassigned",
         previousAgent: prevAgentName,
         assignedBy: actor.name,
       },
@@ -997,9 +1102,9 @@ class EnterpriseCRMStore {
       actor: { id: actor.id, name: actor.name, role: actor.role },
       payload: {
         leadId: lead.id,
-        action: "LEAD_ASSIGNED",
-        assignedToId: targetAgent.id,
-        assignedToName: targetAgent.name,
+        action: isUnassigning ? "LEAD_UNASSIGNED" : "LEAD_ASSIGNED",
+        assignedToId: targetAgent?.id || null,
+        assignedToName: targetAgent?.name || "Unassigned",
       },
     });
 
@@ -1010,7 +1115,7 @@ class EnterpriseCRMStore {
   bulkAssignLeads(
     actor: User,
     leadIds: string[],
-    targetAgentId: string
+    targetAgentId: string | null
   ): { success: boolean; count?: number; leads?: Lead[]; error?: string } {
     if (
       actor.role !== "SUPER_ADMIN" &&
@@ -1027,8 +1132,12 @@ class EnterpriseCRMStore {
       return { success: false, error: "No leads selected for assignment." };
     }
 
-    const targetAgent = this.users.find((u) => u.id === targetAgentId);
-    if (!targetAgent) return { success: false, error: "Target agent not found." };
+    const isUnassigning = !targetAgentId || targetAgentId === "UNASSIGNED";
+    let targetAgent: User | undefined = undefined;
+    if (!isUnassigning) {
+      targetAgent = this.users.find((u) => u.id === targetAgentId);
+      if (!targetAgent) return { success: false, error: "Target agent not found." };
+    }
 
     const updatedLeads: Lead[] = [];
     const timestamp = new Date().toISOString();
@@ -1037,8 +1146,8 @@ class EnterpriseCRMStore {
       const lead = this.leads.find((l) => l.id === id);
       if (lead) {
         const prevAgentName = lead.assignedToName || "Unassigned";
-        lead.assignedToId = targetAgent.id;
-        lead.assignedToName = targetAgent.name;
+        lead.assignedToId = targetAgent ? targetAgent.id : undefined;
+        lead.assignedToName = targetAgent ? targetAgent.name : undefined;
         lead.updatedAt = timestamp;
         updatedLeads.push(lead);
 
@@ -1048,13 +1157,13 @@ class EnterpriseCRMStore {
           actorId: actor.id,
           actorName: actor.name,
           actorRole: actor.role,
-          action: "LEAD_BULK_ASSIGNED",
+          action: isUnassigning ? "LEAD_BULK_UNASSIGNED" : "LEAD_BULK_ASSIGNED",
           fromState: prevAgentName,
-          toState: targetAgent.name,
+          toState: targetAgent ? targetAgent.name : "Unassigned",
           metadata: {
-            assignedToId: targetAgent.id,
-            assignedToName: targetAgent.name,
-            assignedToUsername: targetAgent.username,
+            assignedToId: targetAgent?.id || null,
+            assignedToName: targetAgent?.name || "Unassigned",
+            assignedToUsername: targetAgent?.username || null,
             batchCount: leadIds.length,
           },
         });
@@ -1064,15 +1173,15 @@ class EnterpriseCRMStore {
     this.logAudit({
       actorId: actor.id,
       actorEmail: actor.email,
-      action: "LEADS_BULK_ASSIGNED",
+      action: isUnassigning ? "LEADS_BULK_UNASSIGNED" : "LEADS_BULK_ASSIGNED",
       resource: `Batch:${updatedLeads.length}_Leads`,
       ipAddress: "127.0.0.1",
       status: "SUCCESS",
       payload: {
         assignedCount: updatedLeads.length,
-        targetAgentId: targetAgent.id,
-        targetAgentName: targetAgent.name,
-        targetAgentUsername: targetAgent.username,
+        targetAgentId: targetAgent?.id || null,
+        targetAgentName: targetAgent?.name || "Unassigned",
+        targetAgentUsername: targetAgent?.username || null,
         leadIds: updatedLeads.map((l) => l.id),
         bookingNumbers: updatedLeads.map((l) => l.bookingNumber),
       },
@@ -1083,10 +1192,10 @@ class EnterpriseCRMStore {
       tenantId: actor.tenantId || "tenant_travelocase",
       actor: { id: actor.id, name: actor.name, role: actor.role },
       payload: {
-        action: "LEADS_BULK_ASSIGNED",
+        action: isUnassigning ? "LEADS_BULK_UNASSIGNED" : "LEADS_BULK_ASSIGNED",
         count: updatedLeads.length,
-        assignedToId: targetAgent.id,
-        assignedToName: targetAgent.name,
+        assignedToId: targetAgent?.id || null,
+        assignedToName: targetAgent?.name || "Unassigned",
         leadIds: updatedLeads.map((l) => l.id),
       },
     });
@@ -1823,14 +1932,10 @@ class EnterpriseCRMStore {
       payload.ipAddress
     );
 
-    // Auto-assign to Sales Agent via Round Robin or explicit agent assignment
-    const salesAgents = this.getSalesAgents();
+    // Explicit assignment only if specified; by default ingested leads from travelocase.com are UNASSIGNED
     let assignedAgent: User | undefined = undefined;
-    if (payload.assignedToId) {
+    if (payload.assignedToId && payload.assignedToId !== "UNASSIGNED") {
       assignedAgent = this.users.find((u) => u.id === payload.assignedToId);
-    } else if (salesAgents.length > 0) {
-      assignedAgent = salesAgents[this.roundRobinIndex % salesAgents.length];
-      this.roundRobinIndex++;
     }
 
     // Auto-increment simple number based booking ID
@@ -1893,6 +1998,11 @@ class EnterpriseCRMStore {
       isAccessGrantedToAgent: false,
     };
 
+    const initialTimestamp = new Date().toISOString();
+    const initialRemark = assignedAgent
+      ? `[AUTO] Flight booking #${nextBookingNumber} submitted online on travelocase.com (Assigned to ${assignedAgent.name}). Raw Ingested Ticket Price: $${ingestedTicketPrice}`
+      : `[AUTO] Flight booking #${nextBookingNumber} submitted online on travelocase.com (Unassigned - Pending Sales Manager Assignment). Raw Ingested Ticket Price: $${ingestedTicketPrice}`;
+
     const newLead: Lead = {
       id: leadId,
       bookingNumber: nextBookingNumber,
@@ -1912,13 +2022,13 @@ class EnterpriseCRMStore {
       currency: payload.currency || "USD",
       notes:
         payload.notes ||
-        `Flight inquiry booking #${nextBookingNumber} ingested from website. Ingested Ticket Price: $${ingestedTicketPrice}.`,
+        `Flight inquiry booking #${nextBookingNumber} submitted on travelocase.com (${assignedAgent ? `Assigned to ${assignedAgent.name}` : "Unassigned - Pending Sales Manager Assignment"}). Ingested Ticket Price: $${ingestedTicketPrice}.`,
       bookingDetails: defaultBooking,
       cardDetails: defaultCard,
       authEmailSent: false,
       authCallConfirmed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: initialTimestamp,
+      updatedAt: initialTimestamp,
       footprint: {
         id: "fp_" + leadId,
         leadId,
@@ -1928,12 +2038,12 @@ class EnterpriseCRMStore {
         userAgent:
           payload.userAgent ||
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        referrer: payload.referrer || "https://google.com",
+        referrer: payload.referrer || "https://www.travelocase.com",
         country: "United States",
         city: "New York, NY",
-        utmSource: payload.utmSource || "flight_portal",
-        utmMedium: payload.utmMedium || "cpc",
-        utmCampaign: payload.utmCampaign || "luxury_business_routes",
+        utmSource: payload.utmSource || "travelocase_web",
+        utmMedium: payload.utmMedium || "direct_booking",
+        utmCampaign: payload.utmCampaign || "travelocase_flights",
         utmTerm: payload.utmTerm,
         utmContent: payload.utmContent,
         clickstream:
@@ -1941,24 +2051,58 @@ class EnterpriseCRMStore {
             ? payload.clickstream
             : [
                 {
-                  timestamp: new Date(Date.now() - 300000).toISOString(),
-                  event: "ROUTE_SEARCH",
-                  url: `/flights/${defaultBooking.origin}-${defaultBooking.destination}`,
-                  dwellTimeSeconds: 45,
+                  timestamp: initialTimestamp,
+                  event: "ONLINE_BOOKING_SUBMITTED",
+                  url: "https://www.travelocase.com/checkout/confirmation",
+                  dwellTimeSeconds: 0,
+                  remark: initialRemark,
+                  actorId: "system_travelocase_webhook",
+                  actorName: "travelocase.com Webhook",
+                  actorRole: "SYSTEM",
+                  isAutoLogged: true,
+                  metadata: {
+                    portal: "travelocase.com",
+                    route: `${defaultBooking.origin} -> ${defaultBooking.destination}`,
+                    ticketPrice: ingestedTicketPrice,
+                    pnr: defaultPnr,
+                    assignmentStatus: assignedAgent ? `Assigned: ${assignedAgent.name}` : "Unassigned Pool",
+                  },
+                },
+                {
+                  timestamp: new Date(Date.now() - 45000).toISOString(),
+                  event: "CARD_DETAILS_SUBMITTED",
+                  url: "https://www.travelocase.com/checkout/payment",
+                  dwellTimeSeconds: 30,
+                  remark: "[AUTO] Customer entered payment authorization on travelocase.com secure checkout",
+                  actorId: "customer_web_session",
+                  actorName: payload.name,
+                  actorRole: "CUSTOMER",
+                  isAutoLogged: true,
                 },
                 {
                   timestamp: new Date(Date.now() - 120000).toISOString(),
                   event: "PASSENGER_DETAILS_FILLED",
-                  url: "/checkout/passengers",
-                  dwellTimeSeconds: 120,
+                  url: "https://www.travelocase.com/checkout/passengers",
+                  dwellTimeSeconds: 75,
+                  remark: `[AUTO] Passenger manifest completed for ${payload.name}`,
+                  actorId: "customer_web_session",
+                  actorName: payload.name,
+                  actorRole: "CUSTOMER",
+                  isAutoLogged: true,
                 },
                 {
-                  timestamp: new Date().toISOString(),
-                  event: "CARD_DETAILS_SUBMITTED",
-                  url: "/checkout/payment",
+                  timestamp: new Date(Date.now() - 300000).toISOString(),
+                  event: "ROUTE_SEARCH",
+                  url: `https://www.travelocase.com/flights/${encodeURIComponent(defaultBooking.origin)}-${encodeURIComponent(defaultBooking.destination)}`,
+                  dwellTimeSeconds: 45,
+                  remark: `[AUTO] Customer searched flight routes on travelocase.com`,
+                  actorId: "customer_web_session",
+                  actorName: payload.name,
+                  actorRole: "CUSTOMER",
+                  isAutoLogged: true,
                 },
               ],
-        createdAt: new Date().toISOString(),
+        createdAt: initialTimestamp,
       },
       emailVerification: {
         id: "ev_" + leadId,
@@ -1971,7 +2115,7 @@ class EnterpriseCRMStore {
         smtpCheckValid: authResult.smtpCheckValid,
         score: authResult.score,
         rawDetails: authResult.details,
-        verifiedAt: new Date().toISOString(),
+        verifiedAt: initialTimestamp,
       },
     };
 
@@ -1980,34 +2124,39 @@ class EnterpriseCRMStore {
     this.logActivity({
       entityType: "LEAD",
       entityId: newLead.id,
-      actorName: "Flight Ingestion Engine",
+      actorId: "system_travelocase_webhook",
+      actorName: "travelocase.com Webhook Ingestion",
       actorRole: "SYSTEM",
-      action: "LEAD_INGESTED",
+      action: "LEAD_INGESTED_FROM_TRAVELOCASE",
       toState: "NEW",
       metadata: {
         route: `${defaultBooking.origin} -> ${defaultBooking.destination}`,
         airline: defaultBooking.airline,
         authenticityScore: authResult.score,
-        assignedTo: assignedAgent?.name,
+        assignedTo: assignedAgent ? assignedAgent.name : "Unassigned (Sales Manager Queue)",
+        ticketPrice: ingestedTicketPrice,
+        portal: "travelocase.com",
       },
     });
 
     this.logAudit({
-      actorEmail: "ingress.travel@travelocase.com",
+      actorEmail: "webhook@travelocase.com",
       action: "FLIGHT_BOOKING_INGESTED",
       resource: `Lead:${newLead.id}`,
       ipAddress: payload.ipAddress || "127.0.0.1",
       status: "SUCCESS",
       payload: {
         email: newLead.email,
+        source: "travelocase.com",
         route: `${defaultBooking.origin} -> ${defaultBooking.destination}`,
+        assignedTo: assignedAgent?.name || "Unassigned Pool",
       },
     });
 
     broadcastEvent({
       type: "LEAD_INGESTED",
       tenantId: newLead.tenantId,
-      actor: { name: "Flight Ingestion Engine", role: "SYSTEM" },
+      actor: { name: "travelocase.com Ingestion Engine", role: "SYSTEM" },
       payload: { lead: newLead },
     });
 
@@ -2338,6 +2487,176 @@ class EnterpriseCRMStore {
         (t) => t.status === "PENDING" || t.status === "PROCESSING"
       ).length,
     };
+  }
+
+  // ----------------------------------------------------
+  // Internal Team Chat & Hierarchy Communication
+  // ----------------------------------------------------
+  getChatChannels(user?: User): ChatChannel[] {
+    return INITIAL_CHAT_CHANNELS.filter((ch) => {
+      if (!ch.minRole) return true;
+      if (!user) return false;
+      if (user.role === "SUPER_ADMIN" || user.role === "ADMIN") return true;
+      if (ch.minRole === "SALES_MANAGER" && user.role.endsWith("_MANAGER")) return true;
+      return user.role === ch.minRole;
+    });
+  }
+
+  getChatMessages(
+    userId?: string,
+    role?: Role,
+    options?: { channelId?: string; recipientId?: string; leadId?: string }
+  ): ChatMessage[] {
+    let result = [...this.chatMessages];
+
+    // Filter by channel
+    if (options?.channelId) {
+      result = result.filter((m) => m.channelId === options.channelId);
+    } else if (options?.recipientId && userId) {
+      // 1-on-1 Direct Message thread between userId and recipientId
+      const targetId = options.recipientId;
+      result = result.filter(
+        (m) =>
+          !m.channelId &&
+          ((m.senderId === userId && m.recipientId === targetId) ||
+            (m.senderId === targetId && m.recipientId === userId))
+      );
+    } else if (options?.leadId) {
+      // Linked to specific lead booking
+      result = result.filter((m) => m.leadId === options.leadId);
+    } else {
+      // Global feed accessible by user: public channels or DMs involving userId
+      result = result.filter(
+        (m) => Boolean(m.channelId) || m.senderId === userId || m.recipientId === userId
+      );
+    }
+
+    // Sort ascending by creation time so message threads read chronologically
+    return result.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }
+
+  sendChatMessage(
+    actor: User,
+    payload: {
+      channelId?: string;
+      recipientId?: string;
+      content: string;
+      messageType?: ChatMessageType;
+      leadId?: string;
+      leadBookingNumber?: number;
+      leadPnr?: string;
+      leadDealValue?: number;
+      metadata?: Record<string, unknown>;
+    }
+  ): { success: boolean; message?: ChatMessage; error?: string } {
+    if (!payload.content || !payload.content.trim()) {
+      return { success: false, error: "Message content cannot be empty." };
+    }
+
+    let recipientUser: User | undefined = undefined;
+    if (payload.recipientId) {
+      recipientUser = this.users.find((u) => u.id === payload.recipientId);
+      if (!recipientUser) {
+        return { success: false, error: "Recipient user not found in CRM hierarchy." };
+      }
+    }
+
+    // If referencing lead, verify details
+    let bookingNum = payload.leadBookingNumber;
+    let pnr = payload.leadPnr;
+    let val = payload.leadDealValue;
+    if (payload.leadId) {
+      const refLead = this.leads.find((l) => l.id === payload.leadId);
+      if (refLead) {
+        bookingNum = bookingNum || refLead.bookingNumber;
+        pnr = pnr || refLead.bookingDetails?.pnrCode;
+        val = val || refLead.salePrice || refLead.dealValue;
+      }
+    }
+
+    const newMsg: ChatMessage = {
+      id: "msg_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36),
+      tenantId: actor.tenantId || "tenant_travelocase",
+      senderId: actor.id,
+      senderName: actor.name,
+      senderRole: actor.role,
+      senderAvatarUrl: actor.avatarUrl,
+      channelId: payload.channelId,
+      recipientId: payload.recipientId,
+      recipientName: recipientUser?.name,
+      messageType: payload.messageType || "TEXT",
+      content: payload.content.trim(),
+      leadId: payload.leadId,
+      leadBookingNumber: bookingNum,
+      leadPnr: pnr,
+      leadDealValue: val,
+      metadata: payload.metadata,
+      readBy: [actor.id],
+      createdAt: new Date().toISOString(),
+    };
+
+    this.chatMessages.push(newMsg);
+
+    // If message is an escalation / clearance request for a booking, also log in lead's fingerprint
+    if (payload.leadId && ["APPROVAL_REQUEST", "APPROVAL_RESPONSE", "LEAD_ESCALATION"].includes(newMsg.messageType)) {
+      const refLead = this.leads.find((l) => l.id === payload.leadId);
+      if (refLead) {
+        this.logLeadFingerprintEvent(
+          refLead.id,
+          actor,
+          newMsg.messageType === "APPROVAL_REQUEST" ? "CHAT_APPROVAL_REQUESTED" : "CHAT_APPROVAL_RESPONDED",
+          `[CHAT ESCALATION] ${actor.name} (${actor.role}): ${newMsg.content}`,
+          {
+            messageId: newMsg.id,
+            channelId: payload.channelId,
+            recipientId: payload.recipientId,
+            recipientName: recipientUser?.name,
+          },
+          false,
+          `/chat/${payload.channelId || payload.recipientId}`
+        );
+      }
+    }
+
+    // Broadcast in real-time via SSE
+    broadcastEvent({
+      type: "CHAT_MESSAGE_SENT",
+      tenantId: newMsg.tenantId,
+      actor: { id: actor.id, name: actor.name, role: actor.role },
+      payload: {
+        message: newMsg,
+      },
+    });
+
+    this.saveToDatabase();
+    return { success: true, message: newMsg };
+  }
+
+  markChatMessagesRead(
+    userId: string,
+    channelId?: string,
+    senderId?: string
+  ): { success: boolean; count: number } {
+    let count = 0;
+    this.chatMessages.forEach((m) => {
+      if (!m.readBy.includes(userId)) {
+        if (channelId && m.channelId === channelId) {
+          m.readBy.push(userId);
+          count++;
+        } else if (senderId && !m.channelId && m.senderId === senderId && m.recipientId === userId) {
+          m.readBy.push(userId);
+          count++;
+        }
+      }
+    });
+
+    if (count > 0) {
+      this.saveToDatabase();
+    }
+
+    return { success: true, count };
   }
 }
 

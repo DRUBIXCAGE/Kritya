@@ -292,3 +292,43 @@ export interface AuditLog {
   payload?: Record<string, unknown>;
   timestamp: string;
 }
+
+export type ChatMessageType =
+  | "TEXT"
+  | "HIERARCHY_UPDATE"
+  | "LEAD_ESCALATION"
+  | "APPROVAL_REQUEST"
+  | "APPROVAL_RESPONSE"
+  | "SYSTEM_ANNOUNCEMENT";
+
+export interface ChatMessage {
+  id: string;
+  tenantId: string;
+  senderId: string;
+  senderName: string;
+  senderRole: Role;
+  senderAvatarUrl?: string;
+  recipientId?: string; // If set, this is a 1-on-1 direct hierarchy message
+  recipientName?: string;
+  channelId?: string; // e.g. "general", "sales-team", "charging-ops", "hierarchy-broadcasts"
+  messageType: ChatMessageType;
+  content: string;
+  leadId?: string;
+  leadBookingNumber?: number;
+  leadPnr?: string;
+  leadDealValue?: number;
+  metadata?: Record<string, unknown>;
+  readBy: string[];
+  createdAt: string;
+}
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  description: string;
+  department?: DepartmentType;
+  icon?: string;
+  minRole?: Role;
+  unreadCount?: number;
+}
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { User, Lead, Transaction, Customer, Ticket, AuditLog, ActivityLog, LeadStatus, TicketStatus } from "@/types";
 import { Navbar } from "@/components/layout/Navbar";
@@ -11,6 +11,9 @@ import { SuperAdminView } from "@/components/dashboard/SuperAdminView";
 import { LeadIngestionModal } from "@/components/leads/LeadIngestionModal";
 import { LeadWorkspaceModal, WorkspaceWindow } from "@/components/leads/LeadWorkspaceModal";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
+import { InternalChatDrawer } from "@/components/chat/InternalChatDrawer";
+import { ChatNotificationToast, ToastItem } from "@/components/chat/ChatNotificationToast";
+import { ChatMessage } from "@/types";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -33,6 +36,14 @@ export default function DashboardPage() {
   const [workspaceInitialWindow, setWorkspaceInitialWindow] = useState<WorkspaceWindow>("overview");
   const [isIngestModalOpen, setIsIngestModalOpen] = useState(false);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+
+  // Internal Team Chat & Hierarchy Communication
+  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
+  const [chatInitialLead, setChatInitialLead] = useState<Lead | undefined>(undefined);
+  const [chatActiveChannelId, setChatActiveChannelId] = useState<string | undefined>(undefined);
+  const [chatActiveRecipientId, setChatActiveRecipientId] = useState<string | undefined>(undefined);
+  const [chatNotifications, setChatNotifications] = useState<ToastItem[]>([]);
 
   // SSE & Realtime
   const [isConnected, setIsConnected] = useState(false);
@@ -166,6 +177,12 @@ export default function DashboardPage() {
     }
   }, [currentUser, fetchData]);
 
+  // Keep ref to currentUser for realtime SSE listener
+  const currentUserRef = useRef<User | null>(currentUser);
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
+
   // Connect to SSE Real-time pipeline
   useEffect(() => {
     let eventSource: EventSource | null = null;
@@ -181,7 +198,28 @@ export default function DashboardPage() {
           const parsed = JSON.parse(e.data);
           if (parsed.type !== "CONNECTED") {
             setEventCount((prev) => prev + 1);
-            fetchData();
+            if (parsed.type === "CHAT_MESSAGE_SENT") {
+              const msg: ChatMessage = parsed.payload?.message;
+              if (msg) {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(
+                    new CustomEvent("kritya:chat_message", {
+                      detail: { message: msg },
+                    })
+                  );
+                }
+                const currentUserId = currentUserRef.current?.id;
+                if (msg.senderId !== currentUserId) {
+                  setUnreadChatCount((prev) => prev + 1);
+                  setChatNotifications((prev) => [
+                    ...prev.filter((n) => n.id !== msg.id),
+                    { id: msg.id || String(Date.now()), message: msg, timestamp: Date.now() },
+                  ]);
+                }
+              }
+            } else {
+              fetchData();
+            }
           }
         } catch {
           // ignore keepalive
@@ -199,6 +237,24 @@ export default function DashboardPage() {
       if (eventSource) eventSource.close();
     };
   }, [fetchData]);
+
+  // Handle toast notification actions
+  const handleDismissChatNotification = (id: string) => {
+    setChatNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const handleOpenChatFromToast = (message: ChatMessage) => {
+    setChatNotifications((prev) => prev.filter((n) => n.id !== message.id));
+    if (message.channelId) {
+      setChatActiveChannelId(message.channelId);
+      setChatActiveRecipientId(undefined);
+    } else if (message.senderId) {
+      setChatActiveRecipientId(message.senderId);
+      setChatActiveChannelId(undefined);
+    }
+    setIsChatDrawerOpen(true);
+    setUnreadChatCount(0);
+  };
 
   // Lead state machine transition
   const handleTransitionLead = async (leadId: string, targetStatus: LeadStatus) => {
@@ -302,6 +358,11 @@ export default function DashboardPage() {
         onLogout={handleLogout}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
         onOpenCreateUserModal={() => setIsCreateUserModalOpen(true)}
+        onOpenChat={() => {
+          setIsChatDrawerOpen(true);
+          setUnreadChatCount(0);
+        }}
+        unreadChatCount={unreadChatCount}
         activeView={activeView}
         setActiveView={setActiveView}
         onSearchBookingId={handleSearchBookingId}
@@ -393,6 +454,35 @@ export default function DashboardPage() {
           }}
         />
       )}
+
+      {/* INTERNAL TEAM & HIERARCHY CHAT DRAWER */}
+      <InternalChatDrawer
+        isOpen={isChatDrawerOpen}
+        onClose={() => {
+          setIsChatDrawerOpen(false);
+          setUnreadChatCount(0);
+          setChatActiveChannelId(undefined);
+          setChatActiveRecipientId(undefined);
+        }}
+        currentUser={currentUser}
+        users={users}
+        leads={leads}
+        initialLead={chatInitialLead}
+        initialChannelId={chatActiveChannelId}
+        initialRecipientId={chatActiveRecipientId}
+        onOpenLeadWorkspace={(l) => {
+          setSelectedLeadId(l.id);
+          setWorkspaceInitialWindow("overview");
+          setIsWorkspaceModalOpen(true);
+        }}
+      />
+
+      {/* FLOATING REALTIME CHAT NOTIFICATIONS TOAST */}
+      <ChatNotificationToast
+        notifications={chatNotifications}
+        onDismiss={handleDismissChatNotification}
+        onOpenReply={handleOpenChatFromToast}
+      />
     </div>
   );
 }
