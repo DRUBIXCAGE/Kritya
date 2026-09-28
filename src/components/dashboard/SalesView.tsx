@@ -32,6 +32,7 @@ import {
   BarChart3,
   EyeOff,
   Edit,
+  Copy,
 } from "lucide-react";
 
 import { AgentMonthlyPerformanceCard } from "./AgentMonthlyPerformanceCard";
@@ -40,7 +41,7 @@ interface SalesViewProps {
   leads: Lead[];
   currentUser: User;
   users?: User[];
-  onSelectLead: (lead: Lead, windowType?: "overview" | "email" | "booking_details" | "card_vault" | "audit") => void;
+  onSelectLead: (lead: Lead, windowType?: "overview" | "simple_view" | "email" | "booking_details" | "card_vault" | "audit") => void;
   selectedLeadId?: string;
   onOpenIngestModal: () => void;
   onTransitionLead: (leadId: string, targetStatus: LeadStatus) => Promise<void>;
@@ -167,7 +168,7 @@ export function SalesView({
         (lead.bookingDetails?.destination && lead.bookingDetails.destination.toLowerCase().includes(q)) ||
         (lead.bookingDetails?.pnrCode && lead.bookingDetails.pnrCode.toLowerCase().includes(q)) ||
         (lead.bookingDetails?.airline && lead.bookingDetails.airline.toLowerCase().includes(q)) ||
-        lead.bookingDetails?.passengers?.some((p) => p.fullName.toLowerCase().includes(q) || p.passportNumber.toLowerCase().includes(q));
+        lead.bookingDetails?.passengers?.some((p) => (p.fullName && p.fullName.toLowerCase().includes(q)) || (p.passportNumber && p.passportNumber.toLowerCase().includes(q)));
 
       // 3. Date Stamp Filter
       let targetTimestamp: number | null = null;
@@ -269,6 +270,32 @@ export function SalesView({
     }
   };
 
+  // Duplicate / Clone Lead Handler
+  const [duplicatingLeadId, setDuplicatingLeadId] = useState<string | null>(null);
+  const handleDuplicateLead = async (leadId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDuplicatingLeadId(leadId);
+    try {
+      const res = await fetch("/api/leads/duplicate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId, actorId: currentUser.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`✓ Booking duplicated successfully! New Ref: #${data.lead?.bookingNumber || data.lead?.bookingId || data.lead?.id}`);
+        if (onRefresh) await onRefresh();
+      } else {
+        alert(`Duplicate failed: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("Duplicate error in SalesView:", err);
+      alert("Error duplicating lead");
+    } finally {
+      setDuplicatingLeadId(null);
+    }
+  };
+
   // Bulk Lead Assignment Handler
   const handleBulkAssignLeads = async () => {
     if (selectedLeadIds.length === 0 || !bulkTargetAgentId) return;
@@ -363,7 +390,9 @@ export function SalesView({
             { id: "AUTHENTICATION_SENT", label: "AUTHENTICATION_SENT" },
             { id: "QUALIFIED", label: "QUALIFIED" },
             { id: "SALE", label: "SALE" },
+            { id: "TICKETING", label: "TICKETING" },
             { id: "CHARGING", label: "CHARGING" },
+            { id: "DUPLICATE", label: "DUPLICATE" },
             { id: "CANCELLED", label: "CANCELLED" },
           ].map((st) => (
             <button
@@ -775,6 +804,19 @@ export function SalesView({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
+                            onSelectLead(lead, "simple_view");
+                          }}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200 transition shadow-2xs flex items-center gap-1"
+                          title="Open Simple Reservation Portal"
+                        >
+                          <Plane className="h-3 w-3 text-blue-600" />
+                          <span>Simple View</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             onSelectLead(lead, "email");
                           }}
                           className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 rounded-md border border-purple-200 transition shadow-2xs flex items-center gap-1"
@@ -795,6 +837,17 @@ export function SalesView({
                         >
                           <Edit className="h-3 w-3" />
                           <span className="hidden xl:inline">Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={duplicatingLeadId === lead.id}
+                          onClick={(e) => handleDuplicateLead(lead.id, e)}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-md border border-slate-300 transition shadow-2xs flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                          title="Duplicate / Clone this booking"
+                        >
+                          <Copy className="h-3 w-3 text-slate-500" />
+                          <span className="hidden xl:inline">{duplicatingLeadId === lead.id ? "..." : "Duplicate"}</span>
                         </button>
 
                         <button

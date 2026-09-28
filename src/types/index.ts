@@ -21,6 +21,8 @@ export type LeadStatus =
   | "QUALIFIED"
   | "FINAL"
   | "SALE"
+  | "TICKETING"
+  | "DUPLICATE"
   | "CANCELLED"
   | "CHARGING"
   | "SUCCESS"
@@ -63,30 +65,60 @@ export interface User {
 export interface Passenger {
   id: string;
   fullName: string;
-  passportNumber: string;
+  title?: string;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  passportNumber?: string;
   passportExpiry?: string;
   nationality?: string;
   dob: string;
-  gender?: "MALE" | "FEMALE" | "OTHER";
-  type: "ADULT" | "CHILD" | "INFANT";
+  gender?: "MALE" | "FEMALE" | "OTHER" | string;
+  type: "ADULT" | "CHILD" | "INFANT" | string;
   seatPreference?: string;
   mealPreference?: string;
   specialAssistance?: string;
   eTicketNumber?: string;
 }
 
+export interface AttachedDocument {
+  id: string;
+  name: string;
+  size?: string;
+  type: string;
+  dataUrl?: string;
+  uploadedAt: string;
+}
+
 export interface FlightSegment {
   id: string;
   airline: string;
+  airlineCode?: string;
   flightNumber: string;
-  origin: string; // e.g. "JFK"
-  destination: string; // e.g. "LHR"
-  departureDate: string; // YYYY-MM-DD
-  departureTime?: string; // e.g. "08:30 AM"
+  confirmationNumber?: string; // e.g. "AA-94812" or "YAK33K"
+  eTicketNumber?: string;
+  origin: string; // e.g. "ELP" or "JFK"
+  originName?: string; // e.g. "El Paso International Airport"
+  destination: string; // e.g. "ORD" or "LHR"
+  destinationName?: string; // e.g. "O'Hare International Airport"
+  departureTerminal?: string;
+  arrivalTerminal?: string; // e.g. "Terminal 3"
+  departureDate: string; // e.g. "Wed, Jul 16" or YYYY-MM-DD
+  departureTime?: string; // e.g. "06:00 AM"
   arrivalDate?: string;
-  arrivalTime?: string;
-  cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST";
+  arrivalTime?: string; // e.g. "10:14 AM"
+  duration?: string; // e.g. "03h 14m"
+  cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST" | string;
   seatNumber?: string;
+  fareBasis?: string; // e.g. "GUA0ZNN1"
+  flightClass?: string; // e.g. "G"
+  fareType?: string; // e.g. "SP"
+  legGroup?: "DEPART" | "RETURN" | "MULTI";
+  routeLabel?: string; // e.g. "El Paso To Chicago"
+  layoverAfter?: {
+    duration: string; // e.g. "03h 21m"
+    city: string; // e.g. "Chicago"
+  };
 }
 
 export interface FlightBooking {
@@ -94,13 +126,18 @@ export interface FlightBooking {
   destination: string; // e.g. "LHR (London Heathrow)"
   tripType: "ROUND_TRIP" | "ONE_WAY" | "MULTI_CITY";
   departureDate: string;
+  departureTime?: string;
+  arrivalDate?: string;
+  arrivalTime?: string;
   returnDate?: string;
   airline: string;
   flightNumber: string;
-  cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST";
+  cabinClass: "ECONOMY" | "PREMIUM_ECONOMY" | "BUSINESS" | "FIRST" | string;
   passengers: Passenger[];
   pnrCode?: string;
+  confirmationNumber?: string; // Flight confirmation number
   flights?: FlightSegment[];
+  documents?: AttachedDocument[];
   ticketPrice?: number; // Cost of ticket / Net Fare
   salePrice?: number; // Custom Sale Price / Gross Total
   mco?: number; // Miscellaneous Charges Order = salePrice - ticketPrice (Amount earned by agent)
@@ -183,7 +220,14 @@ export interface Lead {
   assignedToName?: string;
   name: string;
   email: string;
+  alternateEmail?: string;
   phone?: string;
+  alternatePhone?: string;
+  address?: string;
+  state?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
   company?: string;
   status: LeadStatus;
   dealValue: number;
@@ -192,6 +236,8 @@ export interface Lead {
   mco?: number; // MCO = salePrice - ticketPrice (Actual profit earned by agent)
   currency: string;
   notes?: string;
+  confirmationNumber?: string;
+  documents?: AttachedDocument[];
   bookingDetails?: FlightBooking;
   cardDetails?: CardDetails;
   authEmailSent?: boolean;

@@ -925,13 +925,13 @@ class EnterpriseCRMStore {
       };
     }
 
-    // Check for duplicate consecutive open logs within 5 seconds to avoid spamming
-    if (event === "BOOKING_WORKSPACE_OPENED" && lead.footprint.clickstream.length > 0) {
+    // General Deduplication: Ignore identical auto-logged events from same actor within 10 seconds
+    if (isAutoLogged && lead.footprint.clickstream.length > 0) {
       const last = lead.footprint.clickstream[0];
       if (
-        last.event === "BOOKING_WORKSPACE_OPENED" &&
+        last.event === event &&
         last.actorId === actor.id &&
-        Date.now() - new Date(last.timestamp).getTime() < 5000
+        Date.now() - new Date(last.timestamp).getTime() < 10000
       ) {
         return { success: true, lead };
       }
@@ -992,6 +992,65 @@ class EnterpriseCRMStore {
     });
 
     return { success: true, lead };
+  }
+
+  // Duplicate / Clone Lead Action
+  duplicateLead(
+    actor: User,
+    leadId: string
+  ): { success: boolean; lead?: Lead; error?: string } {
+    const source = this.leads.find((l) => l.id === leadId);
+    if (!source) return { success: false, error: "Source lead not found" };
+
+    const highestNumber = this.leads.reduce((max, l) => Math.max(max, l.bookingNumber || 0), 1000);
+    const nextBookingNumber = highestNumber + 1;
+    const newLeadId = `lead_dup_${Date.now()}`;
+    const timestamp = new Date().toISOString();
+
+    const clonedLead: Lead = {
+      ...JSON.parse(JSON.stringify(source)),
+      id: newLeadId,
+      bookingNumber: nextBookingNumber,
+      bookingId: `#${nextBookingNumber}`,
+      name: `${source.name} (Copy)`,
+      status: "NEW",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      footprint: {
+        id: `fp-${Date.now()}`,
+        leadId: newLeadId,
+        ipAddress: "127.0.0.1",
+        userAgent: "Enterprise CRM Cloner",
+        clickstream: [
+          {
+            timestamp,
+            event: "LEAD_DUPLICATED",
+            url: `/leads/${newLeadId}`,
+            remark: `Duplicated from booking #${source.bookingNumber || source.bookingId || source.id} by ${actor.name} (${actor.role})`,
+            actorId: actor.id,
+            actorName: actor.name,
+            actorRole: actor.role,
+            isAutoLogged: true,
+          },
+        ],
+        createdAt: timestamp,
+      },
+    };
+
+    this.leads.unshift(clonedLead);
+
+    this.logActivity({
+      entityType: "LEAD",
+      entityId: newLeadId,
+      actorId: actor.id,
+      actorName: actor.name,
+      actorRole: actor.role,
+      action: "LEAD_DUPLICATED",
+      metadata: { sourceLeadId: leadId, newBookingNumber: nextBookingNumber },
+    });
+
+    this.saveToDatabase();
+    return { success: true, lead: clonedLead };
   }
 
   // ----------------------------------------------------

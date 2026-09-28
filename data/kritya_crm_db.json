@@ -384,7 +384,7 @@
       "email": "arthur.pendelton@oxford-research.ac.uk",
       "phone": "+44 1865 270000",
       "company": "University of Oxford",
-      "status": "AUTHENTICATION_SENT",
+      "status": "QUALIFIED",
       "ticketPrice": 4200,
       "dealValue": 0,
       "currency": "USD",
@@ -427,7 +427,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-18T07:38:48.047Z",
-      "updatedAt": "2026-09-18T11:26:16.329Z",
+      "updatedAt": "2026-09-21T18:21:18.148Z",
       "footprint": {
         "id": "fp_lead_1e2blki",
         "leadId": "lead_1e2blki",
@@ -440,6 +440,230 @@
         "utmMedium": "direct_booking",
         "utmCampaign": "travelocase_flights",
         "clickstream": [
+          {
+            "timestamp": "2026-09-21T18:21:18.148Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:20:27.812Z",
+            "event": "STATUS_QUALIFIED",
+            "url": "/leads/lead_1e2blki/status",
+            "remark": "[AUTO] Status transitioned from 'AUTHENTICATION_SENT' to 'QUALIFIED' by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "from": "AUTHENTICATION_SENT",
+              "to": "QUALIFIED"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:19:54.140Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:19:51.913Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:19:43.061Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:18:15.214Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:17:43.030Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:17:34.745Z",
+            "event": "WORKSPACE_WINDOW_EMAIL",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:17:15.234Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:16:49.052Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:16:40.397Z",
+            "event": "WORKSPACE_WINDOW_EMAIL",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:16:20.805Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:16:11.391Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:15:59.444Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:15:50.912Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-18T10:15:24.309Z",
             "event": "WORKSPACE_WINDOW_OVERVIEW",
@@ -1425,7 +1649,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:14:33.732Z",
-      "updatedAt": "2026-09-14T10:34:08.145Z",
+      "updatedAt": "2026-09-28T21:16:07.020Z",
       "footprint": {
         "id": "fp_lead_xqil2py",
         "leadId": "lead_xqil2py",
@@ -1438,6 +1662,156 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-28T21:16:07.020Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:07.013Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T19:19:39.561Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T19:19:38.135Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T19:02:24.380Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:44:46.056Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:44:39.443Z",
+            "event": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Opened Add / Edit Booking & Flights window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:44:32.339Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:21:44.042Z",
+            "event": "WORKSPACE_WINDOW_CARD_VAULT",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Opened PCI Card Vault window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:21:39.517Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-11T10:09:33.732Z",
             "event": "ROUTE_SEARCH",
@@ -1476,6 +1850,19 @@
               "autoRevokedAt": "2026-09-14T10:34:08.145Z",
               "cardLast4": "1018",
               "assignedAgent": "David Miller (Travel Booking Agent)"
+            }
+          },
+          {
+            "timestamp": "2026-09-21T18:21:49.351Z",
+            "event": "CARD_DETAILS_VIEWED",
+            "url": "/leads/lead_xqil2py/pci-vault",
+            "metadata": {
+              "viewerName": "Claire Beauchamp",
+              "viewerRole": "CHARGING_MANAGER",
+              "viewerEmail": "claire.b@travelocase.com",
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0",
+              "cardLast4": "1018"
             }
           }
         ],
@@ -2127,7 +2514,7 @@
         "grantedAt": "2026-09-10T14:30:00Z"
       },
       "createdAt": "2026-09-08T14:10:00Z",
-      "updatedAt": "2026-09-14T10:34:08.148Z",
+      "updatedAt": "2026-09-28T21:17:15.690Z",
       "footprint": {
         "id": "fp_03",
         "leadId": "lead_flight_03",
@@ -2140,6 +2527,96 @@
         "utmMedium": "meta_search",
         "utmCampaign": "fall_paris_deals",
         "clickstream": [
+          {
+            "timestamp": "2026-09-28T21:17:15.690Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_flight_03",
+            "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:56.581Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_flight_03",
+            "remark": "Opened Overview Hub window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:34.031Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_flight_03",
+            "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:28.906Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_flight_03",
+            "remark": "Opened Overview Hub window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:13.139Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_flight_03",
+            "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T21:16:09.735Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_flight_03",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1003,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-08T14:02:11Z",
             "event": "ROUTE_SELECT",
@@ -2503,6 +2980,488 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_8zang36",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:17:15.690Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_3o7684t",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:56.581Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_h5xcfcd",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:34.031Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_qs4apao",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:28.906Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_tcznalg",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:13.139Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_flight_03",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_7hn0wzn",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:09.735Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_i8ll32n",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:07.020Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_dazzawg",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T21:16:07.013Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_ob8bgcp",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T19:19:39.561Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_4ok1z4g",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T19:19:38.136Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_h5zj1pw",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T19:02:24.380Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_s64yw12",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:44:46.056Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_BOOKING_DETAILS",
+      "metadata": {
+        "remark": "Opened Add / Edit Booking & Flights window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_nm9d9v5",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:44:39.443Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_44bga4k",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:44:32.339Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "CARD_DETAILS_VIEWED",
+      "metadata": {
+        "viewerRole": "CHARGING_MANAGER",
+        "cardLast4": "1018",
+        "ipAddress": "::ffff:127.0.0.1"
+      },
+      "id": "act_j2u3s84",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:21:49.351Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "WORKSPACE_WINDOW_CARD_VAULT",
+      "metadata": {
+        "remark": "Opened PCI Card Vault window by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_mfwkcjx",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:21:44.042Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_019r7cn",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:21:39.518Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_bvv86cw",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:21:18.148Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "TRANSITION_TO_QUALIFIED",
+      "fromState": "AUTHENTICATION_SENT",
+      "toState": "QUALIFIED",
+      "metadata": {
+        "remark": "[AUTO] Status transitioned from 'AUTHENTICATION_SENT' to 'QUALIFIED' by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)"
+      },
+      "id": "act_i9q69n1",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:20:27.812Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_cw3gv9j",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:19:54.140Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_11m1xwi",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:19:51.913Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_3xz2ciq",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:19:43.061Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_2k1eozj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:18:15.214Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_obqg7o1",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:17:43.031Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_EMAIL",
+      "metadata": {
+        "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_8gowy9c",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:17:34.745Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_yjgjmzp",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:17:15.234Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_ikkc2bt",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:16:49.052Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_EMAIL",
+      "metadata": {
+        "remark": "Opened Send Travel Mail window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_zrcdxoj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:16:40.397Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_m71d0oj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:16:20.805Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_s55to9o",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:16:11.391Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_m6olbex",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:15:59.444Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_zc8ayva",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-21T18:15:50.912Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_1e2blki",
@@ -4071,6 +5030,39 @@
   ],
   "auditLogs": [
     {
+      "actorId": "usr_charging_manager_mnveh",
+      "actorEmail": "claire.b@travelocase.com",
+      "action": "CARD_DETAILS_VIEWED",
+      "resource": "Lead:lead_xqil2py:CardVault",
+      "ipAddress": "::ffff:127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "actorName": "Claire Beauchamp",
+        "actorRole": "CHARGING_MANAGER",
+        "leadId": "lead_xqil2py",
+        "cardLast4": "1018",
+        "timestamp": "2026-09-21T18:21:49.351Z"
+      },
+      "id": "aud_bs1bx0t",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-21T18:21:49.351Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "LEAD_STAGE_TRANSITION",
+      "resource": "Lead:lead_1e2blki",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "from": "AUTHENTICATION_SENT",
+        "to": "QUALIFIED"
+      },
+      "id": "aud_l4ssbgp",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-09-21T18:20:27.812Z"
+    },
+    {
       "actorId": "SYSTEM",
       "actorEmail": "security@kritya.crm",
       "action": "CARD_ACCESS_AUTO_REVOKED",
@@ -5482,5 +6474,5 @@
   ],
   "roundRobinIndex": 6,
   "lastBookingNumber": 1013,
-  "lastPersistedAt": "2026-09-18T11:28:56.047Z"
+  "lastPersistedAt": "2026-09-28T21:17:16.752Z"
 }

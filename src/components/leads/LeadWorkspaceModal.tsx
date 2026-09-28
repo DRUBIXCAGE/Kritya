@@ -12,6 +12,7 @@ import {
   OFFICIAL_SENDER_NAME,
 } from "@/lib/templates";
 import { RichTextEmailEditor } from "@/components/common/RichTextEmailEditor";
+import { SimpleReservationView } from "./SimpleReservationView";
 import {
   Plane,
   CreditCard,
@@ -59,9 +60,10 @@ import {
   MessageSquare,
   Bot,
   History,
+  Copy,
 } from "lucide-react";
 
-export type WorkspaceWindow = "overview" | "email" | "booking_details" | "card_vault" | "audit";
+export type WorkspaceWindow = "overview" | "simple_view" | "email" | "booking_details" | "card_vault" | "audit";
 
 interface LeadWorkspaceModalProps {
   isOpen: boolean;
@@ -98,6 +100,9 @@ export function LeadWorkspaceModal({
   // Active Window / View in the Workspace
   const [activeWindow, setActiveWindow] = useState<WorkspaceWindow>(initialWindow || "overview");
 
+  // Ref to prevent duplicate auto-opening fingerprint loops
+  const hasLoggedOpenLeadIdRef = useRef<string | null>(null);
+
   // Helper to log any workspace sub-window or user interaction into digital fingerprints
   const logWorkspaceEvent = (event: string, remark: string, metadata?: Record<string, unknown>) => {
     if (!lead?.id || !currentUser?.id) return;
@@ -120,6 +125,8 @@ export function LeadWorkspaceModal({
   useEffect(() => {
     if (isOpen) {
       setActiveWindow(initialWindow || "overview");
+    } else {
+      hasLoggedOpenLeadIdRef.current = null;
     }
   }, [isOpen, initialWindow, lead?.id]);
 
@@ -128,9 +135,10 @@ export function LeadWorkspaceModal({
   const [isLoggingRemark, setIsLoggingRemark] = useState<boolean>(false);
   const [remarkSuccessMessage, setRemarkSuccessMessage] = useState<string | null>(null);
 
-  // Auto-log opening of the booking workspace into digital fingerprints if user hasn't entered a remark yet
+  // Auto-log opening of the booking workspace ONCE per session
   useEffect(() => {
-    if (isOpen && lead?.id && currentUser?.id) {
+    if (isOpen && lead?.id && currentUser?.id && hasLoggedOpenLeadIdRef.current !== lead.id) {
+      hasLoggedOpenLeadIdRef.current = lead.id;
       fetch(`/api/leads/${lead.id}/fingerprint`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -146,12 +154,34 @@ export function LeadWorkspaceModal({
     }
   }, [isOpen, lead?.id, currentUser?.id, currentUser?.name, currentUser?.role]);
 
+  // Duplicate / Clone Lead Handler
+  const handleDuplicateLead = async () => {
+    if (!lead || !currentUser) return;
+    try {
+      const res = await fetch("/api/leads/duplicate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId: lead.id, actorId: currentUser.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`✓ Cloned as new booking #${data.lead?.bookingNumber || data.lead?.bookingId || data.lead?.id}`);
+        await onRefresh();
+      } else {
+        alert(`Duplication failed: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("Duplicate error:", err);
+    }
+  };
+
   // Window Switcher with Automatic Fingerprint Tracking
   const handleSwitchWindow = (target: WorkspaceWindow) => {
     if (target === activeWindow) return;
     setActiveWindow(target);
     const windowTitles: Record<WorkspaceWindow, string> = {
       overview: "Overview Hub",
+      simple_view: "Simple Reservation Portal",
       email: "Send Travel Mail",
       booking_details: "Add / Edit Booking & Flights",
       card_vault: "PCI Card Vault",
@@ -887,9 +917,21 @@ export function LeadWorkspaceModal({
                 <option value="AUTHENTICATION_SENT" className="bg-white text-purple-700">AUTH MAIL SENT</option>
                 <option value="QUALIFIED" className="bg-white text-indigo-700">QUALIFIED</option>
                 <option value="SALE" className="bg-white text-emerald-700">SALE CONFIRMED</option>
+                <option value="TICKETING" className="bg-white text-teal-700 font-bold">TICKETING DESK</option>
+                <option value="DUPLICATE" className="bg-white text-slate-600">DUPLICATE</option>
                 <option value="CANCELLED" className="bg-white text-red-700">CANCELLED</option>
               </select>
             </div>
+
+            {/* Duplicate Lead Button */}
+            <button
+              onClick={handleDuplicateLead}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-300 font-semibold text-xs shadow-2xs transition cursor-pointer"
+              title="Duplicate this booking"
+            >
+              <Copy className="h-3.5 w-3.5 text-slate-500" />
+              <span>Duplicate</span>
+            </button>
 
             {/* Quick Button: Mark as SALE / Dispatch to Charging */}
             {lead.status !== "SALE" && lead.status !== "CHARGING" && lead.status !== "SUCCESS" && (
@@ -958,6 +1000,13 @@ export function LeadWorkspaceModal({
               </button>
             )}
 
+            {activeWindow === "simple_view" && (
+              <span className="flex items-center gap-1.5 font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md text-[11px]">
+                <Plane className="h-3 w-3" />
+                <span>Simple Reservation Portal</span>
+              </span>
+            )}
+
             {activeWindow === "email" && (
               <span className="flex items-center gap-1.5 font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md text-[11px]">
                 <Mail className="h-3 w-3" />
@@ -989,6 +1038,19 @@ export function LeadWorkspaceModal({
 
           {/* Window Quick Switcher Buttons in Sub-Bar */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+            {/* Direct Simple Reservation Portal Button */}
+            <button
+              onClick={() => handleSwitchWindow("simple_view")}
+              className={`px-3 py-1 rounded-md text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
+                activeWindow === "simple_view"
+                  ? "bg-blue-600 text-white"
+                  : "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-300"
+              }`}
+            >
+              <Sparkles className="h-3 w-3 text-blue-500" />
+              <span>Simple Portal</span>
+            </button>
+
             <button
               onClick={() => handleSwitchWindow("email")}
               className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer ${
@@ -1172,76 +1234,77 @@ export function LeadWorkspaceModal({
               )}
             </div>
 
-            {/* DASHBOARD CARDS GRID: Clean, organized booking overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* DASHBOARD OVERVIEW GRID: 2-Column Split Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
               
-              {/* Card 1: Route & Flight Segments (7 cols) */}
-              <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Plane className="h-4 w-4 text-indigo-600" />
-                    Flight Route & Schedule ({editFlights.length} Segments)
-                  </span>
-                  <button
-                    onClick={() => setActiveWindow("booking_details")}
-                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-                  >
-                    <Edit className="h-3 w-3" />
-                    <span>Edit Flights &rarr;</span>
-                  </button>
-                </div>
-
-                {/* Primary Route Banner */}
-                <div className="p-3.5 rounded-xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white flex flex-wrap items-center justify-between gap-3 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <span className="text-[10px] font-mono text-indigo-300 block uppercase">Origin</span>
-                      <span className="text-xl font-mono font-extrabold tracking-tight">{primaryOrigin}</span>
-                    </div>
-                    <div className="flex flex-col items-center px-2">
-                      <span className="text-[10px] font-mono text-indigo-300 uppercase">{editTripType}</span>
-                      <ArrowRight className="h-5 w-5 text-indigo-300 animate-pulse" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono text-indigo-300 block uppercase">Destination</span>
-                      <span className="text-xl font-mono font-extrabold tracking-tight">{primaryDest}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-[10px] font-mono text-indigo-300 block uppercase">{primaryAirline}</span>
-                    <span className="text-xs font-mono font-bold text-white block">{primaryDate}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/20 text-white mt-1 inline-block">
-                      PNR: {editPnrCode || booking?.pnrCode || "NX-PNR"}
+              {/* LEFT COLUMN (7 cols): Flight Itinerary, Fare & MCO, Passenger Manifest, Customer Card */}
+              <div className="lg:col-span-7 space-y-4">
+                {/* Card 1: Route & Flight Segments */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Plane className="h-4 w-4 text-indigo-600" />
+                      Flight Route & Schedule ({editFlights.length} Segments)
                     </span>
+                    <button
+                      onClick={() => setActiveWindow("booking_details")}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Edit Flights &rarr;</span>
+                    </button>
+                  </div>
+
+                  {/* Primary Route Banner */}
+                  <div className="p-3.5 rounded-xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <span className="text-[10px] font-mono text-indigo-300 block uppercase">Origin</span>
+                        <span className="text-xl font-mono font-extrabold tracking-tight">{primaryOrigin}</span>
+                      </div>
+                      <div className="flex flex-col items-center px-2">
+                        <span className="text-[10px] font-mono text-indigo-300 uppercase">{editTripType}</span>
+                        <ArrowRight className="h-5 w-5 text-indigo-300 animate-pulse" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-mono text-indigo-300 block uppercase">Destination</span>
+                        <span className="text-xl font-mono font-extrabold tracking-tight">{primaryDest}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-[10px] font-mono text-indigo-300 block uppercase">{primaryAirline}</span>
+                      <span className="text-xs font-mono font-bold text-white block">{primaryDate}</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/20 text-white mt-1 inline-block">
+                        PNR: {editPnrCode || booking?.pnrCode || "NX-PNR"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Multi-leg list */}
+                  <div className="space-y-2 pt-1">
+                    {editFlights.map((flt, idx) => (
+                      <div key={flt.id || idx} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
+                            {idx + 1}
+                          </span>
+                          <span className="font-bold text-slate-800 font-mono">{flt.origin} &rarr; {flt.destination}</span>
+                          <span className="text-[11px] text-slate-500 font-mono">({flt.airline} {flt.flightNumber})</span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">
+                            {flt.cabinClass}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-600 font-mono">
+                          📅 {flt.departureDate} {flt.departureTime ? `@ ${flt.departureTime}` : ""}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Multi-leg list */}
-                <div className="space-y-2 pt-1">
-                  {editFlights.map((flt, idx) => (
-                    <div key={flt.id || idx} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
-                          {idx + 1}
-                        </span>
-                        <span className="font-bold text-slate-800 font-mono">{flt.origin} &rarr; {flt.destination}</span>
-                        <span className="text-[11px] text-slate-500 font-mono">({flt.airline} {flt.flightNumber})</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">
-                          {flt.cabinClass}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-600 font-mono">
-                        📅 {flt.departureDate} {flt.departureTime ? `@ ${flt.departureTime}` : ""}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card 2: Fare Pricing & MCO Profit (5 cols) */}
-              <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3 flex flex-col justify-between">
-                <div>
+                {/* Card 2: Fare Pricing & MCO Profit */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                       <DollarSign className="h-4 w-4 text-emerald-600" />
@@ -1249,14 +1312,14 @@ export function LeadWorkspaceModal({
                     </span>
                     <button
                       onClick={() => setActiveWindow("booking_details")}
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
                     >
                       <Edit className="h-3 w-3" />
                       <span>Adjust &rarr;</span>
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2.5 pt-3">
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-[10px] text-slate-500 font-mono uppercase block">
                         {isConfirmed ? "Sale Price" : "Sale Price (Agent Quote)"}
@@ -1277,7 +1340,7 @@ export function LeadWorkspaceModal({
                   </div>
 
                   {/* Highlighted MCO Profit Banner */}
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-300 shadow-xs mt-2.5">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-300 shadow-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-emerald-800 font-mono font-bold uppercase block">
                         Agent MCO (Earned)
@@ -1297,273 +1360,297 @@ export function LeadWorkspaceModal({
                   </div>
                 </div>
 
-                <div className="pt-2">
-                  <button
-                    onClick={() => setActiveWindow("booking_details")}
-                    className="w-full py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
-                  >
-                    <Edit3 className="h-3.5 w-3.5" />
-                    <span>Open Price & MCO Calculator &rarr;</span>
-                  </button>
-                </div>
-              </div>
+                {/* Card 3: Passenger Manifest Summary */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Users className="h-4 w-4 text-indigo-600" />
+                      Passenger Manifest ({editPassengers.length} Travelers)
+                    </span>
+                    <button
+                      onClick={() => setActiveWindow("booking_details")}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="h-3 w-3" />
+                      <span>Add / Edit Pax &rarr;</span>
+                    </button>
+                  </div>
 
-              {/* Card 3: Passenger Manifest Summary (7 cols) */}
-              <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Users className="h-4 w-4 text-indigo-600" />
-                    Passenger Manifest ({editPassengers.length} Travelers)
-                  </span>
-                  <button
-                    onClick={() => setActiveWindow("booking_details")}
-                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-                  >
-                    <Plus className="h-3 w-3" />
-                    <span>Add / Edit Pax &rarr;</span>
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  {editPassengers.map((pax, idx) => (
-                    <div key={pax.id || idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
-                          {idx + 1}
-                        </span>
-                        <div>
-                          <span className="font-bold text-slate-900 block">{pax.fullName || "Passenger Name Pending"}</span>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            Type: {pax.type} &bull; Seat: {pax.seatPreference || "Auto"} &bull; Meal: {pax.mealPreference || "Standard"}
+                  <div className="space-y-2">
+                    {editPassengers.map((pax, idx) => (
+                      <div key={pax.id || idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="h-5 w-5 rounded-full bg-indigo-100 text-indigo-800 font-mono text-[10px] font-bold flex items-center justify-center">
+                            {idx + 1}
                           </span>
+                          <div>
+                            <span className="font-bold text-slate-900 block">{pax.fullName || "Passenger Name Pending"}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              Type: {pax.type} &bull; Seat: {pax.seatPreference || "Auto"} &bull; Meal: {pax.mealPreference || "Standard"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right font-mono text-[11px]">
+                          <span className="text-slate-600 block">Passport: {pax.passportNumber || "On File"}</span>
+                          {pax.eTicketNumber && (
+                            <span className="text-cyan-800 font-bold text-[10px] flex items-center gap-1">
+                              <FileBadge className="h-3 w-3 text-cyan-600 inline" />
+                              {pax.eTicketNumber}
+                            </span>
+                          )}
                         </div>
                       </div>
-
-                      <div className="text-right font-mono text-[11px]">
-                        <span className="text-slate-600 block">Passport: {pax.passportNumber || "On File"}</span>
-                        {pax.eTicketNumber && (
-                          <span className="text-cyan-800 font-bold text-[10px] flex items-center gap-1">
-                            <FileBadge className="h-3 w-3 text-cyan-600 inline" />
-                            {pax.eTicketNumber}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card 4: Customer Details & Card Snapshot (5 cols) */}
-              <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <UserCheck className="h-4 w-4 text-cyan-600" />
-                    Primary Customer & Security
-                  </span>
-                  <button
-                    onClick={() => setActiveWindow("booking_details")}
-                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-                  >
-                    <Edit className="h-3 w-3" />
-                    <span>Edit Contact &rarr;</span>
-                  </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                {/* Card 4: Customer Details & Card Snapshot */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Client Name</span>
-                    <span className="font-bold text-slate-900">{editName || lead.name}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Email</span>
-                    <span className="font-mono text-indigo-700 font-semibold truncate max-w-[200px]">{editEmail || lead.email}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Phone</span>
-                    <span className="font-mono text-slate-800 font-semibold">{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Assigned Agent</span>
-                    <span className={`font-semibold ${lead.assignedToName ? "text-indigo-700 font-bold" : "text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded text-[11px] font-bold"}`}>
-                      {lead.assignedToName || "⚠️ Unassigned (travelocase.com)"}
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <UserCheck className="h-4 w-4 text-cyan-600" />
+                      Primary Customer & Security
                     </span>
+                    <button
+                      onClick={() => setActiveWindow("booking_details")}
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Edit className="h-3 w-3" />
+                      <span>Edit Contact &rarr;</span>
+                    </button>
                   </div>
-                </div>
 
-                {/* Card Snapshot Bar */}
-                <div className="p-3 rounded-lg bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-cyan-400" />
-                    <div>
-                      <span className="text-[10px] font-mono text-slate-300 block uppercase">Payment Method</span>
-                      <span className="font-mono text-xs font-bold text-indigo-200">
-                        {isCardUnmasked && isAuthorizedToUnmask ? (card?.cardNumber || `4532 •••• •••• ${last4}`) : `•••• •••• •••• ${last4}`}
+                  <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 font-mono text-[10px] uppercase">Client Name</span>
+                      <span className="font-bold text-slate-900">{editName || lead.name}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 font-mono text-[10px] uppercase">Email</span>
+                      <span className="font-mono text-indigo-700 font-semibold truncate max-w-[200px]">{editEmail || lead.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 font-mono text-[10px] uppercase">Phone</span>
+                      <span className="font-mono text-slate-800 font-semibold">{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500 font-mono text-[10px] uppercase">Assigned Agent</span>
+                      <span className={`font-semibold ${lead.assignedToName ? "text-indigo-700 font-bold" : "text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded text-[11px] font-bold"}`}>
+                        {lead.assignedToName || "⚠️ Unassigned (travelocase.com)"}
                       </span>
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => setActiveWindow("card_vault")}
-                    className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold shadow-xs transition"
-                  >
-                    Open Vault &rarr;
-                  </button>
+                  {/* Card Snapshot Bar */}
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-cyan-400" />
+                      <div>
+                        <span className="text-[10px] font-mono text-slate-300 block uppercase">Payment Method</span>
+                        <span className="font-mono text-xs font-bold text-indigo-200">
+                          {isCardUnmasked && isAuthorizedToUnmask ? (card?.cardNumber || `4532 •••• •••• ${last4}`) : `•••• •••• •••• ${last4}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setActiveWindow("card_vault")}
+                      className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold shadow-xs transition cursor-pointer"
+                    >
+                      Open Vault &rarr;
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* ========================================================================= */}
-            {/* DIGITAL FINGERPRINTS & QUERY REMARKS SECTION                              */}
-            {/* ========================================================================= */}
-            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3.5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
-                    <History className="h-4 w-4" />
+              {/* RIGHT COLUMN (5 cols): DIGITAL FINGERPRINTS & QUERY REMARKS SIDEBAR */}
+              <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3.5 sticky top-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                      <History className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block">
+                        Digital Fingerprints & Query Remarks
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        Audit timeline & agent query notes
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 block">
-                      Digital Fingerprints & Query Remarks Feed
+
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      {lead.footprint?.clickstream?.length || 0} Events
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
-                      Every opening and action is automatically fingerprinted &bull; Add query remarks below
-                    </span>
+                    {lead.footprint?.ipAddress && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                        IP: {lead.footprint.ipAddress}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                    {lead.footprint?.clickstream?.length || 0} Fingerprint Entries
-                  </span>
-                  {lead.footprint?.ipAddress && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
-                      IP: {lead.footprint.ipAddress}
+                {/* Remark Success Banner */}
+                {remarkSuccessMessage && (
+                  <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-lg flex items-center justify-between animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                      <span>{remarkSuccessMessage}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Interactive Query Remark Composer */}
+                <form onSubmit={handleLogRemark} className="p-3 rounded-xl bg-gradient-to-r from-purple-50/60 via-indigo-50/50 to-slate-50 border border-purple-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                      <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
+                      <span>Enter Query Remark</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-slate-500">
+                      <strong className="text-slate-800">{currentUser.name}</strong>
                     </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <textarea
+                      rows={2}
+                      value={quickRemark}
+                      onChange={(e) => setQuickRemark(e.target.value)}
+                      placeholder="Add inquiry/call remark (e.g. 'Customer called regarding departure time, confirmed baggage allowance')..."
+                      className="w-full bg-white border border-purple-300 rounded-lg p-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs resize-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoggingRemark || !quickRemark.trim()}
+                      className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition active:scale-95 cursor-pointer"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      <span>{isLoggingRemark ? "Saving Remark..." : "Save Query Remark"}</span>
+                    </button>
+                  </div>
+                  <div className="text-[9.5px] text-slate-500 leading-tight font-mono">
+                    💡 All agent actions & views are tracked in the fingerprint ledger.
+                  </div>
+                </form>
+
+                {/* Fingerprints & Remarks Timeline - LATEST ON TOP */}
+                <div className="space-y-2 pt-1 max-h-[480px] overflow-y-auto pr-1">
+                  {(!lead.footprint?.clickstream || lead.footprint.clickstream.length === 0) ? (
+                    <div className="p-4 text-center text-xs text-slate-400 font-mono bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                      No fingerprint events recorded yet.
+                    </div>
+                  ) : (
+                    [...lead.footprint.clickstream]
+                      .sort((a, b) => {
+                        const timeA = new Date(a.timestamp).getTime();
+                        const timeB = new Date(b.timestamp).getTime();
+                        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+                      })
+                      .map((evt, idx) => {
+                        const isManualRemark = !evt.isAutoLogged && (Boolean(evt.remark) || evt.event === "QUERY_REMARK_RECORDED");
+                        const actorDisplayName = evt.actorName || (evt.isAutoLogged ? "System Sentinel" : (lead.assignedToName || "Sales Agent"));
+                        const actorDisplayRole = evt.actorRole || (evt.actorName ? "User" : "System");
+                        const remarkText = evt.remark || `Action '${evt.event.replace(/_/g, " ")}' recorded by ${actorDisplayName} (${actorDisplayRole})`;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`p-2.5 rounded-xl border transition text-xs space-y-1.5 ${
+                              isManualRemark
+                                ? "bg-amber-50/90 border-amber-300 shadow-2xs"
+                                : "bg-slate-50 border-slate-200 hover:bg-slate-100/70"
+                            }`}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-1">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {isManualRemark ? (
+                                  <span className="flex items-center gap-1 text-[9px] font-mono font-extrabold px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 border border-amber-300">
+                                    <MessageSquare className="h-2.5 w-2.5 text-amber-700" />
+                                    Remark
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 border border-slate-300">
+                                    <Bot className="h-2.5 w-2.5 text-indigo-600" />
+                                    Auto
+                                  </span>
+                                )}
+
+                                <span className="font-mono font-bold text-[10px] text-slate-900">
+                                  {evt.event.replace(/_/g, " ")}
+                                </span>
+                              </div>
+
+                              <div className="text-[9.5px] font-mono text-slate-500">
+                                <span title={evt.timestamp}>{formatRelativeTime(evt.timestamp)}</span>
+                              </div>
+                            </div>
+
+                            <div className="text-[10px] font-mono text-slate-600">
+                              Actor: <strong className="text-slate-800">{actorDisplayName}</strong> ({actorDisplayRole})
+                            </div>
+
+                            <div className={`p-2 rounded-lg text-xs leading-relaxed ${
+                              isManualRemark
+                                ? "bg-white border border-amber-300 text-amber-950 font-medium shadow-2xs"
+                                : "bg-white/80 border border-slate-200 text-slate-700"
+                            }`}>
+                              <div className="flex items-start gap-1.5">
+                                {isManualRemark ? (
+                                  <MessageSquare className="h-3 w-3 text-amber-600 shrink-0 mt-0.5" />
+                                ) : (
+                                  <Bot className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
+                                )}
+                                <span className="flex-1 break-words">{remarkText}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
                   )}
                 </div>
               </div>
-
-              {/* Remark Success Banner */}
-              {remarkSuccessMessage && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-lg flex items-center justify-between animate-in fade-in">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span>{remarkSuccessMessage}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Interactive Query Remark Composer */}
-              <form onSubmit={handleLogRemark} className="p-3 rounded-xl bg-gradient-to-r from-purple-50/50 via-indigo-50/40 to-slate-50 border border-purple-200/80 space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                    <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
-                    <span>Enter Query / Action Remark</span>
-                  </label>
-                  <span className="text-[10px] font-mono text-slate-500">
-                    Actor: <strong className="text-slate-800">{currentUser.name}</strong> ({currentUser.role})
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="text"
-                    value={quickRemark}
-                    onChange={(e) => setQuickRemark(e.target.value)}
-                    placeholder="Enter remark for this inquiry query (e.g., 'Discussed business class upgrade with client on phone')..."
-                    className="flex-1 bg-white border border-purple-300 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isLoggingRemark || !quickRemark.trim()}
-                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition active:scale-95 shrink-0 cursor-pointer"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    <span>{isLoggingRemark ? "Logging..." : "Log Query Remark"}</span>
-                  </button>
-                </div>
-                <div className="text-[10px] text-slate-500 flex items-center justify-between font-mono">
-                  <span>💡 If you do not enter a remark when opening/viewing, an auto-log entry is automatically created.</span>
-                  <span>Press Enter to Submit</span>
-                </div>
-              </form>
-
-              {/* Fingerprints & Remarks Timeline - LATEST ON TOP */}
-              <div className="space-y-2 pt-1 max-h-72 overflow-y-auto pr-1">
-                {(!lead.footprint?.clickstream || lead.footprint.clickstream.length === 0) ? (
-                  <div className="p-4 text-center text-xs text-slate-400 font-mono bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                    No fingerprint events recorded yet.
-                  </div>
-                ) : (
-                  [...lead.footprint.clickstream]
-                    .sort((a, b) => {
-                      const timeA = new Date(a.timestamp).getTime();
-                      const timeB = new Date(b.timestamp).getTime();
-                      return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
-                    })
-                    .map((evt, idx) => {
-                      const isManualRemark = !evt.isAutoLogged && (Boolean(evt.remark) || evt.event === "QUERY_REMARK_RECORDED");
-                      const actorDisplayName = evt.actorName || (evt.isAutoLogged ? "System Sentinel" : (lead.assignedToName || "Sales Agent"));
-                      const actorDisplayRole = evt.actorRole || (evt.actorName ? "User" : "System");
-                      const remarkText = evt.remark || `Action '${evt.event.replace(/_/g, " ")}' recorded by ${actorDisplayName} (${actorDisplayRole})`;
-
-                      return (
-                        <div
-                          key={idx}
-                          className={`p-3 rounded-xl border transition text-xs space-y-2 ${
-                            isManualRemark
-                              ? "bg-amber-50/80 border-amber-300 shadow-2xs"
-                              : "bg-slate-50/90 border-slate-200 hover:bg-slate-50"
-                          }`}
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-1.5">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {isManualRemark ? (
-                                <span className="flex items-center gap-1 text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-md bg-amber-200/90 text-amber-900 border border-amber-300">
-                                  <MessageSquare className="h-3 w-3 text-amber-700" />
-                                  Agent Remark
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 border border-slate-300">
-                                  <Bot className="h-3 w-3 text-indigo-600" />
-                                  Auto Logged
-                                </span>
-                              )}
-
-                              <span className="font-mono font-bold text-[11px] text-slate-900">
-                                {evt.event.replace(/_/g, " ")}
-                              </span>
-
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200">
-                                Actor: <strong className="text-slate-900">{actorDisplayName}</strong> ({actorDisplayRole})
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
-                              <span title={evt.timestamp}>{formatDate(evt.timestamp)} &bull; {formatRelativeTime(evt.timestamp)}</span>
-                            </div>
-                          </div>
-
-                          <div className={`p-2.5 rounded-lg text-xs leading-relaxed font-medium ${
-                            isManualRemark
-                              ? "bg-white border border-amber-300 text-amber-950 font-semibold shadow-2xs"
-                              : "bg-white/90 border border-slate-200 text-slate-800"
-                          }`}>
-                            <div className="flex items-start gap-2">
-                              {isManualRemark ? (
-                                <MessageSquare className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
-                              ) : (
-                                <Bot className="h-3.5 w-3.5 text-indigo-500 shrink-0 mt-0.5" />
-                              )}
-                              <span className="flex-1">{remarkText}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                )}
-              </div>
             </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* WINDOW: SIMPLE RESERVATION PORTAL VIEW (MATCHING SPEC)                    */}
+        {/* ========================================================================= */}
+        {activeWindow === "simple_view" && (
+          <div className="flex-1 overflow-y-auto bg-slate-50 flex flex-col">
+            <SimpleReservationView
+              lead={lead}
+              onRefresh={onRefresh}
+              onSaveLead={async (updatedLead) => {
+                try {
+                  await fetch(`/api/leads/${updatedLead.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      actorId: currentUser.id,
+                      name: updatedLead.name,
+                      email: updatedLead.email,
+                      alternateEmail: updatedLead.alternateEmail,
+                      phone: updatedLead.phone,
+                      alternatePhone: updatedLead.alternatePhone,
+                      address: updatedLead.address,
+                      state: updatedLead.state,
+                      city: updatedLead.city,
+                      postalCode: updatedLead.postalCode,
+                      country: updatedLead.country,
+                      bookingDetails: updatedLead.bookingDetails,
+                    }),
+                  });
+                  await onRefresh();
+                } catch (err) {
+                  console.error("Failed to update lead from SimpleReservationView:", err);
+                }
+              }}
+            />
           </div>
         )}
 

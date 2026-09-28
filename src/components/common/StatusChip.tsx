@@ -9,6 +9,8 @@ export function LeadStatusChip({ status }: { status: LeadStatus }) {
     QUALIFIED: { label: "QUALIFIED", class: "bg-indigo-50 text-indigo-700 border-indigo-200 font-medium", dot: "bg-indigo-600" },
     FINAL: { label: "FINAL / DISPATCH", class: "bg-amber-50 text-amber-800 border-amber-200 font-medium", dot: "bg-amber-600" },
     SALE: { label: "SALE CONFIRMED", class: "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold", dot: "bg-emerald-600" },
+    TICKETING: { label: "TICKETING DESK", class: "bg-teal-50 text-teal-800 border-teal-300 font-bold", dot: "bg-teal-600" },
+    DUPLICATE: { label: "DUPLICATE", class: "bg-slate-200 text-slate-700 border-slate-300 font-medium", dot: "bg-slate-500" },
     CANCELLED: { label: "CANCELLED", class: "bg-slate-100 text-slate-500 border-slate-300 line-through", dot: "bg-slate-400" },
     CHARGING: { label: "CHARGING QUEUE", class: "bg-cyan-50 text-cyan-800 border-cyan-200 font-medium", dot: "bg-cyan-600" },
     SUCCESS: { label: "TICKETS ISSUED (WON)", class: "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold", dot: "bg-emerald-600" },
