@@ -388,7 +388,7 @@
       "ticketPrice": 4200,
       "dealValue": 0,
       "currency": "USD",
-      "notes": "Flight inquiry booking #1013 submitted on travelocase.com (Unassigned - Pending Sales Manager Assignment). Ingested Ticket Price: $4200.",
+      "notes": "[9/29/2026 3:31:50 AM - Alex Thorne (Super Admin) (SUPER_ADMIN)]: Default Remark: Workspace reviewed and closed by Alex Thorne (Super Admin) (SUPER_ADMIN)\nFlight inquiry booking #1013 submitted on travelocase.com (Unassigned - Pending Sales Manager Assignment). Ingested Ticket Price: $4200.",
       "bookingDetails": {
         "origin": "LHR (London Heathrow)",
         "destination": "DEL (New Delhi Indira Gandhi)",
@@ -427,7 +427,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-18T07:38:48.047Z",
-      "updatedAt": "2026-09-21T18:21:18.148Z",
+      "updatedAt": "2026-09-28T22:01:50.786Z",
       "footprint": {
         "id": "fp_lead_1e2blki",
         "leadId": "lead_1e2blki",
@@ -440,6 +440,21 @@
         "utmMedium": "direct_booking",
         "utmCampaign": "travelocase_flights",
         "clickstream": [
+          {
+            "timestamp": "2026-09-28T22:01:50.786Z",
+            "event": "QUERY_REMARK_RECORDED",
+            "url": "/leads/lead_1e2blki",
+            "remark": "Default Remark: Workspace reviewed and closed by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+            "actorId": "usr_superadmin",
+            "actorName": "Alex Thorne (Super Admin)",
+            "actorRole": "SUPER_ADMIN",
+            "isAutoLogged": false,
+            "metadata": {
+              "bookingNumber": 1013,
+              "ipAddress": "::1",
+              "userAgent": "node"
+            }
+          },
           {
             "timestamp": "2026-09-21T18:21:18.148Z",
             "event": "BOOKING_WORKSPACE_CLOSED",
@@ -1082,7 +1097,7 @@
       "ticketPrice": 9500,
       "dealValue": 0,
       "currency": "USD",
-      "notes": "Flight inquiry booking #1011 ingested from website. Ingested Ticket Price: $9500.",
+      "notes": "[9/29/2026 3:35:56 AM - Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)]: Default Remark: Workspace reviewed and closed by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)\nFlight inquiry booking #1011 ingested from website. Ingested Ticket Price: $9500.",
       "bookingDetails": {
         "origin": "JFK (New York)",
         "destination": "LHR (London Heathrow)",
@@ -1122,7 +1137,7 @@
       "authEmailSent": false,
       "authCallConfirmed": false,
       "createdAt": "2026-09-14T06:31:42.502Z",
-      "updatedAt": "2026-09-18T07:11:34.439Z",
+      "updatedAt": "2026-09-28T22:05:57.213Z",
       "footprint": {
         "id": "fp_lead_jk6xjtc",
         "leadId": "lead_jk6xjtc",
@@ -1135,6 +1150,81 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-28T22:05:57.213Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:05:56.834Z",
+            "event": "QUERY_REMARK_RECORDED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Default Remark: Workspace reviewed and closed by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": false,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:05:37.157Z",
+            "event": "WORKSPACE_WINDOW_OVERVIEW",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:05:25.941Z",
+            "event": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:05:19.606Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_jk6xjtc",
+            "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1011,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-18T07:11:34.439Z",
             "event": "BOOKING_WORKSPACE_CLOSED",
@@ -1610,7 +1700,7 @@
       "status": "CHARGING",
       "dealValue": 19500,
       "currency": "USD",
-      "notes": "Flight inquiry booking #1008 ingested with passenger roster and card vault record.",
+      "notes": "[9/29/2026 3:35:10 AM - Claire Beauchamp (CHARGING_MANAGER)]: Default Remark: Workspace reviewed and closed by Claire Beauchamp (CHARGING_MANAGER)\nFlight inquiry booking #1008 ingested with passenger roster and card vault record.",
       "bookingDetails": {
         "origin": "LHR (London)",
         "destination": "DXB (Dubai)",
@@ -1649,7 +1739,7 @@
       "authEmailSent": true,
       "authCallConfirmed": false,
       "createdAt": "2026-09-11T10:14:33.732Z",
-      "updatedAt": "2026-09-28T21:16:07.020Z",
+      "updatedAt": "2026-09-28T22:05:10.786Z",
       "footprint": {
         "id": "fp_lead_xqil2py",
         "leadId": "lead_xqil2py",
@@ -1662,6 +1752,51 @@
         "utmMedium": "cpc",
         "utmCampaign": "luxury_business_routes",
         "clickstream": [
+          {
+            "timestamp": "2026-09-28T22:05:10.786Z",
+            "event": "BOOKING_WORKSPACE_CLOSED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:05:10.679Z",
+            "event": "QUERY_REMARK_RECORDED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Default Remark: Workspace reviewed and closed by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": false,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
+          {
+            "timestamp": "2026-09-28T22:04:56.099Z",
+            "event": "BOOKING_WORKSPACE_OPENED",
+            "url": "/leads/lead_xqil2py",
+            "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+            "actorId": "usr_charging_manager_mnveh",
+            "actorName": "Claire Beauchamp",
+            "actorRole": "CHARGING_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "bookingNumber": 1008,
+              "ipAddress": "::ffff:127.0.0.1",
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
+            }
+          },
           {
             "timestamp": "2026-09-28T21:16:07.020Z",
             "event": "BOOKING_WORKSPACE_CLOSED",
@@ -2980,6 +3115,141 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_g4ck606",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:57.213Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "QUERY_REMARK_RECORDED",
+      "metadata": {
+        "remark": "Default Remark: Workspace reviewed and closed by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": false
+      },
+      "id": "act_q7qs8ps",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:56.834Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_OVERVIEW",
+      "metadata": {
+        "remark": "Opened Overview Hub window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_k3q79jg",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:37.157Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "WORKSPACE_WINDOW_SIMPLE_VIEW",
+      "metadata": {
+        "remark": "Opened Simple Reservation Portal window by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_ipjnhqc",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:25.941Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_jk6xjtc",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_5frdlkv",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:19.606Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_CLOSED",
+      "metadata": {
+        "remark": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_twv653q",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:10.786Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "QUERY_REMARK_RECORDED",
+      "metadata": {
+        "remark": "Default Remark: Workspace reviewed and closed by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": false
+      },
+      "id": "act_om500de",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:05:10.679Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_xqil2py",
+      "actorId": "usr_charging_manager_mnveh",
+      "actorName": "Claire Beauchamp",
+      "actorRole": "CHARGING_MANAGER",
+      "action": "BOOKING_WORKSPACE_OPENED",
+      "metadata": {
+        "remark": "Booking workspace opened by Claire Beauchamp (CHARGING_MANAGER)",
+        "isAutoLogged": true
+      },
+      "id": "act_vpnr153",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:04:56.099Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_1e2blki",
+      "actorId": "usr_superadmin",
+      "actorName": "Alex Thorne (Super Admin)",
+      "actorRole": "SUPER_ADMIN",
+      "action": "QUERY_REMARK_RECORDED",
+      "metadata": {
+        "remark": "Default Remark: Workspace reviewed and closed by Alex Thorne (Super Admin) (SUPER_ADMIN)",
+        "isAutoLogged": false
+      },
+      "id": "act_0m5zo26",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-09-28T22:01:50.786Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_flight_03",
@@ -6474,5 +6744,5 @@
   ],
   "roundRobinIndex": 6,
   "lastBookingNumber": 1013,
-  "lastPersistedAt": "2026-09-28T21:17:16.752Z"
+  "lastPersistedAt": "2026-09-28T22:05:58.047Z"
 }

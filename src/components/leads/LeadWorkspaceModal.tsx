@@ -61,6 +61,7 @@ import {
   Bot,
   History,
   Copy,
+  Loader2,
 } from "lucide-react";
 
 export type WorkspaceWindow = "overview" | "simple_view" | "email" | "booking_details" | "card_vault" | "audit";
@@ -121,19 +122,35 @@ export function LeadWorkspaceModal({
     }).catch((err) => console.error("Auto-fingerprint error:", err));
   };
 
-  // Sync activeWindow when initialWindow or lead changes
+  // Query Remark State & Session Enforcement
+  const [quickRemark, setQuickRemark] = useState<string>("");
+  const quickRemarkRef = useRef<string>("");
+  const [isLoggingRemark, setIsLoggingRemark] = useState<boolean>(false);
+  const [remarkSuccessMessage, setRemarkSuccessMessage] = useState<string | null>(null);
+  const hasEnteredRemarkRef = useRef<boolean>(false);
+  const [hasEnteredRemark, setHasEnteredRemark] = useState<boolean>(false);
+  const isClosingRef = useRef<boolean>(false);
+  const [isClosing, setIsClosing] = useState<boolean>(false);
+
+  // Keep quickRemarkRef in sync with quickRemark state
+  useEffect(() => {
+    quickRemarkRef.current = quickRemark;
+  }, [quickRemark]);
+
+  // Sync activeWindow and reset remark tracking when initialWindow, lead, or modal opens
   useEffect(() => {
     if (isOpen) {
       setActiveWindow(initialWindow || "overview");
+      hasEnteredRemarkRef.current = false;
+      setHasEnteredRemark(false);
+      setQuickRemark("");
+      quickRemarkRef.current = "";
+      isClosingRef.current = false;
+      setIsClosing(false);
     } else {
       hasLoggedOpenLeadIdRef.current = null;
     }
   }, [isOpen, initialWindow, lead?.id]);
-
-  // Query Remark State
-  const [quickRemark, setQuickRemark] = useState<string>("");
-  const [isLoggingRemark, setIsLoggingRemark] = useState<boolean>(false);
-  const [remarkSuccessMessage, setRemarkSuccessMessage] = useState<string | null>(null);
 
   // Auto-log opening of the booking workspace ONCE per session
   useEffect(() => {
@@ -193,24 +210,86 @@ export function LeadWorkspaceModal({
     );
   };
 
-  // Close Workspace Handler with Action Logging
-  const handleCloseWorkspace = () => {
+  // Close Workspace Handler with Default Remark Enforcement if not entered by user
+  const handleCloseWorkspace = async () => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    setIsClosing(true);
+
     if (lead?.id && currentUser?.id) {
-      fetch(`/api/leads/${lead.id}/fingerprint`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          event: "BOOKING_WORKSPACE_CLOSED",
-          actorId: currentUser.id,
-          actorName: currentUser.name,
-          actorRole: currentUser.role,
-          isAutoLogged: true,
-          remark: `Closed booking workspace by ${currentUser.name} (${currentUser.role})`,
-        }),
-      }).catch(() => {});
+      try {
+        const pendingRemark = quickRemarkRef.current.trim();
+        const alreadyEnteredRemark = hasEnteredRemarkRef.current;
+
+        // 1. If user typed a remark before closing, save that remark as manual query remark
+        if (pendingRemark) {
+          await fetch(`/api/leads/${lead.id}/fingerprint`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event: "QUERY_REMARK_RECORDED",
+              actorId: currentUser.id,
+              actorName: currentUser.name,
+              actorRole: currentUser.role,
+              isAutoLogged: false,
+              remark: pendingRemark,
+            }),
+          });
+          hasEnteredRemarkRef.current = true;
+          setHasEnteredRemark(true);
+        } else if (!alreadyEnteredRemark) {
+          // 2. If not entered by the user before closing, enter default remark
+          const defaultRemark = `Default Remark: Workspace reviewed and closed by ${currentUser.name} (${currentUser.role})`;
+          await fetch(`/api/leads/${lead.id}/fingerprint`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event: "QUERY_REMARK_RECORDED",
+              actorId: currentUser.id,
+              actorName: currentUser.name,
+              actorRole: currentUser.role,
+              isAutoLogged: false,
+              remark: defaultRemark,
+            }),
+          });
+        }
+
+        // 3. Log the workspace closed telemetry event
+        await fetch(`/api/leads/${lead.id}/fingerprint`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "BOOKING_WORKSPACE_CLOSED",
+            actorId: currentUser.id,
+            actorName: currentUser.name,
+            actorRole: currentUser.role,
+            isAutoLogged: true,
+            remark: `Closed booking workspace by ${currentUser.name} (${currentUser.role})`,
+          }),
+        });
+
+        await onRefresh();
+      } catch (err) {
+        console.error("Failed to log remark on workspace close:", err);
+      }
     }
+
+    isClosingRef.current = false;
+    setIsClosing(false);
     onClose();
   };
+
+  // Keyboard shortcut: Escape closes workspace modal triggering remark enforcement
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleCloseWorkspace();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, lead?.id, currentUser?.id]);
 
   // Cancel / Discard Edit Handler with Action Logging
   const handleCancelEdit = () => {
@@ -650,6 +729,8 @@ export function LeadWorkspaceModal({
       if (!data.success) {
         alert("Failed to log remark: " + (data.error || "Unknown error"));
       } else {
+        hasEnteredRemarkRef.current = true;
+        setHasEnteredRemark(true);
         setQuickRemark("");
         setRemarkSuccessMessage("✓ Remark added to digital fingerprint timeline!");
         setTimeout(() => setRemarkSuccessMessage(null), 3500);
@@ -708,6 +789,10 @@ export function LeadWorkspaceModal({
       } else {
         if (data.lead) {
           loadedLeadIdRef.current = data.lead.id;
+        }
+        if (editNotes.trim() && editNotes.trim() !== (lead.notes || "").trim()) {
+          hasEnteredRemarkRef.current = true;
+          setHasEnteredRemark(true);
         }
         setSaveSuccessMessage("✓ All booking details & flights saved successfully!");
         setTimeout(() => setSaveSuccessMessage(null), 4000);
@@ -808,7 +893,14 @@ export function LeadWorkspaceModal({
   const primaryDate = editFlights[0]?.departureDate || booking?.departureDate || "Pending";
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col sm:p-2 md:p-4 sm:items-center sm:justify-center bg-slate-900/60 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          handleCloseWorkspace();
+        }
+      }}
+      className="fixed inset-0 z-50 flex flex-col sm:p-2 md:p-4 sm:items-center sm:justify-center bg-slate-900/60 backdrop-blur-sm overflow-hidden animate-in fade-in duration-200"
+    >
       <div className="relative w-full max-w-7xl h-full sm:h-[94vh] rounded-none sm:rounded-2xl border-0 sm:border border-slate-200 bg-slate-100/90 shadow-2xl flex flex-col text-slate-900 overflow-hidden">
         
         {/* ========================================================================= */}
@@ -860,10 +952,11 @@ export function LeadWorkspaceModal({
             {/* Mobile Close Button in Header Corner */}
             <button
               onClick={handleCloseWorkspace}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition sm:hidden shrink-0"
-              title="Close Workspace Window"
+              disabled={isClosing}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition sm:hidden shrink-0 disabled:opacity-50 cursor-pointer"
+              title="Close Workspace Window (enters default remark if empty)"
             >
-              <X className="h-5 w-5" />
+              {isClosing ? <Loader2 className="h-5 w-5 animate-spin text-slate-600" /> : <X className="h-5 w-5" />}
             </button>
           </div>
 
@@ -947,10 +1040,11 @@ export function LeadWorkspaceModal({
             {/* Close Full Window Button (Desktop) */}
             <button
               onClick={handleCloseWorkspace}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition hidden sm:block cursor-pointer"
-              title="Close Workspace Window"
+              disabled={isClosing}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition hidden sm:block cursor-pointer disabled:opacity-50"
+              title="Close Workspace Window (enters default remark if empty)"
             >
-              <X className="h-5 w-5" />
+              {isClosing ? <Loader2 className="h-5 w-5 animate-spin text-slate-600" /> : <X className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -1520,7 +1614,7 @@ export function LeadWorkspaceModal({
                       rows={2}
                       value={quickRemark}
                       onChange={(e) => setQuickRemark(e.target.value)}
-                      placeholder="Add inquiry/call remark (e.g. 'Customer called regarding departure time, confirmed baggage allowance')..."
+                      placeholder="Add inquiry/call remark (or default remark will be automatically logged when closing)..."
                       className="w-full bg-white border border-purple-300 rounded-lg p-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs resize-none"
                     />
                     <button
@@ -1532,8 +1626,21 @@ export function LeadWorkspaceModal({
                       <span>{isLoggingRemark ? "Saving Remark..." : "Save Query Remark"}</span>
                     </button>
                   </div>
-                  <div className="text-[9.5px] text-slate-500 leading-tight font-mono">
-                    💡 All agent actions & views are tracked in the fingerprint ledger.
+                  <div className="flex items-center justify-between text-[9.5px] text-slate-500 leading-tight font-mono">
+                    <span>💡 Action & audit fingerprint ledger</span>
+                    <span className={hasEnteredRemark ? "text-emerald-700 font-semibold flex items-center gap-1" : "text-purple-700 font-semibold flex items-center gap-1"}>
+                      {hasEnteredRemark ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                          <span>Remark recorded this session</span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-3 w-3 text-purple-600" />
+                          <span>Default remark auto-logs on close if empty</span>
+                        </>
+                      )}
+                    </span>
                   </div>
                 </form>
 
@@ -1624,6 +1731,7 @@ export function LeadWorkspaceModal({
           <div className="flex-1 overflow-y-auto bg-slate-50 flex flex-col">
             <SimpleReservationView
               lead={lead}
+              onClose={handleCloseWorkspace}
               onRefresh={onRefresh}
               onSaveLead={async (updatedLead) => {
                 try {
