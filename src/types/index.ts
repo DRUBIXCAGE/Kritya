@@ -59,6 +59,9 @@ export interface User {
   role: Role;
   avatarUrl?: string;
   isActive: boolean;
+  rcExtension?: string; // Assigned RingCentral extension (e.g. "101", "102")
+  rcDirectNumber?: string; // RingCentral direct inward dialing (DID) number
+  rcStatus?: "AVAILABLE" | "BUSY" | "ON_CALL" | "OFFLINE";
   createdAt: string;
 }
 
@@ -247,6 +250,12 @@ export interface Lead {
   footprint?: LeadFootprint;
   emailVerification?: EmailVerification;
   transactionCount?: number;
+  ppcSource?: string;
+  ppcCampaign?: string;
+  ppcKeyword?: string;
+  ppcChannel?: "CALL_INBOUND" | "LANDING_PAGE_FORM" | "SEARCH_AD" | "RETARGETING" | string;
+  ppcGclid?: string;
+  lastRemarkSnippet?: string;
 }
 
 export interface TransactionVerificationChecklist {
@@ -376,5 +385,63 @@ export interface ChatChannel {
   icon?: string;
   minRole?: Role;
   unreadCount?: number;
+}
+
+export type CallDirection = "INBOUND" | "OUTBOUND";
+export type CallStatus = "RINGING" | "ANSWERED" | "COMPLETED" | "MISSED" | "REJECTED" | "VOICEMAIL";
+export type CallSentiment = "POSITIVE" | "NEUTRAL" | "URGENT" | "FRUSTRATED";
+
+export type CallDisposition =
+  | "BOOKING_INQUIRY"
+  | "FLIGHT_RESERVATION_SALE"
+  | "PAYMENT_CONFIRMATION"
+  | "ITINERARY_CHANGE"
+  | "CANCELLATION_REQUEST"
+  | "FOLLOW_UP_REQUIRED"
+  | "PRICE_QUOTE_GIVEN"
+  | "LEFT_VOICEMAIL"
+  | "CUSTOMER_BUSY"
+  | "WRONG_NUMBER"
+  | "NOT_INTERESTED"
+  | "GENERAL_SUPPORT";
+
+export interface CallLog {
+  id: string;
+  tenantId: string;
+  agentId: string;
+  agentName: string;
+  agentExtension: string; // The extension assigned to the agent (e.g. "101")
+  agentRole?: Role;
+  leadId?: string; // Linked CRM lead ID if matched or created
+  leadBookingNumber?: number; // Sequential booking number (e.g. 1001)
+  callerNumber: string; // From number (e.g. customer phone or agent DID)
+  calleeNumber: string; // To number (e.g. destination number or extension)
+  direction: CallDirection; // INBOUND or OUTBOUND
+  status: CallStatus;
+  startTime: string;
+  endTime?: string;
+  durationSeconds: number; // Call duration in seconds
+  disposition?: CallDisposition | string; // Disposition chosen by the agent
+  notes?: string; // Detailed notes entered by agent during/after the call
+  leadDetailsEntered: boolean; // Flag indicating if agent entered lead details
+  rcSessionId?: string; // RingCentral telephony session ID
+  transferredToExtension?: string; // Target extension if transferred
+  transferredToAgentName?: string; // Target agent name if transferred
+  transferredFromExtension?: string; // Origin extension if transferred
+  transferredAt?: string; // Transfer timestamp
+  isMuted?: boolean; // In-call mute flag
+  telephonyStatus?: string; // e.g. "Ringing", "Connected", "Disconnected", "Transferred"
+  recordingUrl?: string; // Mock or RingCentral recording URL
+  sentiment?: CallSentiment;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RingCentralConfig {
+  clientId?: string;
+  serverUrl?: string;
+  mainPhoneNumber?: string;
+  isConnected: boolean;
+  activeExtensionsCount: number;
 }
 

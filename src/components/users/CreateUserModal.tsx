@@ -23,6 +23,7 @@ import {
   Briefcase,
   Layers,
   ArrowRight,
+  Phone,
 } from "lucide-react";
 
 interface CreateUserModalProps {
@@ -55,6 +56,8 @@ export function CreateUserModal({
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>(allowedRoles[0] || "SALES_AGENT");
+  const [rcExtension, setRcExtension] = useState("");
+  const [rcDirectNumber, setRcDirectNumber] = useState("");
   const [avatarUrl, setAvatarUrl] = useState(AVATAR_PRESETS[0].url);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -118,6 +121,8 @@ export function CreateUserModal({
           email: email.trim().toLowerCase() || (isAgentRole ? `${cleanUsername}@travelocase.com` : undefined),
           role,
           avatarUrl,
+          rcExtension: rcExtension.trim() || undefined,
+          rcDirectNumber: rcDirectNumber.trim() || undefined,
         }),
       });
 
@@ -331,6 +336,41 @@ export function CreateUserModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required={!isAgentRole}
+                className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* RingCentral Extension & Direct Number */}
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <Phone className="h-3.5 w-3.5 text-indigo-600" />
+                  RingCentral Extension:
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">Auto-assigned if blank</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 109"
+                value={rcExtension}
+                onChange={(e) => setRcExtension(e.target.value)}
+                className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <Phone className="h-3.5 w-3.5 text-indigo-600" />
+                  Direct Inward Dialing (DID):
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">Optional</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. +1 (800) 555-0109"
+                value={rcDirectNumber}
+                onChange={(e) => setRcDirectNumber(e.target.value)}
                 className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>

@@ -33,9 +33,14 @@ import {
   EyeOff,
   Edit,
   Copy,
+  MessageSquare,
+  Target,
+  Phone,
 } from "lucide-react";
 
-import { AgentMonthlyPerformanceCard } from "./AgentMonthlyPerformanceCard";
+import { AgentDashboardView } from "./AgentDashboardView";
+import { ManagerDashboardView } from "./ManagerDashboardView";
+import { QuickRemarkModal } from "../common/QuickRemarkModal";
 
 interface SalesViewProps {
   leads: Lead[];
@@ -44,6 +49,7 @@ interface SalesViewProps {
   onSelectLead: (lead: Lead, windowType?: "overview" | "simple_view" | "email" | "booking_details" | "card_vault" | "audit") => void;
   selectedLeadId?: string;
   onOpenIngestModal: () => void;
+  onOpenPpcModal?: () => void;
   onTransitionLead: (leadId: string, targetStatus: LeadStatus) => Promise<void>;
   onRefresh?: () => Promise<void>;
 }
@@ -58,6 +64,7 @@ export function SalesView({
   onSelectLead,
   selectedLeadId,
   onOpenIngestModal,
+  onOpenPpcModal,
   onTransitionLead,
   onRefresh,
 }: SalesViewProps) {
@@ -82,6 +89,16 @@ export function SalesView({
       return nextVal;
     });
   };
+
+  // Dashboard Role Mode State
+  const isSalesAgent = currentUser.role === "SALES_AGENT";
+  const [managerDashboardMode, setManagerDashboardMode] = useState<"team" | "agent">(
+    isSalesAgent ? "agent" : "team"
+  );
+  const [selectedAgentId, setSelectedAgentId] = useState<string>(
+    isSalesAgent ? currentUser.id : "ALL"
+  );
+  const [quickRemarkLead, setQuickRemarkLead] = useState<Lead | null>(null);
 
   // Lead Multi-Select & Assignment State
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
@@ -329,19 +346,34 @@ export function SalesView({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col min-w-0 bg-slate-50 xl:overflow-hidden">
-      {/* Top Section: Individual Sales and Performance Details on a Monthly Basis */}
+      {/* Top Section: Dedicated Dashboards for Agent and Manager */}
       {showSummaryDashboard && (
-        <AgentMonthlyPerformanceCard
-          leads={leads}
-          currentUser={currentUser}
-          users={users}
-          onHide={() => handleToggleSummaryDashboard(false)}
-        />
+        isSalesAgent || managerDashboardMode === "agent" ? (
+          <AgentDashboardView
+            leads={leads}
+            currentUser={currentUser}
+            onOpenPpcModal={onOpenPpcModal || onOpenIngestModal}
+            onOpenQuickRemark={(lead) => setQuickRemarkLead(lead)}
+            onSelectLead={(lead, win) => onSelectLead(lead, win as any)}
+          />
+        ) : (
+          <ManagerDashboardView
+            leads={leads}
+            currentUser={currentUser}
+            users={users}
+            onOpenPpcModal={onOpenPpcModal || onOpenIngestModal}
+            onOpenQuickRemark={(lead) => setQuickRemarkLead(lead)}
+            onSelectLead={(lead, win) => onSelectLead(lead, win as any)}
+            onRefresh={onRefresh}
+            selectedAgentId={selectedAgentId}
+            onSelectAgentId={setSelectedAgentId}
+          />
+        )
       )}
 
       {/* Primary Toolbar: Search + Stage Filter Buttons */}
       <div className="p-3 border-b border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-white">
-        <div className="flex items-center gap-2 flex-1 max-w-lg w-full">
+        <div className="flex items-center gap-2 flex-1 max-w-2xl w-full flex-wrap">
           {/* Toggle Summarized Dashboard Button */}
           <button
             type="button"
@@ -367,6 +399,46 @@ export function SalesView({
               </>
             )}
           </button>
+
+          {/* Dual Mode Switcher for Managers */}
+          {!isSalesAgent && showSummaryDashboard && (
+            <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs font-semibold shrink-0 border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setManagerDashboardMode("team")}
+                className={`px-2 py-1 rounded-md transition ${
+                  managerDashboardMode === "team"
+                    ? "bg-white text-indigo-700 shadow-xs font-bold"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                👥 Manager Command
+              </button>
+              <button
+                type="button"
+                onClick={() => setManagerDashboardMode("agent")}
+                className={`px-2 py-1 rounded-md transition ${
+                  managerDashboardMode === "agent"
+                    ? "bg-white text-indigo-700 shadow-xs font-bold"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                👤 Agent Desk
+              </button>
+            </div>
+          )}
+
+          {/* Quick Ingest PPC Lead button in toolbar */}
+          {onOpenPpcModal && (
+            <button
+              type="button"
+              onClick={onOpenPpcModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition shrink-0 active:scale-95 cursor-pointer"
+            >
+              <Target className="h-3.5 w-3.5 text-indigo-600" />
+              <span>+ PPC Lead</span>
+            </button>
+          )}
 
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -677,17 +749,30 @@ export function SalesView({
                       </td>
                     )}
                     <td className="py-2.5 px-3">
-                      <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                      <div className="font-semibold text-slate-900 flex items-center gap-1.5 flex-wrap">
                         <span className="font-mono text-[10px] sm:text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded shadow-xs">
                           #{lead.bookingNumber || 1001}
                         </span>
                         <span className="truncate max-w-[150px] sm:max-w-none">{lead.name}</span>
+                        {/* PPC Campaign Badge */}
+                        {(lead.ppcSource || lead.ppcChannel) && (
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-purple-100 text-purple-800 border border-purple-300">
+                            {lead.ppcChannel === "CALL_INBOUND" ? "📞 PPC Call" : "🎯 PPC Ad"}
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-indigo-700 font-mono flex items-center gap-1.5 mt-0.5">
                         <span className="text-slate-600 font-semibold">{booking?.pnrCode || "NX-PNR"}</span>
                         <span>&bull;</span>
                         <span className="text-slate-500 truncate max-w-[130px]">{lead.phone || lead.email}</span>
                       </div>
+                      {/* Latest Logged Remark Preview */}
+                      {lead.lastRemarkSnippet && (
+                        <div className="text-[10px] text-slate-500 truncate max-w-[240px] italic mt-0.5 flex items-center gap-1" title={lead.lastRemarkSnippet}>
+                          <MessageSquare className="h-2.5 w-2.5 text-indigo-500 shrink-0" />
+                          <span className="truncate">{lead.lastRemarkSnippet}</span>
+                        </div>
+                      )}
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="font-mono text-xs font-bold text-slate-800 flex items-center gap-1">
@@ -804,6 +889,46 @@ export function SalesView({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
+                            setQuickRemarkLead(lead);
+                          }}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                          title="Record quick query remark note"
+                        >
+                          <MessageSquare className="h-3 w-3 text-indigo-600" />
+                          <span>Remark</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            const num = lead.phone || "+1 (555) 019-2834";
+                            try {
+                              await fetch("/api/ringcentral/dial", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  agentId: currentUser.id,
+                                  targetNumber: num,
+                                  leadId: lead.id,
+                                  leadBookingNumber: lead.bookingNumber,
+                                }),
+                              });
+                            } catch (err) {
+                              console.error("Dial failed:", err);
+                            }
+                          }}
+                          className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-md border border-emerald-200 transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                          title={`Call via RingCentral (Ext ${currentUser.rcExtension || "101"})`}
+                        >
+                          <Phone className="h-3 w-3 text-emerald-600" />
+                          <span>Call</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             onSelectLead(lead, "simple_view");
                           }}
                           className="px-2 py-1 text-[10px] sm:text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200 transition shadow-2xs flex items-center gap-1"
@@ -870,6 +995,17 @@ export function SalesView({
           </tbody>
         </table>
       </div>
+
+      {/* Inline Quick Remark Modal */}
+      <QuickRemarkModal
+        isOpen={!!quickRemarkLead}
+        lead={quickRemarkLead}
+        currentUser={currentUser}
+        onClose={() => setQuickRemarkLead(null)}
+        onSuccess={async () => {
+          if (onRefresh) await onRefresh();
+        }}
+      />
     </div>
   );
 }

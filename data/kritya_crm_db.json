@@ -9,7 +9,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-01T00:00:00Z",
-      "username": "super.admin"
+      "username": "super.admin",
+      "rcExtension": "100",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0100"
     },
     {
       "id": "usr_admin",
@@ -21,7 +24,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-10T00:00:00Z",
-      "username": "admin.rachel"
+      "username": "admin.rachel",
+      "rcExtension": "103",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0103"
     },
     {
       "id": "usr_sales_mgr",
@@ -33,7 +39,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-15T00:00:00Z",
-      "username": "marcus.brooks"
+      "username": "marcus.brooks",
+      "rcExtension": "102",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0102"
     },
     {
       "id": "usr_sales_agent1",
@@ -45,7 +54,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-20T00:00:00Z",
-      "username": "sarah.chen"
+      "username": "sarah.chen",
+      "rcExtension": "101",
+      "rcStatus": "ON_CALL",
+      "rcDirectNumber": "+1 (800) 555-0101"
     },
     {
       "id": "usr_sales_agent2",
@@ -57,7 +69,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-02-01T00:00:00Z",
-      "username": "david.miller"
+      "username": "david.miller",
+      "rcExtension": "104",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0104"
     },
     {
       "id": "usr_charging_mgr",
@@ -69,7 +84,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-18T00:00:00Z",
-      "username": "elena.rostova"
+      "username": "elena.rostova",
+      "rcExtension": "105",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0105"
     },
     {
       "id": "usr_charging_op",
@@ -81,7 +99,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-02-10T00:00:00Z",
-      "username": "lucas.silva"
+      "username": "lucas.silva",
+      "rcExtension": "106",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0106"
     },
     {
       "id": "usr_cs_mgr",
@@ -93,7 +114,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-01-22T00:00:00Z",
-      "username": "chloe.dupont"
+      "username": "chloe.dupont",
+      "rcExtension": "107",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0107"
     },
     {
       "id": "usr_cs_agent",
@@ -105,7 +129,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-02-15T00:00:00Z",
-      "username": "sam.patel"
+      "username": "sam.patel",
+      "rcExtension": "108",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0108"
     },
     {
       "id": "usr_admin_oveza",
@@ -117,7 +144,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.775Z",
-      "username": "victoria.v"
+      "username": "victoria.v",
+      "rcExtension": "119",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0119"
     },
     {
       "id": "usr_sales_manager_1z3sy",
@@ -129,7 +159,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.785Z",
-      "username": "julian.s"
+      "username": "julian.s",
+      "rcExtension": "120",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0120"
     },
     {
       "id": "usr_sales_agent_py58e",
@@ -141,7 +174,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.794Z",
-      "username": "oliver.t"
+      "username": "oliver.t",
+      "rcExtension": "121",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0121"
     },
     {
       "id": "usr_charging_manager_mnveh",
@@ -153,7 +189,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.802Z",
-      "username": "claire.b"
+      "username": "claire.b",
+      "rcExtension": "122",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0122"
     },
     {
       "id": "usr_cs_agent_d2iph",
@@ -165,7 +204,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.812Z",
-      "username": "liam.h"
+      "username": "liam.h",
+      "rcExtension": "123",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0123"
     },
     {
       "id": "usr_sales_agent_rjwzv",
@@ -177,7 +219,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:14:26.834Z",
-      "username": "sophie.m"
+      "username": "sophie.m",
+      "rcExtension": "124",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0124"
     },
     {
       "id": "usr_sales_agent_y5pzw",
@@ -189,7 +234,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:12.686Z",
-      "username": "test.no.user"
+      "username": "test.no.user",
+      "rcExtension": "125",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0125"
     },
     {
       "id": "usr_sales_manager_0c4dx",
@@ -201,7 +249,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:12.700Z",
-      "username": "test.mgr.2690.corp"
+      "username": "test.mgr.2690.corp",
+      "rcExtension": "126",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0126"
     },
     {
       "id": "usr_admin_5g2qt",
@@ -213,7 +264,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:12.718Z",
-      "username": "test.admin.2704.ops"
+      "username": "test.admin.2704.ops",
+      "rcExtension": "127",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0127"
     },
     {
       "id": "usr_cs_manager_ppoe4",
@@ -225,7 +279,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:12.743Z",
-      "username": "mgr.nousername.2735"
+      "username": "mgr.nousername.2735",
+      "rcExtension": "128",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0128"
     },
     {
       "id": "usr_sales_manager_len71",
@@ -237,7 +294,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:32.945Z",
-      "username": "test.mgr.2938.corp"
+      "username": "test.mgr.2938.corp",
+      "rcExtension": "129",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0129"
     },
     {
       "id": "usr_admin_qe2vc",
@@ -249,7 +309,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:32.955Z",
-      "username": "test.admin.2947.ops"
+      "username": "test.admin.2947.ops",
+      "rcExtension": "130",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0130"
     },
     {
       "id": "usr_cs_manager_cmrd9",
@@ -261,7 +324,10 @@
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
       "createdAt": "2026-09-11T10:20:32.972Z",
-      "username": "mgr.nousername.2964"
+      "username": "mgr.nousername.2964",
+      "rcExtension": "131",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0131"
     },
     {
       "id": "usr_sales_agent_xpgob",
@@ -273,7 +339,10 @@
       "role": "SALES_AGENT",
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:21:05.515Z"
+      "createdAt": "2026-09-11T10:21:05.515Z",
+      "rcExtension": "132",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0132"
     },
     {
       "id": "usr_sales_manager_yvwag",
@@ -285,7 +354,10 @@
       "role": "SALES_MANAGER",
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:21:05.547Z"
+      "createdAt": "2026-09-11T10:21:05.547Z",
+      "rcExtension": "133",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0133"
     },
     {
       "id": "usr_admin_pkpqp",
@@ -297,7 +369,10 @@
       "role": "ADMIN",
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:21:05.568Z"
+      "createdAt": "2026-09-11T10:21:05.568Z",
+      "rcExtension": "134",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0134"
     },
     {
       "id": "usr_sales_agent_9ryd8",
@@ -309,7 +384,10 @@
       "role": "SALES_AGENT",
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:28:02.076Z"
+      "createdAt": "2026-09-11T10:28:02.076Z",
+      "rcExtension": "135",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0135"
     },
     {
       "id": "usr_sales_manager_brocj",
@@ -321,7 +399,10 @@
       "role": "SALES_MANAGER",
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:28:02.096Z"
+      "createdAt": "2026-09-11T10:28:02.096Z",
+      "rcExtension": "136",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0136"
     },
     {
       "id": "usr_admin_8l5wv",
@@ -333,7 +414,10 @@
       "role": "ADMIN",
       "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:28:02.106Z"
+      "createdAt": "2026-09-11T10:28:02.106Z",
+      "rcExtension": "137",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0137"
     },
     {
       "id": "usr_sales_agent_ejs2r",
@@ -345,7 +429,10 @@
       "role": "SALES_AGENT",
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:46:51.440Z"
+      "createdAt": "2026-09-11T10:46:51.440Z",
+      "rcExtension": "138",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0138"
     },
     {
       "id": "usr_sales_manager_srn6d",
@@ -357,7 +444,10 @@
       "role": "SALES_MANAGER",
       "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:46:51.459Z"
+      "createdAt": "2026-09-11T10:46:51.459Z",
+      "rcExtension": "139",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0139"
     },
     {
       "id": "usr_admin_gb8wh",
@@ -369,10 +459,701 @@
       "role": "ADMIN",
       "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
       "isActive": true,
-      "createdAt": "2026-09-11T10:46:51.468Z"
+      "createdAt": "2026-09-11T10:46:51.468Z",
+      "rcExtension": "140",
+      "rcStatus": "AVAILABLE",
+      "rcDirectNumber": "+1 (800) 555-0140"
     }
   ],
   "leads": [
+    {
+      "id": "lead_coqylmk",
+      "bookingNumber": 1018,
+      "bookingId": "#1018",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+      "name": "Eleanor Vance",
+      "email": "eleanor.vance@travelclient.com",
+      "phone": "+1 (555) 781-9920",
+      "company": "Corporate Client",
+      "status": "QUALIFIED",
+      "ticketPrice": 850,
+      "salePrice": 1250,
+      "mco": 400,
+      "dealValue": 1250,
+      "currency": "USD",
+      "notes": "[RingCentral Ext 101 Inbound Call] Customer booked round-trip Rome flight.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "FCO (Rome)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-20",
+        "returnDate": "2026-12-05",
+        "airline": "ITA Airways",
+        "flightNumber": "AZ-609",
+        "cabinClass": "ECONOMY",
+        "ticketPrice": 850,
+        "salePrice": 1250,
+        "mco": 400,
+        "passengers": [
+          {
+            "id": "pax_1",
+            "fullName": "Eleanor Vance",
+            "dob": "1989-07-14",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1018"
+      },
+      "cardDetails": {
+        "cardholderName": "ELEANOR VANCE",
+        "cardNumber": "4532964205155639",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-10-06T12:41:02.186Z",
+      "updatedAt": "2026-10-06T12:41:02.186Z",
+      "footprint": {
+        "id": "fp_lead_coqylmk",
+        "leadId": "lead_coqylmk",
+        "ipAddress": "198.51.100.177",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://www.travelocase.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "travelocase_web",
+        "utmMedium": "direct_booking",
+        "utmCampaign": "travelocase_flights",
+        "clickstream": [
+          {
+            "timestamp": "2026-10-06T12:41:02.186Z",
+            "event": "ONLINE_BOOKING_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/confirmation",
+            "dwellTimeSeconds": 0,
+            "remark": "[AUTO] Flight booking #1018 submitted online on travelocase.com (Assigned to Sarah Chen (Senior Flight Specialist)). Raw Ingested Ticket Price: $850",
+            "actorId": "system_travelocase_webhook",
+            "actorName": "travelocase.com Webhook",
+            "actorRole": "SYSTEM",
+            "isAutoLogged": true,
+            "metadata": {
+              "portal": "travelocase.com",
+              "route": "JFK (New York) -> FCO (Rome)",
+              "ticketPrice": 850,
+              "pnr": "TC-1018",
+              "assignmentStatus": "Assigned: Sarah Chen (Senior Flight Specialist)"
+            }
+          },
+          {
+            "timestamp": "2026-10-06T12:40:17.186Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/payment",
+            "dwellTimeSeconds": 30,
+            "remark": "[AUTO] Customer entered payment authorization on travelocase.com secure checkout",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-10-06T12:39:02.186Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "https://www.travelocase.com/checkout/passengers",
+            "dwellTimeSeconds": 75,
+            "remark": "[AUTO] Passenger manifest completed for Eleanor Vance",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-10-06T12:36:02.186Z",
+            "event": "ROUTE_SEARCH",
+            "url": "https://www.travelocase.com/flights/JFK%20(New%20York)-FCO%20(Rome)",
+            "dwellTimeSeconds": 45,
+            "remark": "[AUTO] Customer searched flight routes on travelocase.com",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          }
+        ],
+        "createdAt": "2026-10-06T12:41:02.186Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_coqylmk",
+        "leadId": "lead_coqylmk",
+        "email": "eleanor.vance@travelclient.com",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "travelclient.com",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.travelclient.com ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@travelclient.com",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-10-06T12:41:02.186Z"
+        },
+        "verifiedAt": "2026-10-06T12:41:02.186Z"
+      },
+      "lastRemarkSnippet": "[AUTO] Flight booking #1018 submitted online on travelocase.com (Assigned to Sarah Chen (Senior Flight Specialist)). Raw Ingested Ticket Price: $850"
+    },
+    {
+      "id": "lead_6epd727",
+      "bookingNumber": 1017,
+      "bookingId": "#1017",
+      "tenantId": "tenant_travelocase",
+      "assignedToId": "usr_sales_agent1",
+      "assignedToName": "Sarah Chen (Senior Flight Specialist)",
+      "name": "Eleanor Vance",
+      "email": "eleanor.vance@travelclient.com",
+      "phone": "+1 (555) 781-9920",
+      "company": "Corporate Client",
+      "status": "NEW",
+      "ticketPrice": 850,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "[RingCentral Ext 101 Inbound Call] Customer booked round-trip Rome flight.",
+      "bookingDetails": {
+        "origin": "JFK (New York)",
+        "destination": "FCO (Rome)",
+        "tripType": "ROUND_TRIP",
+        "departureDate": "2026-11-20",
+        "returnDate": "2026-12-05",
+        "airline": "ITA Airways",
+        "flightNumber": "AZ-609",
+        "cabinClass": "ECONOMY",
+        "ticketPrice": 850,
+        "passengers": [
+          {
+            "id": "pax_1",
+            "fullName": "Eleanor Vance",
+            "dob": "1989-07-14",
+            "type": "ADULT"
+          }
+        ],
+        "pnrCode": "TC-1017"
+      },
+      "cardDetails": {
+        "cardholderName": "ELEANOR VANCE",
+        "cardNumber": "4532426951295341",
+        "expiryMonth": "10",
+        "expiryYear": "2028",
+        "cvv": "892",
+        "cardType": "VISA",
+        "isAccessGrantedToAgent": false
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-10-06T12:38:38.803Z",
+      "updatedAt": "2026-10-06T12:38:38.803Z",
+      "footprint": {
+        "id": "fp_lead_6epd727",
+        "leadId": "lead_6epd727",
+        "ipAddress": "198.51.100.87",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://www.travelocase.com",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "travelocase_web",
+        "utmMedium": "direct_booking",
+        "utmCampaign": "travelocase_flights",
+        "clickstream": [
+          {
+            "timestamp": "2026-10-06T12:38:38.803Z",
+            "event": "ONLINE_BOOKING_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/confirmation",
+            "dwellTimeSeconds": 0,
+            "remark": "[AUTO] Flight booking #1017 submitted online on travelocase.com (Assigned to Sarah Chen (Senior Flight Specialist)). Raw Ingested Ticket Price: $850",
+            "actorId": "system_travelocase_webhook",
+            "actorName": "travelocase.com Webhook",
+            "actorRole": "SYSTEM",
+            "isAutoLogged": true,
+            "metadata": {
+              "portal": "travelocase.com",
+              "route": "JFK (New York) -> FCO (Rome)",
+              "ticketPrice": 850,
+              "pnr": "TC-1017",
+              "assignmentStatus": "Assigned: Sarah Chen (Senior Flight Specialist)"
+            }
+          },
+          {
+            "timestamp": "2026-10-06T12:37:53.803Z",
+            "event": "CARD_DETAILS_SUBMITTED",
+            "url": "https://www.travelocase.com/checkout/payment",
+            "dwellTimeSeconds": 30,
+            "remark": "[AUTO] Customer entered payment authorization on travelocase.com secure checkout",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-10-06T12:36:38.803Z",
+            "event": "PASSENGER_DETAILS_FILLED",
+            "url": "https://www.travelocase.com/checkout/passengers",
+            "dwellTimeSeconds": 75,
+            "remark": "[AUTO] Passenger manifest completed for Eleanor Vance",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          },
+          {
+            "timestamp": "2026-10-06T12:33:38.803Z",
+            "event": "ROUTE_SEARCH",
+            "url": "https://www.travelocase.com/flights/JFK%20(New%20York)-FCO%20(Rome)",
+            "dwellTimeSeconds": 45,
+            "remark": "[AUTO] Customer searched flight routes on travelocase.com",
+            "actorId": "customer_web_session",
+            "actorName": "Eleanor Vance",
+            "actorRole": "CUSTOMER",
+            "isAutoLogged": true
+          }
+        ],
+        "createdAt": "2026-10-06T12:38:38.803Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_6epd727",
+        "leadId": "lead_6epd727",
+        "email": "eleanor.vance@travelclient.com",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "travelclient.com",
+          "ipAddress": "127.0.0.1",
+          "smtpBanner": "220 mx.travelclient.com ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@travelclient.com",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-10-06T12:38:38.803Z"
+        },
+        "verifiedAt": "2026-10-06T12:38:38.803Z"
+      },
+      "lastRemarkSnippet": "[AUTO] Flight booking #1017 submitted online on travelocase.com (Assigned to Sarah Chen (Senior Flight Specialist)). Raw Ingested Ticket Price: $850"
+    },
+    {
+      "id": "lead_ppc_snvmjuz",
+      "bookingNumber": 1016,
+      "bookingId": "#1016",
+      "tenantId": "tenant_travelocase",
+      "name": "Dr. Gregory House",
+      "email": "ghouse@princeton-plainsboro.edu",
+      "phone": "+1 (609) 555-0144",
+      "company": "PPC Direct Client",
+      "status": "NEW",
+      "ticketPrice": 3800,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "[10/3/2026 3:59:36 AM]: [PPC INBOUND - BING ADS] Phone Call Inbound | Campaign: \"Bing_Europe_Corporate\" | Keyword: \"cheap business class to paris\" | Route: EWR -> CDG | Quoted: $3800 (Sale: $4500, MCO: +$700)| Assigned: Unassigned Queue",
+      "bookingDetails": {
+        "origin": "EWR",
+        "destination": "CDG",
+        "tripType": "ONE_WAY",
+        "departureDate": "2026-10-29",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "PPC-1016",
+        "ticketPrice": 3800,
+        "passengers": [
+          {
+            "id": "pax_ppc_id1c",
+            "fullName": "Dr. Gregory House",
+            "passportNumber": "ON_FILE",
+            "passportExpiry": "2031-10-15",
+            "nationality": "Verified",
+            "dob": "1988-04-12",
+            "type": "ADULT",
+            "seatPreference": "Window / Priority",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-PPC-8009193520"
+          }
+        ]
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": true,
+      "createdAt": "2026-10-02T22:29:36.428Z",
+      "updatedAt": "2026-10-02T22:29:36.882Z",
+      "ppcSource": "bing_ads",
+      "ppcCampaign": "Bing_Europe_Corporate",
+      "ppcKeyword": "cheap business class to paris",
+      "ppcChannel": "CALL_INBOUND",
+      "ppcGclid": "CjwKCAiAltijfevziv",
+      "lastRemarkSnippet": "[AUTO] Round-Robin Distributed to Sophie Martin (@sophie.m) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+      "footprint": {
+        "id": "fp_lead_ppc_snvmjuz",
+        "leadId": "lead_ppc_snvmjuz",
+        "ipAddress": "198.51.100.88",
+        "userAgent": "PPC Campaign Tracking Dispatcher",
+        "referrer": "https://www.google.com/search?q=cheap%20business%20class%20to%20paris",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "bing_ads",
+        "utmMedium": "cpc_call",
+        "utmCampaign": "Bing_Europe_Corporate",
+        "utmTerm": "cheap business class to paris",
+        "utmContent": "JFK-LHR-Special-Offer",
+        "clickstream": [
+          {
+            "timestamp": "2026-10-02T22:29:36.882Z",
+            "event": "LEAD_ROUND_ROBIN_ASSIGNED",
+            "url": "/leads/lead_ppc_snvmjuz",
+            "remark": "[AUTO] Round-Robin Distributed to Sophie Martin (@sophie.m) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "targetAgentId": "usr_sales_agent_rjwzv",
+              "targetAgentName": "Sophie Martin",
+              "previousAgent": "Unassigned (travelocase.com Pool)",
+              "distributionType": "ROUND_ROBIN"
+            }
+          },
+          {
+            "timestamp": "2026-10-02T22:29:36.428Z",
+            "event": "PPC_INBOUND_CALL_RECEIVED",
+            "url": "https://www.travelocase.com/lp/luxury-flights?gclid=CjwKCAiAltijfevziv",
+            "dwellTimeSeconds": 45,
+            "remark": "[PPC INBOUND - BING ADS] Phone Call Inbound | Campaign: \"Bing_Europe_Corporate\" | Keyword: \"cheap business class to paris\" | Route: EWR -> CDG | Quoted: $3800 (Sale: $4500, MCO: +$700)| Assigned: Unassigned Queue",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "ppcSource": "bing_ads",
+              "channel": "CALL_INBOUND",
+              "campaignName": "Bing_Europe_Corporate",
+              "adGroup": "JFK-LHR-Special-Offer",
+              "keyword": "cheap business class to paris",
+              "gclid": "CjwKCAiAltijfevziv",
+              "intentLevel": "HIGH",
+              "ticketPrice": 3800,
+              "salePrice": 4500,
+              "mco": 700,
+              "assignmentStatus": "Unassigned Queue"
+            }
+          }
+        ],
+        "createdAt": "2026-10-02T22:29:36.428Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_ppc_snvmjuz",
+        "leadId": "lead_ppc_snvmjuz",
+        "email": "ghouse@princeton-plainsboro.edu",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "princeton-plainsboro.edu",
+          "ipAddress": "198.51.100.88",
+          "smtpBanner": "220 mx.princeton-plainsboro.edu ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@princeton-plainsboro.edu",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-10-02T22:29:36.428Z"
+        },
+        "verifiedAt": "2026-10-02T22:29:36.428Z"
+      },
+      "assignedToId": "usr_sales_agent_rjwzv",
+      "assignedToName": "Sophie Martin"
+    },
+    {
+      "id": "lead_ppc_wgsyywa",
+      "bookingNumber": 1015,
+      "bookingId": "#1015",
+      "tenantId": "tenant_travelocase",
+      "name": "Countess Eleanor Wright",
+      "email": "eleanor@wright-capital.co.uk",
+      "phone": "+44 20 7946 0881",
+      "company": "PPC Direct Client",
+      "status": "NEW",
+      "ticketPrice": 13500,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "[10/3/2026 3:59:36 AM]: [PPC INBOUND - META ADS] Landing Page Web Form | Campaign: \"Meta_Luxury_Tokyo_Suites\" | Keyword: \"first class tokyo suite\" | Route: SFO -> HND | Quoted: $13500 (Sale: $15800, MCO: +$2300)| Assigned: Unassigned Queue",
+      "bookingDetails": {
+        "origin": "SFO",
+        "destination": "HND",
+        "tripType": "ONE_WAY",
+        "departureDate": "2026-11-10",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "PPC-1015",
+        "ticketPrice": 13500,
+        "passengers": [
+          {
+            "id": "pax_ppc_tp0d",
+            "fullName": "Countess Eleanor Wright",
+            "passportNumber": "ON_FILE",
+            "passportExpiry": "2031-10-15",
+            "nationality": "Verified",
+            "dob": "1988-04-12",
+            "type": "ADULT",
+            "seatPreference": "Window / Priority",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-PPC-3837013453"
+          }
+        ]
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": false,
+      "createdAt": "2026-10-02T22:29:36.421Z",
+      "updatedAt": "2026-10-02T22:29:36.882Z",
+      "ppcSource": "meta_ads",
+      "ppcCampaign": "Meta_Luxury_Tokyo_Suites",
+      "ppcKeyword": "first class tokyo suite",
+      "ppcChannel": "SEARCH_AD",
+      "ppcGclid": "CjwKCAiAp1uxb5nakx",
+      "lastRemarkSnippet": "[AUTO] Round-Robin Distributed to Nameless Agent (@test.no.user) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+      "footprint": {
+        "id": "fp_lead_ppc_wgsyywa",
+        "leadId": "lead_ppc_wgsyywa",
+        "ipAddress": "198.51.100.88",
+        "userAgent": "PPC Campaign Tracking Dispatcher",
+        "referrer": "https://www.google.com/search?q=first%20class%20tokyo%20suite",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "meta_ads",
+        "utmMedium": "cpc",
+        "utmCampaign": "Meta_Luxury_Tokyo_Suites",
+        "utmTerm": "first class tokyo suite",
+        "utmContent": "JFK-LHR-Special-Offer",
+        "clickstream": [
+          {
+            "timestamp": "2026-10-02T22:29:36.882Z",
+            "event": "LEAD_ROUND_ROBIN_ASSIGNED",
+            "url": "/leads/lead_ppc_wgsyywa",
+            "remark": "[AUTO] Round-Robin Distributed to Nameless Agent (@test.no.user) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "targetAgentId": "usr_sales_agent_y5pzw",
+              "targetAgentName": "Nameless Agent",
+              "previousAgent": "Unassigned (travelocase.com Pool)",
+              "distributionType": "ROUND_ROBIN"
+            }
+          },
+          {
+            "timestamp": "2026-10-02T22:29:36.421Z",
+            "event": "PPC_WEB_FORM_SUBMITTED",
+            "url": "https://www.travelocase.com/lp/luxury-flights?gclid=CjwKCAiAp1uxb5nakx",
+            "dwellTimeSeconds": 45,
+            "remark": "[PPC INBOUND - META ADS] Landing Page Web Form | Campaign: \"Meta_Luxury_Tokyo_Suites\" | Keyword: \"first class tokyo suite\" | Route: SFO -> HND | Quoted: $13500 (Sale: $15800, MCO: +$2300)| Assigned: Unassigned Queue",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "ppcSource": "meta_ads",
+              "channel": "SEARCH_AD",
+              "campaignName": "Meta_Luxury_Tokyo_Suites",
+              "adGroup": "JFK-LHR-Special-Offer",
+              "keyword": "first class tokyo suite",
+              "gclid": "CjwKCAiAp1uxb5nakx",
+              "intentLevel": "HIGH",
+              "ticketPrice": 13500,
+              "salePrice": 15800,
+              "mco": 2300,
+              "assignmentStatus": "Unassigned Queue"
+            }
+          }
+        ],
+        "createdAt": "2026-10-02T22:29:36.421Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_ppc_wgsyywa",
+        "leadId": "lead_ppc_wgsyywa",
+        "email": "eleanor@wright-capital.co.uk",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "wright-capital.co.uk",
+          "ipAddress": "198.51.100.88",
+          "smtpBanner": "220 mx.wright-capital.co.uk ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@wright-capital.co.uk",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-10-02T22:29:36.421Z"
+        },
+        "verifiedAt": "2026-10-02T22:29:36.421Z"
+      },
+      "assignedToId": "usr_sales_agent_y5pzw",
+      "assignedToName": "Nameless Agent"
+    },
+    {
+      "id": "lead_ppc_jddyt71",
+      "bookingNumber": 1014,
+      "bookingId": "#1014",
+      "tenantId": "tenant_travelocase",
+      "name": "Arthur Pendelton",
+      "email": "15557749911@ppc-lead.travelocase.com",
+      "phone": "+1 (555) 774-9911",
+      "company": "PPC Direct Client",
+      "status": "NEW",
+      "ticketPrice": 4200,
+      "dealValue": 0,
+      "currency": "USD",
+      "notes": "[10/3/2026 3:59:38 AM - Sarah Chen (Senior Flight Specialist) (SALES_AGENT)]: Followed up with Arthur via telephone; confirmed lie-flat seat 2A. Awaiting credit card approval.\n[10/3/2026 3:59:35 AM]: [PPC GOOGLE ADS - Phone Call Inbound] Caller urgently needed 1st business seat on BA-178. Quoted ,950.",
+      "bookingDetails": {
+        "origin": "JFK",
+        "destination": "LHR",
+        "tripType": "ONE_WAY",
+        "departureDate": "2026-10-25",
+        "airline": "British Airways",
+        "flightNumber": "BA-178",
+        "cabinClass": "BUSINESS",
+        "pnrCode": "PPC-1014",
+        "ticketPrice": 4200,
+        "passengers": [
+          {
+            "id": "pax_ppc_5ghq",
+            "fullName": "Arthur Pendelton",
+            "passportNumber": "ON_FILE",
+            "passportExpiry": "2031-10-15",
+            "nationality": "Verified",
+            "dob": "1988-04-12",
+            "type": "ADULT",
+            "seatPreference": "Window / Priority",
+            "mealPreference": "Standard Gourmet",
+            "specialAssistance": "None",
+            "eTicketNumber": "ETKT-PPC-8616721200"
+          }
+        ]
+      },
+      "authEmailSent": false,
+      "authCallConfirmed": true,
+      "createdAt": "2026-10-02T22:29:35.925Z",
+      "updatedAt": "2026-10-02T22:29:38.975Z",
+      "ppcSource": "google_ads",
+      "ppcCampaign": "US_Search_BusinessClass_Europe_2026",
+      "ppcKeyword": "urgent business class flight to london",
+      "ppcChannel": "CALL_INBOUND",
+      "ppcGclid": "CjwKCAiAamou39gwpm",
+      "lastRemarkSnippet": "Followed up with Arthur via telephone; confirmed lie-flat seat 2A. Awaiting credit card approval.",
+      "footprint": {
+        "id": "fp_lead_ppc_jddyt71",
+        "leadId": "lead_ppc_jddyt71",
+        "ipAddress": "198.51.100.88",
+        "userAgent": "PPC Campaign Tracking Dispatcher",
+        "referrer": "https://www.google.com/search?q=urgent%20business%20class%20flight%20to%20london",
+        "country": "United States",
+        "city": "New York, NY",
+        "utmSource": "google_ads",
+        "utmMedium": "cpc_call",
+        "utmCampaign": "US_Search_BusinessClass_Europe_2026",
+        "utmTerm": "urgent business class flight to london",
+        "utmContent": "JFK-LHR-Special-Offer",
+        "clickstream": [
+          {
+            "timestamp": "2026-10-02T22:29:38.975Z",
+            "event": "QUERY_REMARK_RECORDED",
+            "url": "/leads/lead_ppc_jddyt71",
+            "remark": "Followed up with Arthur via telephone; confirmed lie-flat seat 2A. Awaiting credit card approval.",
+            "actorId": "usr_sales_agent1",
+            "actorName": "Sarah Chen (Senior Flight Specialist)",
+            "actorRole": "SALES_AGENT",
+            "isAutoLogged": false,
+            "metadata": {
+              "bookingNumber": 1014,
+              "ipAddress": "::1",
+              "userAgent": "node"
+            }
+          },
+          {
+            "timestamp": "2026-10-02T22:29:36.882Z",
+            "event": "LEAD_ROUND_ROBIN_ASSIGNED",
+            "url": "/leads/lead_ppc_jddyt71",
+            "remark": "[AUTO] Round-Robin Distributed to Automated Test Agent (@test.agent.5491) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "targetAgentId": "usr_sales_agent_xpgob",
+              "targetAgentName": "Automated Test Agent",
+              "previousAgent": "Unassigned (travelocase.com Pool)",
+              "distributionType": "ROUND_ROBIN"
+            }
+          },
+          {
+            "timestamp": "2026-10-02T22:29:35.925Z",
+            "event": "PPC_INBOUND_CALL_RECEIVED",
+            "url": "https://www.travelocase.com/lp/luxury-flights?gclid=CjwKCAiAamou39gwpm",
+            "dwellTimeSeconds": 45,
+            "remark": "[PPC GOOGLE ADS - Phone Call Inbound] Caller urgently needed 1st business seat on BA-178. Quoted ,950.",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "ppcSource": "google_ads",
+              "channel": "CALL_INBOUND",
+              "campaignName": "US_Search_BusinessClass_Europe_2026",
+              "adGroup": "JFK-LHR-Special-Offer",
+              "keyword": "urgent business class flight to london",
+              "gclid": "CjwKCAiAamou39gwpm",
+              "intentLevel": "URGENT",
+              "ticketPrice": 4200,
+              "salePrice": 4950,
+              "mco": 750,
+              "assignmentStatus": "Unassigned Queue"
+            }
+          }
+        ],
+        "createdAt": "2026-10-02T22:29:35.925Z"
+      },
+      "emailVerification": {
+        "id": "ev_lead_ppc_jddyt71",
+        "leadId": "lead_ppc_jddyt71",
+        "email": "15557749911@ppc-lead.travelocase.com",
+        "spfResult": "PASS",
+        "dkimResult": "PASS",
+        "dmarcResult": "PASS",
+        "mxRecordExists": true,
+        "smtpCheckValid": true,
+        "score": 100,
+        "rawDetails": {
+          "domain": "ppc-lead.travelocase.com",
+          "ipAddress": "198.51.100.88",
+          "smtpBanner": "220 mx.ppc-lead.travelocase.com ESMTP Postfix ready",
+          "spfPolicy": "v=spf1 include:_spf.google.com ~all",
+          "dmarcPolicy": "v=DMARC1; p=reject; rua=mailto:dmarc@ppc-lead.travelocase.com",
+          "tlsVersion": "TLSv1.3 / ECDHE-RSA-AES256-GCM-SHA384",
+          "evaluationTimestamp": "2026-10-02T22:29:35.925Z"
+        },
+        "verifiedAt": "2026-10-02T22:29:35.925Z"
+      },
+      "assignedToId": "usr_sales_agent_xpgob",
+      "assignedToName": "Automated Test Agent"
+    },
     {
       "id": "lead_1e2blki",
       "bookingNumber": 1013,
@@ -945,7 +1726,8 @@
           "evaluationTimestamp": "2026-09-18T07:38:48.047Z"
         },
         "verifiedAt": "2026-09-18T07:38:48.047Z"
-      }
+      },
+      "lastRemarkSnippet": "Default Remark: Workspace reviewed and closed by Alex Thorne (Super Admin) (SUPER_ADMIN)"
     },
     {
       "id": "lead_pwc9byn",
@@ -993,7 +1775,7 @@
       "authEmailSent": false,
       "authCallConfirmed": false,
       "createdAt": "2026-09-18T07:38:26.171Z",
-      "updatedAt": "2026-09-18T07:38:26.171Z",
+      "updatedAt": "2026-10-02T22:29:36.882Z",
       "footprint": {
         "id": "fp_lead_pwc9byn",
         "leadId": "lead_pwc9byn",
@@ -1006,6 +1788,22 @@
         "utmMedium": "direct_booking",
         "utmCampaign": "travelocase_flights",
         "clickstream": [
+          {
+            "timestamp": "2026-10-02T22:29:36.882Z",
+            "event": "LEAD_ROUND_ROBIN_ASSIGNED",
+            "url": "/leads/lead_pwc9byn",
+            "remark": "[AUTO] Round-Robin Distributed to Automated Test Agent (@test.agent.2064) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+            "actorId": "usr_sales_mgr",
+            "actorName": "Marcus Brooks (Sales Director & Manager)",
+            "actorRole": "SALES_MANAGER",
+            "isAutoLogged": true,
+            "metadata": {
+              "targetAgentId": "usr_sales_agent_9ryd8",
+              "targetAgentName": "Automated Test Agent",
+              "previousAgent": "Unassigned (travelocase.com Pool)",
+              "distributionType": "ROUND_ROBIN"
+            }
+          },
           {
             "timestamp": "2026-09-18T07:38:26.171Z",
             "event": "ONLINE_BOOKING_SUBMITTED",
@@ -1080,7 +1878,10 @@
           "evaluationTimestamp": "2026-09-18T07:38:26.171Z"
         },
         "verifiedAt": "2026-09-18T07:38:26.171Z"
-      }
+      },
+      "lastRemarkSnippet": "[AUTO] Round-Robin Distributed to Automated Test Agent (@test.agent.2064) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+      "assignedToId": "usr_sales_agent_9ryd8",
+      "assignedToName": "Automated Test Agent"
     },
     {
       "id": "lead_jk6xjtc",
@@ -1452,7 +2253,8 @@
           "evaluationTimestamp": "2026-09-14T06:31:42.502Z"
         },
         "verifiedAt": "2026-09-14T06:31:42.502Z"
-      }
+      },
+      "lastRemarkSnippet": "Closed booking workspace by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)"
     },
     {
       "id": "lead_aiuros9",
@@ -1562,7 +2364,8 @@
           "evaluationTimestamp": "2026-09-14T06:31:28.094Z"
         },
         "verifiedAt": "2026-09-14T06:31:28.094Z"
-      }
+      },
+      "lastRemarkSnippet": "Flight inquiry booking #1010 ingested from website. Ingested Ticket Price: $9500."
     },
     {
       "id": "lead_99hl6z7",
@@ -1684,7 +2487,8 @@
         },
         "verifiedAt": "2026-09-11T10:14:33.741Z"
       },
-      "ticketPrice": 28000
+      "ticketPrice": 28000,
+      "lastRemarkSnippet": "Flight inquiry booking #1009 ingested with passenger roster and card vault record."
     },
     {
       "id": "lead_xqil2py",
@@ -2026,7 +2830,8 @@
       },
       "salePrice": 19500,
       "ticketPrice": 15210,
-      "mco": 4290
+      "mco": 4290,
+      "lastRemarkSnippet": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)"
     },
     {
       "id": "lead_gfijvlo",
@@ -2136,7 +2941,8 @@
         },
         "verifiedAt": "2026-09-11T10:00:29.335Z"
       },
-      "ticketPrice": 28000
+      "ticketPrice": 28000,
+      "lastRemarkSnippet": "Flight inquiry booking #1007 ingested with passenger roster and card vault record."
     },
     {
       "id": "lead_dar1t6t",
@@ -2357,7 +3163,8 @@
         },
         "verifiedAt": "2026-09-11T10:00:29.315Z"
       },
-      "ticketPrice": 19500
+      "ticketPrice": 19500,
+      "lastRemarkSnippet": "Closed booking workspace by Sarah Chen (Senior Flight Specialist) (SALES_AGENT)"
     },
     {
       "id": "lead_flight_01",
@@ -2478,7 +3285,8 @@
         "score": 98,
         "verifiedAt": "2026-09-11T09:30:02Z"
       },
-      "ticketPrice": 14800
+      "ticketPrice": 14800,
+      "lastRemarkSnippet": "Executive business class reservation for 2 passengers. Authentication email sent, waiting for manager clearance to inspect card."
     },
     {
       "id": "lead_flight_02",
@@ -2574,7 +3382,8 @@
         "score": 96,
         "verifiedAt": "2026-09-09T11:20:05Z"
       },
-      "ticketPrice": 22400
+      "ticketPrice": 22400,
+      "lastRemarkSnippet": "First Class Roundtrip SFO to Tokyo Haneda. Authentication email sent to passenger."
     },
     {
       "id": "lead_flight_03",
@@ -2790,7 +3599,8 @@
       },
       "salePrice": 18900,
       "ticketPrice": 14742,
-      "mco": 4158
+      "mco": 4158,
+      "lastRemarkSnippet": "Closed booking workspace by Claire Beauchamp (CHARGING_MANAGER)"
     },
     {
       "id": "lead_flight_04",
@@ -2877,7 +3687,8 @@
         "score": 94,
         "verifiedAt": "2026-09-11T10:40:03Z"
       },
-      "ticketPrice": 8400
+      "ticketPrice": 8400,
+      "lastRemarkSnippet": "New inquiry for LAX to Rome FCO business class."
     },
     {
       "id": "lead_flight_05",
@@ -2988,7 +3799,8 @@
       },
       "salePrice": 36000,
       "ticketPrice": 28080,
-      "mco": 7920
+      "mco": 7920,
+      "lastRemarkSnippet": "Payment validated and captured. Flight e-tickets issued and VIP onboarding ticket dispatched to CS concierge."
     }
   ],
   "transactions": [
@@ -3115,6 +3927,254 @@
     }
   ],
   "activityLogs": [
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_coqylmk",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "RINGCENTRAL_CALL_LOGGED",
+      "fromState": "QUALIFIED",
+      "toState": "QUALIFIED",
+      "metadata": {
+        "callId": "call_rc_1791290461909_0omkv",
+        "extension": "101",
+        "direction": "INBOUND",
+        "durationSeconds": 195,
+        "disposition": "FLIGHT_RESERVATION_SALE",
+        "notes": "Customer confirmed travel dates and accepted ticket quote with $400 margin. Authorization email dispatched.",
+        "callerNumber": "+1 (555) 781-9920"
+      },
+      "id": "act_d4kayww",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-06T12:41:02.334Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_coqylmk",
+      "actorId": "system_travelocase_webhook",
+      "actorName": "travelocase.com Webhook Ingestion",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED_FROM_TRAVELOCASE",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> FCO (Rome)",
+        "airline": "ITA Airways",
+        "authenticityScore": 100,
+        "assignedTo": "Sarah Chen (Senior Flight Specialist)",
+        "ticketPrice": 850,
+        "portal": "travelocase.com"
+      },
+      "id": "act_igyqpqr",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-06T12:41:02.186Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_6epd727",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "RINGCENTRAL_CALL_LOGGED",
+      "fromState": "NEW",
+      "toState": "NEW",
+      "metadata": {
+        "callId": "call_rc_1791290318653_a6f6w",
+        "extension": "101",
+        "direction": "INBOUND",
+        "durationSeconds": 195,
+        "disposition": "FLIGHT_RESERVATION_SALE",
+        "notes": "Customer confirmed travel dates and accepted ticket quote with $400 margin. Authorization email dispatched.",
+        "callerNumber": "+1 (555) 781-9920"
+      },
+      "id": "act_a6k5ypj",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-06T12:38:39.249Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_6epd727",
+      "actorId": "system_travelocase_webhook",
+      "actorName": "travelocase.com Webhook Ingestion",
+      "actorRole": "SYSTEM",
+      "action": "LEAD_INGESTED_FROM_TRAVELOCASE",
+      "toState": "NEW",
+      "metadata": {
+        "route": "JFK (New York) -> FCO (Rome)",
+        "airline": "ITA Airways",
+        "authenticityScore": 100,
+        "assignedTo": "Sarah Chen (Senior Flight Specialist)",
+        "ticketPrice": 850,
+        "portal": "travelocase.com"
+      },
+      "id": "act_gtys12c",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-06T12:38:38.803Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_jddyt71",
+      "actorId": "usr_sales_agent1",
+      "actorName": "Sarah Chen (Senior Flight Specialist)",
+      "actorRole": "SALES_AGENT",
+      "action": "QUERY_REMARK_RECORDED",
+      "metadata": {
+        "remark": "Followed up with Arthur via telephone; confirmed lie-flat seat 2A. Awaiting credit card approval.",
+        "isAutoLogged": false
+      },
+      "id": "act_wsmhmgq",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:38.975Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_pwc9byn",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ROUND_ROBIN_ASSIGNED",
+      "fromState": "Unassigned (travelocase.com Pool)",
+      "toState": "Automated Test Agent",
+      "metadata": {
+        "remark": "[AUTO] Round-Robin Distributed to Automated Test Agent (@test.agent.2064) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "assignedToId": "usr_sales_agent_9ryd8",
+        "assignedToName": "Automated Test Agent",
+        "assignedToUsername": "test.agent.2064",
+        "distributionType": "ROUND_ROBIN"
+      },
+      "id": "act_ouhekla",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.883Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_jddyt71",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ROUND_ROBIN_ASSIGNED",
+      "fromState": "Unassigned (travelocase.com Pool)",
+      "toState": "Automated Test Agent",
+      "metadata": {
+        "remark": "[AUTO] Round-Robin Distributed to Automated Test Agent (@test.agent.5491) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "assignedToId": "usr_sales_agent_xpgob",
+        "assignedToName": "Automated Test Agent",
+        "assignedToUsername": "test.agent.5491",
+        "distributionType": "ROUND_ROBIN"
+      },
+      "id": "act_khdrd7w",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.883Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_wgsyywa",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ROUND_ROBIN_ASSIGNED",
+      "fromState": "Unassigned (travelocase.com Pool)",
+      "toState": "Nameless Agent",
+      "metadata": {
+        "remark": "[AUTO] Round-Robin Distributed to Nameless Agent (@test.no.user) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "assignedToId": "usr_sales_agent_y5pzw",
+        "assignedToName": "Nameless Agent",
+        "assignedToUsername": "test.no.user",
+        "distributionType": "ROUND_ROBIN"
+      },
+      "id": "act_a2k8oqr",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.883Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_snvmjuz",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "LEAD_ROUND_ROBIN_ASSIGNED",
+      "fromState": "Unassigned (travelocase.com Pool)",
+      "toState": "Sophie Martin",
+      "metadata": {
+        "remark": "[AUTO] Round-Robin Distributed to Sophie Martin (@sophie.m) by Marcus Brooks (Sales Director & Manager) (SALES_MANAGER)",
+        "assignedToId": "usr_sales_agent_rjwzv",
+        "assignedToName": "Sophie Martin",
+        "assignedToUsername": "sophie.m",
+        "distributionType": "ROUND_ROBIN"
+      },
+      "id": "act_9paowkk",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.883Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_snvmjuz",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "PPC_CALL_LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "remark": "[PPC INBOUND - BING ADS] Phone Call Inbound | Campaign: \"Bing_Europe_Corporate\" | Keyword: \"cheap business class to paris\" | Route: EWR -> CDG | Quoted: $3800 (Sale: $4500, MCO: +$700)| Assigned: Unassigned Queue",
+        "ppcSource": "bing_ads",
+        "channel": "CALL_INBOUND",
+        "campaignName": "Bing_Europe_Corporate",
+        "keyword": "cheap business class to paris",
+        "assignedTo": "Unassigned Queue",
+        "ticketPrice": 3800,
+        "salePrice": 4500,
+        "mco": 700
+      },
+      "id": "act_fghro99",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.428Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_wgsyywa",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "PPC_WEB_LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "remark": "[PPC INBOUND - META ADS] Landing Page Web Form | Campaign: \"Meta_Luxury_Tokyo_Suites\" | Keyword: \"first class tokyo suite\" | Route: SFO -> HND | Quoted: $13500 (Sale: $15800, MCO: +$2300)| Assigned: Unassigned Queue",
+        "ppcSource": "meta_ads",
+        "channel": "SEARCH_AD",
+        "campaignName": "Meta_Luxury_Tokyo_Suites",
+        "keyword": "first class tokyo suite",
+        "assignedTo": "Unassigned Queue",
+        "ticketPrice": 13500,
+        "salePrice": 15800,
+        "mco": 2300
+      },
+      "id": "act_atqknir",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:36.421Z"
+    },
+    {
+      "entityType": "LEAD",
+      "entityId": "lead_ppc_jddyt71",
+      "actorId": "usr_sales_mgr",
+      "actorName": "Marcus Brooks (Sales Director & Manager)",
+      "actorRole": "SALES_MANAGER",
+      "action": "PPC_CALL_LEAD_INGESTED",
+      "toState": "NEW",
+      "metadata": {
+        "remark": "[PPC GOOGLE ADS - Phone Call Inbound] Caller urgently needed 1st business seat on BA-178. Quoted ,950.",
+        "ppcSource": "google_ads",
+        "channel": "CALL_INBOUND",
+        "campaignName": "US_Search_BusinessClass_Europe_2026",
+        "keyword": "urgent business class flight to london",
+        "assignedTo": "Unassigned Queue",
+        "ticketPrice": 4200,
+        "salePrice": 4950,
+        "mco": 750
+      },
+      "id": "act_ytl90l2",
+      "tenantId": "tenant_travelocase",
+      "createdAt": "2026-10-02T22:29:35.983Z"
+    },
     {
       "entityType": "LEAD",
       "entityId": "lead_jk6xjtc",
@@ -5300,6 +6360,125 @@
   ],
   "auditLogs": [
     {
+      "actorEmail": "webhook@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_coqylmk",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "eleanor.vance@travelclient.com",
+        "source": "travelocase.com",
+        "route": "JFK (New York) -> FCO (Rome)",
+        "assignedTo": "Sarah Chen (Senior Flight Specialist)"
+      },
+      "id": "aud_sogbp81",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-06T12:41:02.186Z"
+    },
+    {
+      "actorEmail": "webhook@travelocase.com",
+      "action": "FLIGHT_BOOKING_INGESTED",
+      "resource": "Lead:lead_6epd727",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "email": "eleanor.vance@travelclient.com",
+        "source": "travelocase.com",
+        "route": "JFK (New York) -> FCO (Rome)",
+        "assignedTo": "Sarah Chen (Senior Flight Specialist)"
+      },
+      "id": "aud_jug51c8",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-06T12:38:38.803Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "LEADS_ROUND_ROBIN_ASSIGNED",
+      "resource": "Batch:4_Leads",
+      "ipAddress": "127.0.0.1",
+      "status": "SUCCESS",
+      "payload": {
+        "assignedCount": 4,
+        "agentsInvolved": [
+          "Sarah Chen (Senior Flight Specialist)",
+          "David Miller (Travel Booking Agent)",
+          "Lucas Silva (Ticketing & Card Charge Ops)",
+          "Sam Patel (Concierge & Onboarding Specialist)",
+          "Oliver Thorne",
+          "Liam Henderson",
+          "Sophie Martin",
+          "Nameless Agent",
+          "Automated Test Agent",
+          "Automated Test Agent",
+          "Automated Test Agent"
+        ],
+        "leadIds": [
+          "lead_ppc_snvmjuz",
+          "lead_ppc_wgsyywa",
+          "lead_ppc_jddyt71",
+          "lead_pwc9byn"
+        ]
+      },
+      "id": "aud_jo2mqs7",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-02T22:29:36.883Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "PPC_LEAD_INGESTED",
+      "resource": "Lead:lead_ppc_snvmjuz",
+      "ipAddress": "198.51.100.88",
+      "status": "SUCCESS",
+      "payload": {
+        "ppcSource": "bing_ads",
+        "campaignName": "Bing_Europe_Corporate",
+        "channel": "CALL_INBOUND",
+        "bookingNumber": 1016,
+        "assignedTo": "Unassigned Queue"
+      },
+      "id": "aud_bxt9o2h",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-02T22:29:36.428Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "PPC_LEAD_INGESTED",
+      "resource": "Lead:lead_ppc_wgsyywa",
+      "ipAddress": "198.51.100.88",
+      "status": "SUCCESS",
+      "payload": {
+        "ppcSource": "meta_ads",
+        "campaignName": "Meta_Luxury_Tokyo_Suites",
+        "channel": "SEARCH_AD",
+        "bookingNumber": 1015,
+        "assignedTo": "Unassigned Queue"
+      },
+      "id": "aud_b0tux5n",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-02T22:29:36.422Z"
+    },
+    {
+      "actorId": "usr_sales_mgr",
+      "actorEmail": "marcus.brooks@travelocase.com",
+      "action": "PPC_LEAD_INGESTED",
+      "resource": "Lead:lead_ppc_jddyt71",
+      "ipAddress": "198.51.100.88",
+      "status": "SUCCESS",
+      "payload": {
+        "ppcSource": "google_ads",
+        "campaignName": "US_Search_BusinessClass_Europe_2026",
+        "channel": "CALL_INBOUND",
+        "bookingNumber": 1014,
+        "assignedTo": "Unassigned Queue"
+      },
+      "id": "aud_s1mgz7c",
+      "tenantId": "tenant_travelocase",
+      "timestamp": "2026-10-02T22:29:35.983Z"
+    },
+    {
       "actorId": "usr_charging_manager_mnveh",
       "actorEmail": "claire.b@travelocase.com",
       "action": "CARD_DETAILS_VIEWED",
@@ -6742,7 +7921,302 @@
       "createdAt": "2026-09-18T07:55:04.427Z"
     }
   ],
-  "roundRobinIndex": 6,
-  "lastBookingNumber": 1013,
-  "lastPersistedAt": "2026-09-28T22:05:58.047Z"
+  "callLogs": [
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_mgr",
+      "agentName": "Marcus Brooks (Sales Director & Manager)",
+      "agentExtension": "102",
+      "agentRole": "SALES_MANAGER",
+      "callerNumber": "+1 (800) 555-0102",
+      "calleeNumber": "+1 (555) 789-1234",
+      "direction": "OUTBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T21:15:57.437Z",
+      "durationSeconds": 82,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sess_out_1791321357438_i3sl",
+      "telephonyStatus": "Disconnected",
+      "id": "call_rc_1791321357438_gp5dx",
+      "createdAt": "2026-10-06T21:15:57.438Z",
+      "updatedAt": "2026-10-06T21:17:20.889Z",
+      "endTime": "2026-10-06T21:17:20.821Z"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (800) 555-0101",
+      "calleeNumber": "+1 (800) 433-7300",
+      "direction": "OUTBOUND",
+      "status": "RINGING",
+      "startTime": "2026-10-06T13:07:26.160Z",
+      "durationSeconds": 0,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sess_out_1791292046160_6cj4",
+      "telephonyStatus": "Proceeding",
+      "id": "call_rc_1791292046160_7b9gn",
+      "createdAt": "2026-10-06T13:07:26.160Z",
+      "updatedAt": "2026-10-06T13:07:26.160Z"
+    },
+    {
+      "id": "call_rc_1791292045606_omc0n",
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_mgr",
+      "agentName": "Marcus Brooks (Sales Director & Manager)",
+      "agentExtension": "102",
+      "callerNumber": "+1 (555) 789-1234",
+      "calleeNumber": "102",
+      "direction": "INBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T13:07:25.606Z",
+      "durationSeconds": 85,
+      "leadDetailsEntered": false,
+      "transferredFromExtension": "101",
+      "telephonyStatus": "Disconnected",
+      "notes": "Completed flight rescheduling for caller.",
+      "createdAt": "2026-10-06T13:07:25.606Z",
+      "updatedAt": "2026-10-06T13:07:25.724Z",
+      "endTime": "2026-10-06T13:07:25.614Z",
+      "disposition": "ITINERARY_CHANGE"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (555) 789-1234",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T13:07:23.179Z",
+      "durationSeconds": 2,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sim_in_1791292043179_o1f2",
+      "telephonyStatus": "Transferred to Ext 102",
+      "notes": "Simulated inbound RingCentral call from Jessica Alba (+1 (555) 789-1234) to Extension 101.\n[Transferred to Ext 102 (Marcus Brooks (Sales Director & Manager)): Caller requesting flight date change]",
+      "id": "call_rc_1791292043179_cs0ej",
+      "createdAt": "2026-10-06T13:07:23.179Z",
+      "updatedAt": "2026-10-06T13:07:25.606Z",
+      "isMuted": true,
+      "endTime": "2026-10-06T13:07:25.606Z",
+      "transferredToExtension": "102",
+      "transferredToAgentName": "Marcus Brooks (Sales Director & Manager)",
+      "transferredFromExtension": "101",
+      "transferredAt": "2026-10-06T13:07:25.606Z"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (555) 234-8910",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "RINGING",
+      "startTime": "2026-10-06T12:46:57.254Z",
+      "durationSeconds": 0,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sim_in_1791290817254_4q82",
+      "telephonyStatus": "Ringing",
+      "notes": "Simulated inbound RingCentral call from Robert Davis (+1 (555) 234-8910) to Extension 101.",
+      "id": "call_rc_1791290817254_aff1h",
+      "createdAt": "2026-10-06T12:46:57.254Z",
+      "updatedAt": "2026-10-06T12:46:57.254Z"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (800) 555-0101",
+      "calleeNumber": "+1 (555) 912-3849",
+      "direction": "OUTBOUND",
+      "status": "RINGING",
+      "startTime": "2026-10-06T12:41:02.437Z",
+      "durationSeconds": 0,
+      "leadId": "lead_coqylmk",
+      "leadBookingNumber": 1018,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sess_out_1791290462437_jbac",
+      "telephonyStatus": "Proceeding",
+      "id": "call_rc_1791290462437_vrgst",
+      "createdAt": "2026-10-06T12:41:02.437Z",
+      "updatedAt": "2026-10-06T12:41:02.437Z"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (555) 781-9920",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T12:41:01.909Z",
+      "durationSeconds": 195,
+      "leadId": "lead_coqylmk",
+      "leadBookingNumber": 1018,
+      "leadDetailsEntered": true,
+      "rcSessionId": "rc_sim_in_1791290461909_t2a7",
+      "telephonyStatus": "Connected",
+      "notes": "Customer confirmed travel dates and accepted ticket quote with $400 margin. Authorization email dispatched.",
+      "id": "call_rc_1791290461909_0omkv",
+      "createdAt": "2026-10-06T12:41:01.909Z",
+      "updatedAt": "2026-10-06T12:41:02.334Z",
+      "disposition": "FLIGHT_RESERVATION_SALE",
+      "sentiment": "POSITIVE"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (800) 555-0101",
+      "calleeNumber": "+1 (555) 912-3849",
+      "direction": "OUTBOUND",
+      "status": "RINGING",
+      "startTime": "2026-10-06T12:38:39.431Z",
+      "durationSeconds": 0,
+      "leadId": "lead_6epd727",
+      "leadBookingNumber": 1017,
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sess_out_1791290319431_4kmm",
+      "telephonyStatus": "Proceeding",
+      "id": "call_rc_1791290319431_82by6",
+      "createdAt": "2026-10-06T12:38:39.431Z",
+      "updatedAt": "2026-10-06T12:38:39.431Z"
+    },
+    {
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen (Senior Flight Specialist)",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (555) 781-9920",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T12:38:38.653Z",
+      "durationSeconds": 195,
+      "leadDetailsEntered": true,
+      "rcSessionId": "rc_sim_in_1791290318653_n6la",
+      "telephonyStatus": "Connected",
+      "notes": "Customer confirmed travel dates and accepted ticket quote with $400 margin. Authorization email dispatched.",
+      "id": "call_rc_1791290318653_a6f6w",
+      "createdAt": "2026-10-06T12:38:38.653Z",
+      "updatedAt": "2026-10-06T12:38:39.248Z",
+      "leadId": "lead_6epd727",
+      "leadBookingNumber": 1017,
+      "disposition": "FLIGHT_RESERVATION_SALE",
+      "sentiment": "POSITIVE"
+    },
+    {
+      "id": "call_rc_001",
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "leadId": "lead_yak33k",
+      "leadBookingNumber": 1001,
+      "callerNumber": "+1 (555) 234-8910",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T09:36:47.261Z",
+      "endTime": "2026-10-06T09:40:52.261Z",
+      "durationSeconds": 245,
+      "disposition": "FLIGHT_RESERVATION_SALE",
+      "notes": "Inbound call answered on Ext 101. Passenger verified passport number for JFK to LHR route. Agreed to final sale price and confirmed ticketing schedule.",
+      "leadDetailsEntered": true,
+      "rcSessionId": "rc_sess_89218731",
+      "telephonyStatus": "Disconnected",
+      "recordingUrl": "https://example.com/recordings/rc_call_001.mp3",
+      "sentiment": "POSITIVE",
+      "createdAt": "2026-10-06T09:36:47.261Z",
+      "updatedAt": "2026-10-06T09:40:52.261Z"
+    },
+    {
+      "id": "call_rc_002",
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "leadId": "lead_flight_02",
+      "leadBookingNumber": 1002,
+      "callerNumber": "+1 (800) 555-0101",
+      "calleeNumber": "+1 (555) 892-1209",
+      "direction": "OUTBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-06T06:36:47.261Z",
+      "endTime": "2026-10-06T06:39:49.261Z",
+      "durationSeconds": 182,
+      "disposition": "PRICE_QUOTE_GIVEN",
+      "notes": "Outbound follow-up via RingCentral dialer. Provided business class upgrade quote on Emirates flight. Customer will review and call back by afternoon.",
+      "leadDetailsEntered": true,
+      "rcSessionId": "rc_sess_89218732",
+      "telephonyStatus": "Disconnected",
+      "recordingUrl": "https://example.com/recordings/rc_call_002.mp3",
+      "sentiment": "NEUTRAL",
+      "createdAt": "2026-10-06T06:36:47.261Z",
+      "updatedAt": "2026-10-06T06:39:49.261Z"
+    },
+    {
+      "id": "call_rc_003",
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_agent1",
+      "agentName": "Sarah Chen",
+      "agentExtension": "101",
+      "agentRole": "SALES_AGENT",
+      "callerNumber": "+1 (555) 774-9912",
+      "calleeNumber": "101",
+      "direction": "INBOUND",
+      "status": "MISSED",
+      "startTime": "2026-10-06T00:36:47.261Z",
+      "durationSeconds": 0,
+      "disposition": "LEFT_VOICEMAIL",
+      "notes": "Missed call during shift handoff. Voicemail audio received: Customer inquiring about flight rescheduling fee.",
+      "leadDetailsEntered": false,
+      "rcSessionId": "rc_sess_89218733",
+      "telephonyStatus": "Disconnected",
+      "sentiment": "NEUTRAL",
+      "createdAt": "2026-10-06T00:36:47.261Z",
+      "updatedAt": "2026-10-06T00:36:47.261Z"
+    },
+    {
+      "id": "call_rc_004",
+      "tenantId": "tenant_travelocase",
+      "agentId": "usr_sales_mgr",
+      "agentName": "Marcus Brooks",
+      "agentExtension": "102",
+      "agentRole": "SALES_MANAGER",
+      "callerNumber": "+1 (800) 555-0102",
+      "calleeNumber": "+1 (555) 671-3329",
+      "direction": "OUTBOUND",
+      "status": "COMPLETED",
+      "startTime": "2026-10-05T16:36:47.261Z",
+      "endTime": "2026-10-05T16:41:59.261Z",
+      "durationSeconds": 312,
+      "disposition": "PAYMENT_CONFIRMATION",
+      "notes": "Manager escalation call. Cleared card verification checklist with client and sent authorization receipt.",
+      "leadDetailsEntered": true,
+      "rcSessionId": "rc_sess_89218734",
+      "telephonyStatus": "Disconnected",
+      "sentiment": "POSITIVE",
+      "createdAt": "2026-10-05T16:36:47.261Z",
+      "updatedAt": "2026-10-05T16:41:59.261Z"
+    }
+  ],
+  "roundRobinIndex": 10,
+  "lastBookingNumber": 1018,
+  "lastPersistedAt": "2026-10-06T21:17:21.980Z"
 }

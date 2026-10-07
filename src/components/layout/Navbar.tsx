@@ -22,6 +22,8 @@ import {
   UserPlus,
   LogOut,
   MessageSquare,
+  Target,
+  Phone,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -29,8 +31,10 @@ interface NavbarProps {
   users: User[];
   onSelectUser: (user: User) => void;
   onOpenIngestModal: () => void;
+  onOpenPpcModal?: () => void;
   onOpenCreateUserModal?: () => void;
   onOpenChat?: () => void;
+  onTogglePhone?: () => void;
   unreadChatCount?: number;
   onLogout?: () => void;
   activeView: string;
@@ -45,8 +49,10 @@ export function Navbar({
   users,
   onSelectUser,
   onOpenIngestModal,
+  onOpenPpcModal,
   onOpenCreateUserModal,
   onOpenChat,
+  onTogglePhone,
   unreadChatCount = 0,
   onLogout,
   activeView,
@@ -173,6 +179,19 @@ export function Navbar({
                 <span>Super Admin & Audit</span>
               </button>
             )}
+
+            {/* RingCentral Telephony & Call Logs */}
+            <button
+              onClick={() => handleNavClick("calls")}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
+                activeView === "calls"
+                  ? "bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs font-semibold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+            >
+              <Phone className="h-3.5 w-3.5 text-indigo-600" />
+              <span>Calls (Ext {currentUser.rcExtension || "101"})</span>
+            </button>
           </nav>
         </div>
 
@@ -218,6 +237,33 @@ export function Navbar({
             )}
           </div>
 
+          {/* RingCentral Softphone Launcher */}
+          {onTogglePhone && (
+            <button
+              onClick={onTogglePhone}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all active:scale-95 shrink-0 ${
+                currentUser.rcStatus === "ON_CALL"
+                  ? "bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-400/20"
+                  : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300 shadow-xs"
+              }`}
+              title="Open RingCentral Phone Dialer"
+            >
+              <div className="relative">
+                <Phone className="h-3.5 w-3.5 text-emerald-600" />
+                <span
+                  className={`absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full ${
+                    currentUser.rcStatus === "ON_CALL"
+                      ? "bg-rose-500 animate-pulse"
+                      : currentUser.rcStatus === "BUSY"
+                      ? "bg-amber-500"
+                      : "bg-emerald-500"
+                  }`}
+                />
+              </div>
+              <span className="hidden sm:inline">Ext {currentUser.rcExtension || "101"}</span>
+            </button>
+          )}
+
           {/* Team & Hierarchy Chat Button */}
           {onOpenChat && (
             <button
@@ -232,6 +278,19 @@ export function Navbar({
                   {unreadChatCount}
                 </span>
               )}
+            </button>
+          )}
+
+          {/* PPC Inbound Lead button (Visible to Sales Agents, Managers, and Admins) */}
+          {onOpenPpcModal && !isCsAgent && !isChargingOperator && (
+            <button
+              onClick={onOpenPpcModal}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-xs transition active:scale-95 shrink-0 cursor-pointer"
+              title="Open PPC Inbound & Batch Lead Ingestion Center"
+            >
+              <Target className="h-3.5 w-3.5 text-indigo-600" />
+              <span className="hidden sm:inline">PPC Inbound</span>
+              <span className="sm:hidden text-[11px]">PPC</span>
             </button>
           )}
 
@@ -371,6 +430,18 @@ export function Navbar({
               <span>Super Admin & Audit Trail</span>
             </button>
           )}
+
+          <button
+            onClick={() => handleNavClick("calls")}
+            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition ${
+              activeView === "calls"
+                ? "bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold"
+                : "text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            <Phone className="h-4 w-4 text-indigo-600" />
+            <span>Call Logs & Telephony (Ext {currentUser.rcExtension || "101"})</span>
+          </button>
         </div>
       )}
     </header>

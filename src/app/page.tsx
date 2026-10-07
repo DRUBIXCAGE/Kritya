@@ -2,18 +2,23 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { User, Lead, Transaction, Customer, Ticket, AuditLog, ActivityLog, LeadStatus, TicketStatus } from "@/types";
+import { User, Lead, Transaction, Customer, Ticket, AuditLog, ActivityLog, LeadStatus, TicketStatus, CallLog } from "@/types";
 import { Navbar } from "@/components/layout/Navbar";
 import { SalesView } from "@/components/dashboard/SalesView";
 import { ChargingView } from "@/components/dashboard/ChargingView";
 import { CSView } from "@/components/dashboard/CSView";
 import { SuperAdminView } from "@/components/dashboard/SuperAdminView";
 import { LeadIngestionModal } from "@/components/leads/LeadIngestionModal";
+import { PpcLeadIngestionModal } from "@/components/leads/PpcLeadIngestionModal";
 import { LeadWorkspaceModal, WorkspaceWindow } from "@/components/leads/LeadWorkspaceModal";
 import { CreateUserModal } from "@/components/users/CreateUserModal";
 import { InternalChatDrawer } from "@/components/chat/InternalChatDrawer";
 import { ChatNotificationToast, ToastItem } from "@/components/chat/ChatNotificationToast";
 import { ChatMessage } from "@/types";
+import { SoftphoneDialer } from "@/components/ringcentral/SoftphoneDialer";
+import { IncomingCallScreenPop } from "@/components/ringcentral/IncomingCallScreenPop";
+import { CallDispositionLeadModal } from "@/components/ringcentral/CallDispositionLeadModal";
+import { CallHistoryView } from "@/components/ringcentral/CallHistoryView";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -35,6 +40,7 @@ export default function DashboardPage() {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [workspaceInitialWindow, setWorkspaceInitialWindow] = useState<WorkspaceWindow>("overview");
   const [isIngestModalOpen, setIsIngestModalOpen] = useState(false);
+  const [isPpcModalOpen, setIsPpcModalOpen] = useState(false);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
   // Internal Team Chat & Hierarchy Communication
@@ -44,6 +50,11 @@ export default function DashboardPage() {
   const [chatActiveChannelId, setChatActiveChannelId] = useState<string | undefined>(undefined);
   const [chatActiveRecipientId, setChatActiveRecipientId] = useState<string | undefined>(undefined);
   const [chatNotifications, setChatNotifications] = useState<ToastItem[]>([]);
+
+  // RingCentral Telephony & In-App Calling State
+  const [activeCall, setActiveCall] = useState<CallLog | null>(null);
+  const [incomingRingingCall, setIncomingRingingCall] = useState<CallLog | null>(null);
+  const [isCallDispositionModalOpen, setIsCallDispositionModalOpen] = useState(false);
 
   // SSE & Realtime
   const [isConnected, setIsConnected] = useState(false);
@@ -137,6 +148,7 @@ export default function DashboardPage() {
   // Role-based view protection
   useEffect(() => {
     if (currentUser) {
+      if (activeView === "calls") return;
       if (currentUser.role === "SALES_AGENT") {
         setActiveView("sales");
       } else if (currentUser.role === "CS_AGENT") {
@@ -145,7 +157,7 @@ export default function DashboardPage() {
         setActiveView("charging");
       }
     }
-  }, [currentUser]);
+  }, [currentUser, activeView]);
 
   // Search booking ID in persistent database
   const handleSearchBookingId = async (bookingId: string) => {
@@ -217,6 +229,40 @@ export default function DashboardPage() {
                   ]);
                 }
               }
+            } else if (parsed.type === "RINGCENTRAL_INCOMING_CALL") {
+              const incoming: CallLog = parsed.payload?.call;
+              const callExt = parsed.payload?.extension || incoming?.agentExtension;
+              const myExt = currentUserRef.current?.rcExtension;
+              if (
+                incoming &&
+                (callExt === myExt ||
+                  !myExt ||
+                  currentUserRef.current?.role === "SUPER_ADMIN" ||
+                  currentUserRef.current?.role === "ADMIN")
+              ) {
+                setIncomingRingingCall(incoming);
+              }
+            } else if (parsed.type === "RINGCENTRAL_CALL_ANSWERED") {
+              const call: CallLog = parsed.payload?.call;
+              if (call) {
+                setActiveCall((prev) => (prev?.id === call.id ? call : prev));
+                setIncomingRingingCall((prev) => (prev?.id === call.id ? null : prev));
+              }
+            } else if (parsed.type === "RINGCENTRAL_CALL_ENDED") {
+              const call: CallLog = parsed.payload?.call;
+              if (call) {
+                setActiveCall((prev) => (prev?.id === call.id ? call : prev));
+                setIncomingRingingCall((prev) => (prev?.id === call.id ? null : prev));
+              }
+            } else if (parsed.type === "RINGCENTRAL_CALL_TRANSFERRED") {
+              const originalCallId = parsed.payload?.originalCallId;
+              const fromExt = parsed.payload?.fromExtension;
+              const myExt = currentUserRef.current?.rcExtension;
+              if (fromExt === myExt) {
+                setActiveCall((prev) => (prev?.id === originalCallId ? null : prev));
+                setIsCallDispositionModalOpen(false);
+              }
+              fetchData();
             } else {
               fetchData();
             }
@@ -330,6 +376,87 @@ export default function DashboardPage() {
     }
   };
 
+  // RingCentral Telephony actions
+  const handleAnswerIncomingCall = async (call: CallLog) => {
+    try {
+      const res = await fetch(`/api/ringcentral/calls/${call.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "ANSWERED",
+          telephonyStatus: "Connected",
+        }),
+      });
+      const data = await res.json();
+      setIncomingRingingCall(null);
+      if (data.success && data.call) {
+        setActiveCall(data.call);
+      } else {
+        setActiveCall({ ...call, status: "ANSWERED" });
+      }
+      setIsCallDispositionModalOpen(true);
+    } catch (err) {
+      console.error("Answer call failed:", err);
+    }
+  };
+
+  const handleDeclineIncomingCall = async (call: CallLog) => {
+    try {
+      await fetch(`/api/ringcentral/calls/${call.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "REJECTED",
+          telephonyStatus: "Disconnected",
+        }),
+      });
+      setIncomingRingingCall(null);
+    } catch (err) {
+      console.error("Decline call failed:", err);
+    }
+  };
+
+  const handleInitiateCall = async (targetNumber: string, leadId?: string) => {
+    if (!currentUser) return;
+    try {
+      const res = await fetch("/api/ringcentral/dial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: currentUser.id,
+          targetNumber,
+          leadId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.call) {
+        setActiveCall(data.call);
+        // In simulation, auto answer after 1s
+        setTimeout(async () => {
+          try {
+            const ansRes = await fetch(`/api/ringcentral/calls/${data.call.id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                status: "ANSWERED",
+                telephonyStatus: "Connected",
+              }),
+            });
+            const ansData = await ansRes.json();
+            if (ansData.success && ansData.call) {
+              setActiveCall(ansData.call);
+            }
+          } catch {}
+        }, 1200);
+        setIsCallDispositionModalOpen(true);
+      } else {
+        alert(data.error || "Dial failed");
+      }
+    } catch (err) {
+      console.error("Initiate call failed:", err);
+    }
+  };
+
   if (isAuthChecking || !currentUser) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans">
@@ -357,6 +484,7 @@ export default function DashboardPage() {
         onSelectUser={handleSelectUser}
         onLogout={handleLogout}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
+        onOpenPpcModal={() => setIsPpcModalOpen(true)}
         onOpenCreateUserModal={() => setIsCreateUserModalOpen(true)}
         onOpenChat={() => {
           setIsChatDrawerOpen(true);
@@ -385,6 +513,7 @@ export default function DashboardPage() {
               }}
               selectedLeadId={selectedLeadId}
               onOpenIngestModal={() => setIsIngestModalOpen(true)}
+              onOpenPpcModal={() => setIsPpcModalOpen(true)}
               onTransitionLead={(id, st) => handleTransitionLead(id, st)}
               onRefresh={fetchData}
             />
@@ -419,6 +548,26 @@ export default function DashboardPage() {
             onRefreshUsers={fetchData}
           />
         )}
+
+        {activeView === "calls" && (
+          <CallHistoryView
+            currentUser={currentUser}
+            users={users}
+            onSelectLeadById={(leadId) => {
+              const found = leads.find((l) => l.id === leadId);
+              if (found) {
+                setSelectedLeadId(found.id);
+                setWorkspaceInitialWindow("overview");
+                setIsWorkspaceModalOpen(true);
+              }
+            }}
+            onInitiateCall={(num) => handleInitiateCall(num)}
+            onOpenDispositionModalForCall={(call) => {
+              setActiveCall(call);
+              setIsCallDispositionModalOpen(true);
+            }}
+          />
+        )}
       </main>
 
       {/* FULL-WINDOW WORKSPACE MODAL FOR AGENTS */}
@@ -438,6 +587,17 @@ export default function DashboardPage() {
       <LeadIngestionModal
         isOpen={isIngestModalOpen}
         onClose={() => setIsIngestModalOpen(false)}
+        onSuccess={() => {
+          fetchData();
+        }}
+      />
+
+      {/* Modal: Dedicated PPC Advertising & Inbound Lead Center */}
+      <PpcLeadIngestionModal
+        isOpen={isPpcModalOpen}
+        currentUser={currentUser}
+        users={users}
+        onClose={() => setIsPpcModalOpen(false)}
         onSuccess={() => {
           fetchData();
         }}
@@ -482,6 +642,33 @@ export default function DashboardPage() {
         notifications={chatNotifications}
         onDismiss={handleDismissChatNotification}
         onOpenReply={handleOpenChatFromToast}
+      />
+
+      {/* RINGCENTRAL TELEPHONY COMPONENTS */}
+      <IncomingCallScreenPop
+        incomingCall={incomingRingingCall}
+        onAnswer={handleAnswerIncomingCall}
+        onDecline={handleDeclineIncomingCall}
+        agentExtension={currentUser.rcExtension || "101"}
+      />
+
+      <CallDispositionLeadModal
+        isOpen={isCallDispositionModalOpen}
+        activeCall={activeCall}
+        currentUser={currentUser}
+        onClose={() => setIsCallDispositionModalOpen(false)}
+        onCallUpdated={(c) => setActiveCall(c)}
+        onLeadCreatedOrUpdated={fetchData}
+      />
+
+      <SoftphoneDialer
+        currentUser={currentUser}
+        activeCall={activeCall}
+        onCallInitiated={(c) => {
+          setActiveCall(c);
+        }}
+        onCallUpdated={(c) => setActiveCall(c)}
+        onOpenDispositionModal={() => setIsCallDispositionModalOpen(true)}
       />
     </div>
   );

@@ -28,7 +28,17 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { actorId, name, username, email, role, departmentId, avatarUrl } = body;
+    const {
+      actorId,
+      name,
+      username,
+      email,
+      role,
+      departmentId,
+      avatarUrl,
+      rcExtension,
+      rcDirectNumber,
+    } = body;
 
     if (!actorId) {
       return NextResponse.json(
@@ -59,6 +69,8 @@ export async function POST(req: NextRequest) {
       role: role as Role,
       departmentId,
       avatarUrl,
+      rcExtension,
+      rcDirectNumber,
     });
 
     if (!result.success) {

@@ -17,6 +17,8 @@ import {
   ChatMessage,
   ChatChannel,
   ChatMessageType,
+  CallLog,
+  CallDisposition,
 } from "@/types";
 import {
   INITIAL_USERS,
@@ -26,6 +28,7 @@ import {
   INITIAL_TICKETS,
   INITIAL_ACTIVITY_LOGS,
   INITIAL_AUDIT_LOGS,
+  INITIAL_CALL_LOGS,
 } from "./mock-data";
 import { canTransitionLead, canCreateUserRole, ROLE_DEPARTMENT_MAP } from "./rbac";
 import { evaluateSenderAuthenticity } from "./verification";
@@ -130,6 +133,7 @@ interface DatabaseSnapshot {
   activityLogs: ActivityLog[];
   auditLogs: AuditLog[];
   chatMessages?: ChatMessage[];
+  callLogs?: CallLog[];
   roundRobinIndex: number;
   lastBookingNumber?: number;
   lastPersistedAt: string;
@@ -145,6 +149,7 @@ class EnterpriseCRMStore {
   private activityLogs: ActivityLog[] = JSON.parse(JSON.stringify(INITIAL_ACTIVITY_LOGS));
   private auditLogs: AuditLog[] = JSON.parse(JSON.stringify(INITIAL_AUDIT_LOGS));
   private chatMessages: ChatMessage[] = JSON.parse(JSON.stringify(INITIAL_CHAT_MESSAGES));
+  private callLogs: CallLog[] = JSON.parse(JSON.stringify(INITIAL_CALL_LOGS));
   private roundRobinIndex = 0;
   private lastBookingNumber = 1005;
 
@@ -177,6 +182,11 @@ class EnterpriseCRMStore {
         if (parsed.chatMessages && Array.isArray(parsed.chatMessages) && parsed.chatMessages.length > 0) {
           this.chatMessages = parsed.chatMessages;
         }
+        if (parsed.callLogs && Array.isArray(parsed.callLogs) && parsed.callLogs.length > 0) {
+          this.callLogs = parsed.callLogs;
+        } else {
+          this.callLogs = JSON.parse(JSON.stringify(INITIAL_CALL_LOGS));
+        }
         if (parsed.users && Array.isArray(parsed.users)) this.users = parsed.users;
         if (typeof parsed.roundRobinIndex === "number") this.roundRobinIndex = parsed.roundRobinIndex;
         if (typeof parsed.lastBookingNumber === "number") {
@@ -184,10 +194,32 @@ class EnterpriseCRMStore {
         }
       }
 
-      // Ensure all loaded users have username backfilled
-      this.users.forEach((u) => {
+      // Default RingCentral extension mapping for seed accounts
+      const defaultExtMap: Record<string, string> = {
+        usr_superadmin: "100",
+        usr_sales_agent1: "101",
+        usr_sales_mgr: "102",
+        usr_admin: "103",
+        usr_sales_agent2: "104",
+        usr_charging_mgr: "105",
+        usr_charging_op: "106",
+        usr_cs_mgr: "107",
+        usr_cs_agent: "108",
+      };
+
+      // Ensure all loaded users have username and RingCentral extensions backfilled
+      this.users.forEach((u, idx) => {
         if (!u.username) {
           u.username = u.email.split("@")[0].toLowerCase().replace(/[^a-z0-9._-]/g, "");
+        }
+        if (!u.rcExtension) {
+          u.rcExtension = defaultExtMap[u.id] || String(110 + idx);
+        }
+        if (!u.rcStatus) {
+          u.rcStatus = "AVAILABLE";
+        }
+        if (!u.rcDirectNumber) {
+          u.rcDirectNumber = `+1 (800) 555-0${u.rcExtension}`;
         }
       });
 
@@ -280,6 +312,7 @@ class EnterpriseCRMStore {
         activityLogs: this.activityLogs,
         auditLogs: this.auditLogs,
         chatMessages: this.chatMessages,
+        callLogs: this.callLogs,
         roundRobinIndex: this.roundRobinIndex,
         lastBookingNumber: this.lastBookingNumber,
         lastPersistedAt: new Date().toISOString(),
@@ -326,6 +359,8 @@ class EnterpriseCRMStore {
       role: Role;
       departmentId?: string;
       avatarUrl?: string;
+      rcExtension?: string;
+      rcDirectNumber?: string;
     }
   ): { success: boolean; user?: User; error?: string } {
     // 1. Strict Hierarchy Validation
@@ -421,6 +456,14 @@ class EnterpriseCRMStore {
     ];
     const chosenAvatar = payload.avatarUrl || defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
 
+    // RingCentral extension calculation
+    const existingExtensions = this.users
+      .map((u) => parseInt(u.rcExtension || "100", 10))
+      .filter((n) => !isNaN(n));
+    const nextExtNum = Math.max(100, ...existingExtensions, 100) + 1;
+    const finalExtension = payload.rcExtension?.trim() || String(nextExtNum);
+    const finalDirectNumber = payload.rcDirectNumber?.trim() || `+1 (800) 555-0${finalExtension}`;
+
     const userId = `usr_${payload.role.toLowerCase()}_` + Math.random().toString(36).substring(2, 7);
     const newUser: User = {
       id: userId,
@@ -432,6 +475,9 @@ class EnterpriseCRMStore {
       role: payload.role,
       avatarUrl: chosenAvatar,
       isActive: true,
+      rcExtension: finalExtension,
+      rcDirectNumber: finalDirectNumber,
+      rcStatus: "AVAILABLE",
       createdAt: new Date().toISOString(),
     };
 
@@ -598,6 +644,15 @@ class EnterpriseCRMStore {
           l.mco = undefined;
           l.dealValue = 0;
         }
+      }
+
+      // Populate lastRemarkSnippet from footprint clickstream or notes
+      if (l.footprint?.clickstream && l.footprint.clickstream.length > 0) {
+        const topRemark = l.footprint.clickstream.find((c) => c.remark && c.remark.trim())?.remark;
+        if (topRemark) l.lastRemarkSnippet = topRemark;
+      }
+      if (!l.lastRemarkSnippet && l.notes) {
+        l.lastRemarkSnippet = l.notes.split("\n")[0];
       }
     });
 
@@ -1255,6 +1310,138 @@ class EnterpriseCRMStore {
         count: updatedLeads.length,
         assignedToId: targetAgent?.id || null,
         assignedToName: targetAgent?.name || "Unassigned",
+        leadIds: updatedLeads.map((l) => l.id),
+      },
+    });
+
+    this.saveToDatabase();
+    return { success: true, count: updatedLeads.length, leads: updatedLeads };
+  }
+
+  // ----------------------------------------------------
+  // One-Click Round-Robin Lead Distribution Engine
+  // ----------------------------------------------------
+  roundRobinAssignLeads(
+    actor: User,
+    leadIds?: string[]
+  ): { success: boolean; count?: number; leads?: Lead[]; error?: string } {
+    if (
+      actor.role !== "SUPER_ADMIN" &&
+      actor.role !== "ADMIN" &&
+      !actor.role.endsWith("_MANAGER")
+    ) {
+      return {
+        success: false,
+        error: "Unauthorized: Only Admins and Department Managers can run round-robin distribution.",
+      };
+    }
+
+    const activeAgents = this.users.filter(
+      (u) =>
+        (u.role === "SALES_AGENT" || u.role.endsWith("_AGENT") || u.role.endsWith("_OPERATOR")) &&
+        u.isActive
+    );
+
+    if (activeAgents.length === 0) {
+      return { success: false, error: "No active sales agents available for round-robin assignment." };
+    }
+
+    let targetLeads: Lead[] = [];
+    if (Array.isArray(leadIds) && leadIds.length > 0) {
+      targetLeads = this.leads.filter((l) => leadIds.includes(l.id));
+    } else {
+      // Pick all currently unassigned leads
+      targetLeads = this.leads.filter((l) => !l.assignedToId || l.assignedToId === "UNASSIGNED");
+    }
+
+    if (targetLeads.length === 0) {
+      return { success: false, error: "No unassigned leads found for round-robin distribution." };
+    }
+
+    const timestamp = new Date().toISOString();
+    const updatedLeads: Lead[] = [];
+
+    for (const lead of targetLeads) {
+      const targetAgent = activeAgents[this.roundRobinIndex % activeAgents.length];
+      this.roundRobinIndex++;
+
+      const prevAgentName = lead.assignedToName || "Unassigned (travelocase.com Pool)";
+      lead.assignedToId = targetAgent.id;
+      lead.assignedToName = targetAgent.name;
+      lead.updatedAt = timestamp;
+      updatedLeads.push(lead);
+
+      const assignRemark = `[AUTO] Round-Robin Distributed to ${targetAgent.name} (@${targetAgent.username || targetAgent.name}) by ${actor.name} (${actor.role})`;
+      lead.lastRemarkSnippet = assignRemark;
+
+      if (!lead.footprint) {
+        lead.footprint = {
+          id: `fp-${Date.now()}`,
+          leadId: lead.id,
+          ipAddress: "127.0.0.1",
+          userAgent: "Enterprise CRM Web Client",
+          clickstream: [],
+          createdAt: timestamp,
+        };
+      }
+
+      lead.footprint.clickstream.unshift({
+        timestamp,
+        event: "LEAD_ROUND_ROBIN_ASSIGNED",
+        url: `/leads/${lead.id}`,
+        remark: assignRemark,
+        actorId: actor.id,
+        actorName: actor.name,
+        actorRole: actor.role,
+        isAutoLogged: true,
+        metadata: {
+          targetAgentId: targetAgent.id,
+          targetAgentName: targetAgent.name,
+          previousAgent: prevAgentName,
+          distributionType: "ROUND_ROBIN",
+        },
+      });
+
+      this.logActivity({
+        entityType: "LEAD",
+        entityId: lead.id,
+        actorId: actor.id,
+        actorName: actor.name,
+        actorRole: actor.role,
+        action: "LEAD_ROUND_ROBIN_ASSIGNED",
+        fromState: prevAgentName,
+        toState: targetAgent.name,
+        metadata: {
+          remark: assignRemark,
+          assignedToId: targetAgent.id,
+          assignedToName: targetAgent.name,
+          assignedToUsername: targetAgent.username || null,
+          distributionType: "ROUND_ROBIN",
+        },
+      });
+    }
+
+    this.logAudit({
+      actorId: actor.id,
+      actorEmail: actor.email,
+      action: "LEADS_ROUND_ROBIN_ASSIGNED",
+      resource: `Batch:${updatedLeads.length}_Leads`,
+      ipAddress: "127.0.0.1",
+      status: "SUCCESS",
+      payload: {
+        assignedCount: updatedLeads.length,
+        agentsInvolved: activeAgents.map((a) => a.name),
+        leadIds: updatedLeads.map((l) => l.id),
+      },
+    });
+
+    broadcastEvent({
+      type: "LEAD_TRANSITION",
+      tenantId: actor.tenantId || "tenant_travelocase",
+      actor: { id: actor.id, name: actor.name, role: actor.role },
+      payload: {
+        action: "LEADS_ROUND_ROBIN_ASSIGNED",
+        count: updatedLeads.length,
         leadIds: updatedLeads.map((l) => l.id),
       },
     });
@@ -1963,11 +2150,15 @@ class EnterpriseCRMStore {
     email: string;
     phone?: string;
     company?: string;
+    status?: LeadStatus | string;
     ticketPrice?: number;
+    salePrice?: number;
+    mco?: number;
     dealValue?: number;
     currency?: string;
     notes?: string;
     assignedToId?: string;
+    assignedToName?: string;
     ipAddress?: string;
     userAgent?: string;
     referrer?: string;
@@ -2042,9 +2233,24 @@ class EnterpriseCRMStore {
     if (!defaultBooking.pnrCode) {
       defaultBooking.pnrCode = defaultPnr;
     }
+    const finalSalePrice = typeof payload.salePrice === "number" ? payload.salePrice : undefined;
+    const finalMco =
+      typeof payload.mco === "number"
+        ? payload.mco
+        : finalSalePrice !== undefined
+        ? Math.max(0, finalSalePrice - ingestedTicketPrice)
+        : undefined;
+    const finalDealValue =
+      finalSalePrice !== undefined
+        ? finalSalePrice
+        : typeof payload.dealValue === "number"
+        ? payload.dealValue
+        : ingestedTicketPrice;
+    const finalStatus = (payload.status as LeadStatus) || "NEW";
+
     defaultBooking.ticketPrice = ingestedTicketPrice;
-    defaultBooking.salePrice = undefined;
-    defaultBooking.mco = undefined;
+    defaultBooking.salePrice = finalSalePrice;
+    defaultBooking.mco = finalMco;
 
     const defaultCard: CardDetails = payload.cardDetails || {
       cardholderName: payload.name.toUpperCase(),
@@ -2073,11 +2279,11 @@ class EnterpriseCRMStore {
       email: payload.email,
       phone: payload.phone || "+1 (555) 019-3344",
       company: payload.company || "Corporate Client",
-      status: "NEW",
+      status: finalStatus,
       ticketPrice: ingestedTicketPrice,
-      salePrice: undefined, // No default value! Agent will enter sale price
-      mco: undefined,       // MCO will be calculated when sale price is entered
-      dealValue: 0,
+      salePrice: finalSalePrice,
+      mco: finalMco,
+      dealValue: finalDealValue,
       currency: payload.currency || "USD",
       notes:
         payload.notes ||
@@ -2221,6 +2427,280 @@ class EnterpriseCRMStore {
 
     this.saveToDatabase();
     return newLead;
+  }
+
+  // ----------------------------------------------------
+  // Dedicated PPC Advertising & Inbound Call Lead Ingestion
+  // ----------------------------------------------------
+  ingestPpcLead(payload: {
+    ppcSource?: string;
+    campaignName?: string;
+    adGroup?: string;
+    keyword?: string;
+    gclid?: string;
+    channel?: "CALL_INBOUND" | "LANDING_PAGE_FORM" | "SEARCH_AD" | "RETARGETING" | string;
+    intentLevel?: "URGENT" | "HIGH" | "STANDARD" | "FLEXIBLE" | string;
+    callDurationSeconds?: number;
+    initialRemark?: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    company?: string;
+    origin?: string;
+    destination?: string;
+    departureDate?: string;
+    returnDate?: string;
+    airline?: string;
+    cabinClass?: string;
+    passengerCount?: number;
+    ticketPrice?: number;
+    salePrice?: number;
+    assignedToId?: string;
+    cardDetails?: CardDetails;
+    actor?: User;
+  }): Lead {
+    const leadId = "lead_ppc_" + Math.random().toString(36).substring(2, 9);
+    this.lastBookingNumber = Math.max(this.lastBookingNumber || 1000, 1000) + 1;
+    const nextBookingNumber = this.lastBookingNumber;
+    const defaultPnr = "PPC-" + nextBookingNumber;
+
+    const ppcSource = payload.ppcSource || "google_ads";
+    const channel = payload.channel || "CALL_INBOUND";
+    const campaignName = payload.campaignName || "Google_Search_Luxury_Transatlantic";
+    const keyword = payload.keyword || "cheap business class flights";
+    const adGroup = payload.adGroup || "JFK-LHR-Special-Offer";
+    const gclid = payload.gclid || "CjwKCAiA" + Math.random().toString(36).substring(2, 12);
+
+    const safeEmail =
+      payload.email && payload.email.trim()
+        ? payload.email.trim()
+        : `${(payload.phone || "caller").replace(/[^0-9]/g, "") || Math.floor(1000 + Math.random() * 9000)}@ppc-lead.travelocase.com`;
+
+    const authResult = evaluateSenderAuthenticity(safeEmail, "198.51.100.88");
+
+    // Agent Assignment
+    let assignedAgent: User | undefined = undefined;
+    if (payload.assignedToId && payload.assignedToId !== "UNASSIGNED") {
+      assignedAgent = this.users.find((u) => u.id === payload.assignedToId);
+    } else if (payload.actor && (payload.actor.role === "SALES_AGENT" || payload.actor.role.endsWith("_AGENT"))) {
+      // If sales agent created this inbound call lead directly, assign to themselves
+      assignedAgent = payload.actor;
+    }
+
+    const ticketPrice = typeof payload.ticketPrice === "number" && !isNaN(payload.ticketPrice) ? Math.max(0, payload.ticketPrice) : 0;
+    const salePrice = typeof payload.salePrice === "number" && !isNaN(payload.salePrice) && payload.salePrice > 0 ? payload.salePrice : undefined;
+    const mco = salePrice !== undefined ? Math.max(0, salePrice - ticketPrice) : undefined;
+    const dealValue = salePrice || 0;
+
+    const origin = payload.origin || "JFK (New York)";
+    const destination = payload.destination || "LHR (London Heathrow)";
+    const departureDate = payload.departureDate || new Date(Date.now() + 86400000 * 14).toISOString().split("T")[0];
+    const returnDate = payload.returnDate;
+    const airline = payload.airline || "British Airways";
+    const cabinClass = (payload.cabinClass as any) || "BUSINESS";
+
+    const defaultBooking: FlightBooking = {
+      origin,
+      destination,
+      tripType: returnDate ? "ROUND_TRIP" : "ONE_WAY",
+      departureDate,
+      returnDate,
+      airline,
+      flightNumber: airline.includes("Airways") ? "BA-178" : "AA-492",
+      cabinClass,
+      pnrCode: defaultPnr,
+      ticketPrice,
+      salePrice,
+      mco,
+      passengers: [
+        {
+          id: "pax_ppc_" + Math.random().toString(36).substring(2, 6),
+          fullName: payload.name,
+          passportNumber: "ON_FILE",
+          passportExpiry: "2031-10-15",
+          nationality: "Verified",
+          dob: "1988-04-12",
+          type: "ADULT",
+          seatPreference: "Window / Priority",
+          mealPreference: "Standard Gourmet",
+          specialAssistance: "None",
+          eTicketNumber: "ETKT-PPC-" + Math.floor(1000000000 + Math.random() * 9000000000),
+        },
+      ],
+    };
+
+    // Strictly enforce PCI vault security & default masking
+    let finalCardDetails: CardDetails | undefined = undefined;
+    if (payload.cardDetails) {
+      finalCardDetails = {
+        ...payload.cardDetails,
+        isAccessGrantedToAgent: false, // Strict PCI standard: never exposed to agents by default
+        grantedAt: undefined,
+        accessExpiresAt: undefined,
+      };
+    }
+
+    const initialTimestamp = new Date().toISOString();
+    const sourceLabel = ppcSource.replace("_", " ").toUpperCase();
+    const channelLabel = channel === "CALL_INBOUND" ? "Phone Call Inbound" : "Landing Page Web Form";
+
+    const generatedRemark = payload.initialRemark && payload.initialRemark.trim()
+      ? `[PPC ${sourceLabel} - ${channelLabel}] ${payload.initialRemark.trim()}`
+      : `[PPC INBOUND - ${sourceLabel}] ${channelLabel} | Campaign: "${campaignName}" | Keyword: "${keyword}" | Route: ${origin} -> ${destination} | Quoted: $${ticketPrice} ${salePrice ? `(Sale: $${salePrice}, MCO: +$${mco})` : ""}| Assigned: ${assignedAgent ? assignedAgent.name : "Unassigned Queue"}`;
+
+    const newLead: Lead = {
+      id: leadId,
+      bookingNumber: nextBookingNumber,
+      bookingId: `#${nextBookingNumber}`,
+      tenantId: "tenant_travelocase",
+      assignedToId: assignedAgent?.id,
+      assignedToName: assignedAgent?.name,
+      name: payload.name,
+      email: safeEmail,
+      phone: payload.phone || "+1 (555) 019-8800",
+      company: payload.company || "PPC Direct Client",
+      status: "NEW",
+      ticketPrice,
+      salePrice,
+      mco,
+      dealValue,
+      currency: "USD",
+      notes: `[${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}]: ${generatedRemark}`,
+      bookingDetails: defaultBooking,
+      cardDetails: finalCardDetails,
+      authEmailSent: false,
+      authCallConfirmed: channel === "CALL_INBOUND",
+      createdAt: initialTimestamp,
+      updatedAt: initialTimestamp,
+      ppcSource,
+      ppcCampaign: campaignName,
+      ppcKeyword: keyword,
+      ppcChannel: channel,
+      ppcGclid: gclid,
+      lastRemarkSnippet: generatedRemark,
+      footprint: {
+        id: "fp_" + leadId,
+        leadId,
+        ipAddress: "198.51.100.88",
+        userAgent: "PPC Campaign Tracking Dispatcher",
+        referrer: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
+        country: "United States",
+        city: "New York, NY",
+        utmSource: ppcSource,
+        utmMedium: channel === "CALL_INBOUND" ? "cpc_call" : "cpc",
+        utmCampaign: campaignName,
+        utmTerm: keyword,
+        utmContent: adGroup,
+        clickstream: [
+          {
+            timestamp: initialTimestamp,
+            event: channel === "CALL_INBOUND" ? "PPC_INBOUND_CALL_RECEIVED" : "PPC_WEB_FORM_SUBMITTED",
+            url: `https://www.travelocase.com/lp/luxury-flights?gclid=${gclid}`,
+            dwellTimeSeconds: payload.callDurationSeconds || 45,
+            remark: generatedRemark,
+            actorId: payload.actor ? payload.actor.id : "system_ppc_ingestion",
+            actorName: payload.actor ? payload.actor.name : "PPC Ads Webhook",
+            actorRole: payload.actor ? payload.actor.role : "SYSTEM",
+            isAutoLogged: true,
+            metadata: {
+              ppcSource,
+              channel,
+              campaignName,
+              adGroup,
+              keyword,
+              gclid,
+              intentLevel: payload.intentLevel || "HIGH",
+              callDurationSeconds: payload.callDurationSeconds,
+              ticketPrice,
+              salePrice,
+              mco,
+              assignmentStatus: assignedAgent ? `Assigned to ${assignedAgent.name}` : "Unassigned Queue",
+            },
+          },
+        ],
+        createdAt: initialTimestamp,
+      },
+      emailVerification: {
+        id: "ev_" + leadId,
+        leadId,
+        email: safeEmail,
+        spfResult: authResult.spfResult,
+        dkimResult: authResult.dkimResult,
+        dmarcResult: authResult.dmarcResult,
+        mxRecordExists: authResult.mxRecordExists,
+        smtpCheckValid: authResult.smtpCheckValid,
+        score: authResult.score,
+        rawDetails: authResult.details,
+        verifiedAt: initialTimestamp,
+      },
+    };
+
+    this.leads.unshift(newLead);
+
+    this.logActivity({
+      entityType: "LEAD",
+      entityId: newLead.id,
+      actorId: payload.actor?.id || "system_ppc_engine",
+      actorName: payload.actor?.name || "PPC Advertising Engine",
+      actorRole: payload.actor?.role || "SYSTEM",
+      action: channel === "CALL_INBOUND" ? "PPC_CALL_LEAD_INGESTED" : "PPC_WEB_LEAD_INGESTED",
+      toState: "NEW",
+      metadata: {
+        remark: generatedRemark,
+        ppcSource,
+        channel,
+        campaignName,
+        keyword,
+        assignedTo: assignedAgent ? assignedAgent.name : "Unassigned Queue",
+        ticketPrice,
+        salePrice,
+        mco,
+      },
+    });
+
+    this.logAudit({
+      actorId: payload.actor?.id,
+      actorEmail: payload.actor?.email || "ppc-tracking@travelocase.com",
+      action: "PPC_LEAD_INGESTED",
+      resource: `Lead:${newLead.id}`,
+      ipAddress: "198.51.100.88",
+      status: "SUCCESS",
+      payload: {
+        ppcSource,
+        campaignName,
+        channel,
+        bookingNumber: newLead.bookingNumber,
+        assignedTo: assignedAgent?.name || "Unassigned Queue",
+      },
+    });
+
+    broadcastEvent({
+      type: "LEAD_INGESTED",
+      tenantId: newLead.tenantId,
+      actor: {
+        name: payload.actor ? payload.actor.name : "PPC Ads Ingestion Engine",
+        role: payload.actor ? payload.actor.role : "SYSTEM",
+      },
+      payload: { lead: newLead },
+    });
+
+    this.saveToDatabase();
+    return newLead;
+  }
+
+  // Batch Ingestion for Multiple PPC Leads (CSV / Bulk Ad Form Export)
+  ingestPpcBatch(
+    items: Array<Parameters<EnterpriseCRMStore["ingestPpcLead"]>[0]>,
+    actor?: User
+  ): { success: boolean; count: number; leads: Lead[] } {
+    const createdLeads: Lead[] = [];
+    for (const item of items) {
+      if (item && item.name) {
+        const lead = this.ingestPpcLead({ ...item, actor: actor || item.actor });
+        createdLeads.push(lead);
+      }
+    }
+    return { success: true, count: createdLeads.length, leads: createdLeads };
   }
 
   // ----------------------------------------------------
@@ -2716,6 +3196,424 @@ class EnterpriseCRMStore {
     }
 
     return { success: true, count };
+  }
+
+  // ----------------------------------------------------
+  // RingCentral Telephony & Call Logs Management
+  // ----------------------------------------------------
+  getCallLogs(filters?: {
+    agentId?: string;
+    extension?: string;
+    leadId?: string;
+    status?: string;
+    direction?: string;
+    search?: string;
+  }): CallLog[] {
+    let list = [...this.callLogs];
+
+    if (filters?.extension) {
+      list = list.filter((c) => c.agentExtension === filters.extension);
+    }
+
+    if (filters?.agentId) {
+      list = list.filter((c) => c.agentId === filters.agentId);
+    }
+
+    if (filters?.leadId) {
+      list = list.filter((c) => c.leadId === filters.leadId);
+    }
+
+    if (filters?.status) {
+      list = list.filter((c) => c.status === filters.status);
+    }
+
+    if (filters?.direction) {
+      list = list.filter((c) => c.direction === filters.direction);
+    }
+
+    if (filters?.search) {
+      const q = filters.search.toLowerCase().trim();
+      list = list.filter(
+        (c) =>
+          c.callerNumber.toLowerCase().includes(q) ||
+          c.calleeNumber.toLowerCase().includes(q) ||
+          c.agentName.toLowerCase().includes(q) ||
+          c.agentExtension.toLowerCase().includes(q) ||
+          (c.notes && c.notes.toLowerCase().includes(q)) ||
+          (c.disposition && c.disposition.toLowerCase().includes(q)) ||
+          (c.leadBookingNumber && String(c.leadBookingNumber).includes(q))
+      );
+    }
+
+    // Sort newest calls first
+    return list.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+  }
+
+  getCallLogById(id: string): CallLog | undefined {
+    return this.callLogs.find((c) => c.id === id);
+  }
+
+  createCallLog(data: Omit<CallLog, "id" | "createdAt" | "updatedAt">): CallLog {
+    const callId = `call_rc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const now = new Date().toISOString();
+
+    const newCall: CallLog = {
+      ...data,
+      id: callId,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    this.callLogs.unshift(newCall);
+
+    // If inbound call, broadcast ringing event to connected agents
+    if (newCall.direction === "INBOUND" && newCall.status === "RINGING") {
+      broadcastEvent({
+        type: "RINGCENTRAL_INCOMING_CALL",
+        tenantId: newCall.tenantId,
+        actor: {
+          id: newCall.agentId,
+          name: newCall.agentName,
+          role: newCall.agentRole || "SALES_AGENT",
+        },
+        payload: {
+          call: newCall,
+          extension: newCall.agentExtension,
+          callerNumber: newCall.callerNumber,
+          leadId: newCall.leadId,
+          leadBookingNumber: newCall.leadBookingNumber,
+        },
+      });
+    } else {
+      broadcastEvent({
+        type: "RINGCENTRAL_CALL_UPDATED",
+        tenantId: newCall.tenantId,
+        actor: {
+          id: newCall.agentId,
+          name: newCall.agentName,
+          role: newCall.agentRole || "SALES_AGENT",
+        },
+        payload: { call: newCall },
+      });
+    }
+
+    this.saveToDatabase();
+    return newCall;
+  }
+
+  updateCallLog(
+    id: string,
+    updates: Partial<CallLog>
+  ): { success: boolean; callLog?: CallLog; error?: string } {
+    const idx = this.callLogs.findIndex((c) => c.id === id);
+    if (idx === -1) {
+      return { success: false, error: "Call log record not found." };
+    }
+
+    const prevCall = this.callLogs[idx];
+    const now = new Date().toISOString();
+
+    const updatedCall: CallLog = {
+      ...prevCall,
+      ...updates,
+      updatedAt: now,
+    };
+
+    // Auto-calculate duration if endTime is supplied
+    if (updates.endTime && updatedCall.startTime) {
+      const dur = Math.max(
+        0,
+        Math.round((new Date(updates.endTime).getTime() - new Date(updatedCall.startTime).getTime()) / 1000)
+      );
+      if (!updates.durationSeconds) {
+        updatedCall.durationSeconds = dur;
+      }
+    }
+
+    this.callLogs[idx] = updatedCall;
+
+    // Handle telephony status transitions
+    if (updates.status === "ANSWERED" && prevCall.status !== "ANSWERED") {
+      // Mark agent on call
+      const agent = this.users.find((u) => u.id === updatedCall.agentId || u.rcExtension === updatedCall.agentExtension);
+      if (agent) {
+        agent.rcStatus = "ON_CALL";
+      }
+
+      broadcastEvent({
+        type: "RINGCENTRAL_CALL_ANSWERED",
+        tenantId: updatedCall.tenantId,
+        actor: {
+          id: updatedCall.agentId,
+          name: updatedCall.agentName,
+          role: updatedCall.agentRole || "SALES_AGENT",
+        },
+        payload: { call: updatedCall },
+      });
+    } else if (
+      (updates.status === "COMPLETED" || updates.status === "MISSED" || updates.status === "REJECTED") &&
+      prevCall.status !== updates.status
+    ) {
+      // Revert agent back to available
+      const agent = this.users.find((u) => u.id === updatedCall.agentId || u.rcExtension === updatedCall.agentExtension);
+      if (agent && agent.rcStatus === "ON_CALL") {
+        agent.rcStatus = "AVAILABLE";
+      }
+
+      broadcastEvent({
+        type: "RINGCENTRAL_CALL_ENDED",
+        tenantId: updatedCall.tenantId,
+        actor: {
+          id: updatedCall.agentId,
+          name: updatedCall.agentName,
+          role: updatedCall.agentRole || "SALES_AGENT",
+        },
+        payload: { call: updatedCall },
+      });
+    } else {
+      broadcastEvent({
+        type: "RINGCENTRAL_CALL_UPDATED",
+        tenantId: updatedCall.tenantId,
+        actor: {
+          id: updatedCall.agentId,
+          name: updatedCall.agentName,
+          role: updatedCall.agentRole || "SALES_AGENT",
+        },
+        payload: { call: updatedCall },
+      });
+    }
+
+    // If linked to lead and notes/disposition entered, log activity on Lead timeline
+    if (updatedCall.leadId && (updates.notes || updates.disposition)) {
+      const targetLead = this.leads.find((l) => l.id === updatedCall.leadId);
+      if (targetLead) {
+        this.logActivity({
+          entityType: "LEAD",
+          entityId: targetLead.id,
+          actorId: updatedCall.agentId,
+          actorName: updatedCall.agentName,
+          actorRole: updatedCall.agentRole || "SALES_AGENT",
+          action: "RINGCENTRAL_CALL_LOGGED",
+          fromState: targetLead.status,
+          toState: targetLead.status,
+          metadata: {
+            callId: updatedCall.id,
+            extension: updatedCall.agentExtension,
+            direction: updatedCall.direction,
+            durationSeconds: updatedCall.durationSeconds,
+            disposition: updatedCall.disposition,
+            notes: updatedCall.notes,
+            callerNumber: updatedCall.callerNumber,
+          },
+        });
+      }
+    }
+
+    this.saveToDatabase();
+    return { success: true, callLog: updatedCall };
+  }
+
+  updateUserRcStatus(
+    userId: string,
+    status: "AVAILABLE" | "BUSY" | "ON_CALL" | "OFFLINE",
+    extension?: string,
+    directNumber?: string
+  ): { success: boolean; user?: User; error?: string } {
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) {
+      return { success: false, error: "User not found." };
+    }
+
+    user.rcStatus = status;
+    if (extension) user.rcExtension = extension.trim();
+    if (directNumber) user.rcDirectNumber = directNumber.trim();
+
+    broadcastEvent({
+      type: "RINGCENTRAL_STATUS_CHANGED",
+      tenantId: user.tenantId,
+      actor: { id: user.id, name: user.name, role: user.role },
+      payload: { userId: user.id, status, extension: user.rcExtension },
+    });
+
+    this.saveToDatabase();
+    return { success: true, user };
+  }
+
+  assignAgentExtension(
+    userId: string,
+    extension: string,
+    directNumber?: string
+  ): { success: boolean; user?: User; error?: string } {
+    const cleanExt = extension.trim();
+    if (!cleanExt) {
+      return { success: false, error: "Extension cannot be empty." };
+    }
+
+    // Check uniqueness of extension across active users
+    const existing = this.users.find((u) => u.id !== userId && u.rcExtension === cleanExt);
+    if (existing) {
+      return {
+        success: false,
+        error: `Extension ${cleanExt} is already assigned to ${existing.name} (${existing.role}).`,
+      };
+    }
+
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) {
+      return { success: false, error: "User not found." };
+    }
+
+    user.rcExtension = cleanExt;
+    if (directNumber) {
+      user.rcDirectNumber = directNumber.trim();
+    } else if (!user.rcDirectNumber) {
+      user.rcDirectNumber = `+1 (800) 555-0${cleanExt}`;
+    }
+
+    this.saveToDatabase();
+    return { success: true, user };
+  }
+
+  transferCall(
+    callId: string,
+    targetExtension: string,
+    transferredByUserId: string,
+    transferNotes?: string
+  ): {
+    success: boolean;
+    callLog?: CallLog;
+    targetUser?: User;
+    transferredInboundCall?: CallLog;
+    error?: string;
+  } {
+    const callIndex = this.callLogs.findIndex((c) => c.id === callId);
+    if (callIndex === -1) {
+      return { success: false, error: "Call log not found." };
+    }
+
+    const call = this.callLogs[callIndex];
+    const cleanTargetExt = targetExtension.trim();
+    if (!cleanTargetExt) {
+      return { success: false, error: "Target extension is required." };
+    }
+
+    // Find target agent by extension
+    const targetUser = this.users.find((u) => u.rcExtension === cleanTargetExt);
+    const targetAgentName = targetUser?.name || `Agent (Ext ${cleanTargetExt})`;
+
+    const transferTimestamp = new Date().toISOString();
+    const duration = call.startTime
+      ? Math.max(0, Math.floor((Date.now() - new Date(call.startTime).getTime()) / 1000))
+      : call.durationSeconds || 0;
+
+    // 1. Mark original call as completed/transferred
+    const updatedOriginalCall: CallLog = {
+      ...call,
+      status: "COMPLETED",
+      endTime: transferTimestamp,
+      durationSeconds: duration,
+      transferredToExtension: cleanTargetExt,
+      transferredToAgentName: targetAgentName,
+      transferredFromExtension: call.agentExtension,
+      transferredAt: transferTimestamp,
+      telephonyStatus: `Transferred to Ext ${cleanTargetExt}`,
+      notes:
+        (call.notes ? call.notes + "\n" : "") +
+        `[Transferred to Ext ${cleanTargetExt} (${targetAgentName})${transferNotes ? `: ${transferNotes}` : ""}]`,
+      updatedAt: transferTimestamp,
+    };
+    this.callLogs[callIndex] = updatedOriginalCall;
+
+    // 2. Spawn transferred inbound call on target extension
+    const newCallId = "call_rc_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+    const transferredInboundCall: CallLog = {
+      id: newCallId,
+      tenantId: call.tenantId,
+      agentId: targetUser?.id || "usr_unassigned",
+      agentName: targetAgentName,
+      agentExtension: cleanTargetExt,
+      callerNumber: call.callerNumber,
+      calleeNumber: cleanTargetExt,
+      direction: "INBOUND",
+      status: "RINGING",
+      startTime: transferTimestamp,
+      durationSeconds: 0,
+      leadId: call.leadId,
+      leadBookingNumber: call.leadBookingNumber,
+      leadDetailsEntered: call.leadDetailsEntered,
+      transferredFromExtension: call.agentExtension,
+      telephonyStatus: `Transferred from Ext ${call.agentExtension}`,
+      notes: `[Transferred from Ext ${call.agentExtension} (${call.agentName})]: ${transferNotes || "Direct call transfer"}`,
+      createdAt: transferTimestamp,
+      updatedAt: transferTimestamp,
+    };
+    this.callLogs.unshift(transferredInboundCall);
+
+    // 3. Broadcast real-time events
+    broadcastEvent({
+      type: "RINGCENTRAL_CALL_TRANSFERRED",
+      tenantId: call.tenantId,
+      actor: { id: transferredByUserId, name: call.agentName, role: "Sales Specialist" },
+      payload: {
+        originalCallId: call.id,
+        newCallId: transferredInboundCall.id,
+        fromExtension: call.agentExtension,
+        targetExtension: cleanTargetExt,
+        targetAgentName,
+        transferNotes,
+      },
+    });
+
+    broadcastEvent({
+      type: "RINGCENTRAL_INCOMING_CALL",
+      tenantId: call.tenantId,
+      actor: { id: transferredByUserId, name: "RingCentral PBX", role: "SYSTEM" },
+      payload: {
+        call: transferredInboundCall,
+        targetExtension: cleanTargetExt,
+      },
+    });
+
+    this.saveToDatabase();
+    return {
+      success: true,
+      callLog: updatedOriginalCall,
+      targetUser,
+      transferredInboundCall,
+    };
+  }
+
+  getRingCentralStats(extension?: string): {
+    totalCalls: number;
+    inboundCalls: number;
+    outboundCalls: number;
+    answeredCalls: number;
+    missedCalls: number;
+    totalDurationSeconds: number;
+    avgDurationSeconds: number;
+  } {
+    let list = this.callLogs;
+    if (extension) {
+      list = list.filter((c) => c.agentExtension === extension);
+    }
+
+    const totalCalls = list.length;
+    const inboundCalls = list.filter((c) => c.direction === "INBOUND").length;
+    const outboundCalls = list.filter((c) => c.direction === "OUTBOUND").length;
+    const answeredCalls = list.filter((c) => c.status === "COMPLETED" || c.status === "ANSWERED").length;
+    const missedCalls = list.filter((c) => c.status === "MISSED" || c.status === "REJECTED").length;
+    const totalDurationSeconds = list.reduce((acc, c) => acc + (c.durationSeconds || 0), 0);
+    const avgDurationSeconds = totalCalls > 0 ? Math.round(totalDurationSeconds / Math.max(1, answeredCalls)) : 0;
+
+    return {
+      totalCalls,
+      inboundCalls,
+      outboundCalls,
+      answeredCalls,
+      missedCalls,
+      totalDurationSeconds,
+      avgDurationSeconds,
+    };
   }
 }
 

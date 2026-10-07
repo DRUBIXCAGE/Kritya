@@ -924,9 +924,34 @@ export function LeadWorkspaceModal({
                 <LeadStatusChip status={lead.status} />
               </div>
               <div className="text-[11px] sm:text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-1.5 sm:gap-3">
-                <span className="flex items-center gap-1 text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-700">
                   <Phone className="h-3 w-3 text-slate-400" />
-                  {editPhone || lead.phone || "+1 (555) 019-2834"}
+                  <span>{editPhone || lead.phone || "+1 (555) 019-2834"}</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const num = editPhone || lead.phone || "+1 (555) 019-2834";
+                      try {
+                        await fetch("/api/ringcentral/dial", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            agentId: currentUser.id,
+                            targetNumber: num,
+                            leadId: lead.id,
+                            leadBookingNumber: lead.bookingNumber,
+                          }),
+                        });
+                      } catch (err) {
+                        console.error("Dial failed:", err);
+                      }
+                    }}
+                    className="ml-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95"
+                    title={`Call via RingCentral (Ext ${currentUser.rcExtension || "101"})`}
+                  >
+                    <Phone className="h-2.5 w-2.5 text-emerald-600" />
+                    <span>Call Ext {currentUser.rcExtension || "101"}</span>
+                  </button>
                 </span>
                 <span className="hidden sm:inline text-slate-300">&bull;</span>
                 <span className="text-slate-700 truncate max-w-[180px] sm:max-w-none flex items-center gap-1">

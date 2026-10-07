@@ -32,6 +32,7 @@ import {
   Users,
   Calendar,
   Ticket as TicketIcon,
+  Phone,
   PhoneCall,
   AlertTriangle,
   Building,
@@ -507,9 +508,36 @@ export function LeadDetailSplitPane({
                   <span className="text-[10px] text-slate-500 block font-mono uppercase">Full Name</span>
                   <span className="font-semibold text-white">{lead.name}</span>
                 </div>
-                <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] text-slate-500 block font-mono uppercase">Phone</span>
-                  <span className="font-semibold text-slate-200">{lead.phone || "+1 (555) 019-2834"}</span>
+                <div className="p-2 rounded bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <div className="min-w-0 pr-1">
+                    <span className="text-[10px] text-slate-500 block font-mono uppercase">Phone</span>
+                    <span className="font-semibold text-slate-200 truncate block">{lead.phone || "+1 (555) 019-2834"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const num = lead.phone || "+1 (555) 019-2834";
+                      try {
+                        await fetch("/api/ringcentral/dial", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            agentId: currentUser.id,
+                            targetNumber: num,
+                            leadId: lead.id,
+                            leadBookingNumber: lead.bookingNumber,
+                          }),
+                        });
+                      } catch (err) {
+                        console.error("Dial failed:", err);
+                      }
+                    }}
+                    className="px-2 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-all active:scale-95 flex items-center gap-1 text-[10px] font-bold shrink-0"
+                    title={`Call via RingCentral (Ext ${currentUser.rcExtension || "101"})`}
+                  >
+                    <Phone className="h-3 w-3" />
+                    <span>Call</span>
+                  </button>
                 </div>
                 <div className="p-2 rounded bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-slate-500 block font-mono uppercase">Email</span>
