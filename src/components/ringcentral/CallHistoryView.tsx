@@ -3,85 +3,53 @@
 import React, { useState, useEffect } from "react";
 import {
   Phone,
-  PhoneCall,
   PhoneIncoming,
   PhoneOutgoing,
-  PhoneOff,
   PhoneForwarded,
-  User,
-  Clock,
   Search,
-  Filter,
-  Calendar,
-  Sparkles,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
   ExternalLink,
   RotateCcw,
-  Volume2,
-  ShieldCheck,
-  TrendingUp,
+  Sparkles,
+  Clock,
+  FileText,
 } from "lucide-react";
-import { CallLog, User as CrmUser, Lead } from "@/types";
-import { formatCurrency, formatRelativeTime, formatDate } from "@/lib/utils";
+import { CallLog, User as CrmUser } from "@/types";
 
 interface CallHistoryViewProps {
   currentUser: CrmUser;
-  users: CrmUser[];
+  users?: CrmUser[];
+  onInitiateCall: (phoneNumber: string) => void;
   onSelectLeadById?: (leadId: string) => void;
-  onInitiateCall?: (targetNumber: string) => void;
   onOpenDispositionModalForCall?: (call: CallLog) => void;
 }
 
 export function CallHistoryView({
   currentUser,
   users,
-  onSelectLeadById,
   onInitiateCall,
+  onSelectLeadById,
   onOpenDispositionModalForCall,
 }: CallHistoryViewProps) {
-  const isManagerOrAdmin =
-    currentUser.role === "SUPER_ADMIN" ||
-    currentUser.role === "ADMIN" ||
-    currentUser.role.endsWith("_MANAGER");
-
-  const [selectedExtension, setSelectedExtension] = useState<string>(
-    isManagerOrAdmin ? "ALL" : currentUser.rcExtension || "101"
-  );
-  const [directionFilter, setDirectionFilter] = useState<string>("ALL");
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
   const [callLogs, setCallLogs] = useState<CallLog[]>([]);
-  const [stats, setStats] = useState<{
-    totalCalls: number;
-    inboundCalls: number;
-    outboundCalls: number;
-    answeredCalls: number;
-    missedCalls: number;
-    totalDurationSeconds: number;
-    avgDurationSeconds: number;
-  }>({
+  const [stats, setStats] = useState({
     totalCalls: 0,
     inboundCalls: 0,
     outboundCalls: 0,
     answeredCalls: 0,
-    missedCalls: 0,
     totalDurationSeconds: 0,
-    avgDurationSeconds: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedCallDetail, setSelectedCallDetail] = useState<CallLog | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedExtension, setSelectedExtension] = useState<string>(
+    currentUser.rcExtension || "ALL"
+  );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchCalls = async () => {
-    setIsLoading(true);
+    setLoading(true);
     try {
-      const extQuery = selectedExtension !== "ALL" ? `extension=${selectedExtension}&` : "";
-      const dirQuery = directionFilter !== "ALL" ? `direction=${directionFilter}&` : "";
-      const statQuery = statusFilter !== "ALL" ? `status=${statusFilter}&` : "";
-      const searchParam = searchQuery.trim() ? `search=${encodeURIComponent(searchQuery.trim())}&` : "";
-
-      const res = await fetch(`/api/ringcentral/calls?${extQuery}${dirQuery}${statQuery}${searchParam}`);
+      const extParam = selectedExtension === "ALL" ? "" : `&extension=${selectedExtension}`;
+      const searchParam = searchQuery.trim() ? `&search=${encodeURIComponent(searchQuery.trim())}` : "";
+      const res = await fetch(`/api/ringcentral/calls?_t=${Date.now()}${extParam}${searchParam}`);
       const data = await res.json();
       if (data.success) {
         setCallLogs(data.callLogs || []);
@@ -90,15 +58,15 @@ export function CallHistoryView({
         }
       }
     } catch (err) {
-      console.error("Failed to fetch RingCentral call logs:", err);
+      console.warn("Failed to fetch calls:", err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchCalls();
-  }, [selectedExtension, directionFilter, statusFilter, searchQuery]);
+  }, [selectedExtension, searchQuery]);
 
   const formatDuration = (totalSeconds: number) => {
     if (!totalSeconds) return "0s";
@@ -108,195 +76,154 @@ export function CallHistoryView({
     return `${mins}m ${secs}s`;
   };
 
-  // Trigger test call
+  const formatDate = (isoString: string) => {
+    if (!isoString) return "-";
+    const d = new Date(isoString);
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const handleTriggerTestCall = async () => {
     try {
-      const ext = selectedExtension !== "ALL" ? selectedExtension : currentUser.rcExtension || "101";
+      const ext = selectedExtension !== "ALL" ? selectedExtension : (currentUser.rcExtension || "101");
       await fetch("/api/ringcentral/simulate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "INCOMING_CALL",
           extension: ext,
-          callerNumber: "+1 (555) 893-4421",
-          callerName: "Marcus Sterling",
+          callerNumber: "+1 (555) 781-9920",
+          callerName: "Emily Watson",
         }),
       });
       fetchCalls();
-    } catch (err) {
-      console.error("Test call trigger failed:", err);
-    }
+    } catch {}
   };
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
-      {/* Top Banner & Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-indigo-600/20">
-              <Phone className="h-6 w-6" />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                  RingCentral Telephony & Call Logs
-                </h1>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  Extension Logs
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                All inbound and outbound calls tracked and stored with respect to agent extensions.
-              </p>
-            </div>
+      {/* Clean Header & Compact Summary */}
+      <div className="bg-white border-b border-slate-200 px-6 py-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <Phone className="h-4 w-4 text-indigo-600" />
+              <span>Call Records & Extension Logs</span>
+            </h1>
+            <p className="text-xs text-slate-500">
+              Calls recorded and tracked by agent extension.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleTriggerTestCall}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-all shadow-xs"
-              title="Simulate an incoming test call to the selected extension"
+              className="px-3 py-1.5 text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl transition-colors flex items-center gap-1.5"
             >
               <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-              <span>Simulate Inbound Call</span>
+              <span>Test Call</span>
             </button>
 
             <button
               onClick={fetchCalls}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-colors"
-              title="Refresh Calls"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              title="Refresh"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Aggregate Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 mt-5">
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5">
-            <span className="text-xs font-semibold text-slate-500">Total Calls</span>
-            <p className="text-xl font-bold font-mono text-slate-900 mt-1">{stats.totalCalls}</p>
-            <span className="text-[10px] text-slate-400">Recorded on system</span>
+        {/* Clean 1-Row Stats Strip */}
+        <div className="flex items-center gap-4 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200/80 px-4 py-2 rounded-xl flex-wrap">
+          <div>
+            <span className="text-slate-400 mr-1.5">Total:</span>
+            <strong className="text-slate-900 font-mono">{stats.totalCalls}</strong>
           </div>
-
-          <div className="bg-blue-50/60 border border-blue-200/80 rounded-2xl p-3.5">
-            <span className="text-xs font-semibold text-blue-700">Inbound Calls</span>
-            <p className="text-xl font-bold font-mono text-blue-900 mt-1">{stats.inboundCalls}</p>
-            <span className="text-[10px] text-blue-600">Answered by agent</span>
+          <div className="h-3 w-px bg-slate-300" />
+          <div>
+            <span className="text-slate-400 mr-1.5">Inbound:</span>
+            <strong className="text-blue-700 font-mono">{stats.inboundCalls}</strong>
           </div>
-
-          <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-3.5">
-            <span className="text-xs font-semibold text-emerald-700">Outbound Calls</span>
-            <p className="text-xl font-bold font-mono text-emerald-900 mt-1">{stats.outboundCalls}</p>
-            <span className="text-[10px] text-emerald-600">Client dials</span>
+          <div className="h-3 w-px bg-slate-300" />
+          <div>
+            <span className="text-slate-400 mr-1.5">Outbound:</span>
+            <strong className="text-emerald-700 font-mono">{stats.outboundCalls}</strong>
           </div>
-
-          <div className="bg-indigo-50/60 border border-indigo-200/80 rounded-2xl p-3.5">
-            <span className="text-xs font-semibold text-indigo-700">Total Talk Time</span>
-            <p className="text-xl font-bold font-mono text-indigo-900 mt-1">{formatDuration(stats.totalDurationSeconds)}</p>
-            <span className="text-[10px] text-indigo-600">Across extensions</span>
-          </div>
-
-          <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-3.5">
-            <span className="text-xs font-semibold text-amber-700">Avg Call Duration</span>
-            <p className="text-xl font-bold font-mono text-amber-900 mt-1">{formatDuration(stats.avgDurationSeconds)}</p>
-            <span className="text-[10px] text-amber-600">Per conversation</span>
+          <div className="h-3 w-px bg-slate-300" />
+          <div>
+            <span className="text-slate-400 mr-1.5">Talk Time:</span>
+            <strong className="text-indigo-700 font-mono">{formatDuration(stats.totalDurationSeconds)}</strong>
           </div>
         </div>
-      </div>
 
-      {/* Filter Toolbar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Extension selector */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-500 font-semibold">Extension:</span>
+        {/* Search & Extension Toolbar */}
+        <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
+          <div className="flex items-center gap-2 flex-1 max-w-sm">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search phone number or notes..."
+                className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium">Filter Extension:</span>
             <select
               value={selectedExtension}
               onChange={(e) => setSelectedExtension(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-indigo-500"
+              className="text-xs font-mono font-semibold px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-hidden"
             >
-              {isManagerOrAdmin && <option value="ALL">All Extensions</option>}
-              {users
-                .filter((u) => u.rcExtension)
-                .map((u) => (
-                  <option key={u.id} value={u.rcExtension}>
-                    Ext {u.rcExtension} - {u.name} ({u.role})
-                  </option>
-                ))}
+              <option value="ALL">All Extensions</option>
+              <option value="100">Ext 100 - Alex Thorne</option>
+              <option value="101">Ext 101 - Sarah Chen</option>
+              <option value="102">Ext 102 - Marcus Brooks</option>
+              <option value="103">Ext 103 - Rachel Vance</option>
+              <option value="104">Ext 104 - David Miller</option>
+              <option value="105">Ext 105 - Elena Rostova</option>
             </select>
           </div>
-
-          {/* Direction Filter */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-500 font-semibold">Direction:</span>
-            <select
-              value={directionFilter}
-              onChange={(e) => setDirectionFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:outline-indigo-500"
-            >
-              <option value="ALL">All Directions</option>
-              <option value="INBOUND">Inbound</option>
-              <option value="OUTBOUND">Outbound</option>
-            </select>
-          </div>
-
-          {/* Status Filter */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-500 font-semibold">Status:</span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:outline-indigo-500"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="ANSWERED">Answered</option>
-              <option value="MISSED">Missed</option>
-              <option value="RINGING">Ringing</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Search input */}
-        <div className="relative w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search phone, agent, notes..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
-          />
         </div>
       </div>
 
-      {/* Main Call Logs Table */}
+      {/* Clean Call Log Table */}
       <div className="p-6">
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px] font-bold">
+                <tr>
                   <th className="py-3 px-4">Date / Time</th>
-                  <th className="py-3 px-4">Agent (Extension)</th>
-                  <th className="py-3 px-4">Direction</th>
-                  <th className="py-3 px-4">Customer Phone</th>
+                  <th className="py-3 px-4">Agent Ext</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Phone Number</th>
                   <th className="py-3 px-4">Duration</th>
-                  <th className="py-3 px-4">Call Disposition</th>
-                  <th className="py-3 px-4">Linked CRM Lead</th>
-                  <th className="py-3 px-4">Discussion Notes</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">Disposition</th>
+                  <th className="py-3 px-4">Booking</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-slate-100">
-                {callLogs.length === 0 ? (
+                {loading ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-12 text-slate-400">
-                      {isLoading ? "Loading calls..." : "No call logs found matching current filters."}
+                    <td colSpan={8} className="py-8 text-center text-slate-400">
+                      Loading call logs...
+                    </td>
+                  </tr>
+                ) : callLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-8 text-center text-slate-400">
+                      No calls recorded for this extension.
                     </td>
                   </tr>
                 ) : (
@@ -305,110 +232,86 @@ export function CallHistoryView({
                     const customerPhone = isInbound ? c.callerNumber : c.calleeNumber;
 
                     return (
-                      <tr key={c.id} className="hover:bg-slate-50/70 transition-colors group">
-                        {/* Time */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <p className="font-semibold text-slate-800">{formatDate(c.startTime)}</p>
-                          <p className="text-[10px] text-slate-400">{formatRelativeTime(c.startTime)}</p>
+                      <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3 px-4 whitespace-nowrap font-medium text-slate-700">
+                          {formatDate(c.startTime)}
                         </td>
 
-                        {/* Agent & Extension */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-md">
-                              Ext {c.agentExtension}
-                            </span>
-                            <span className="font-medium text-slate-800">{c.agentName}</span>
-                          </div>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <span className="font-mono text-xs font-semibold bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                            Ext {c.agentExtension}
+                          </span>
                         </td>
 
-                        {/* Direction */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
+                        <td className="py-3 px-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               isInbound
-                                ? "bg-blue-50 text-blue-700 border border-blue-200"
-                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                ? "bg-blue-50 text-blue-700"
+                                : "bg-emerald-50 text-emerald-700"
                             }`}
                           >
-                            {isInbound ? <PhoneIncoming className="h-3 w-3" /> : <PhoneOutgoing className="h-3 w-3" />}
+                            {isInbound ? <PhoneIncoming className="h-2.5 w-2.5" /> : <PhoneOutgoing className="h-2.5 w-2.5" />}
                             <span>{isInbound ? "Inbound" : "Outbound"}</span>
                           </span>
                         </td>
 
-                        {/* Customer Phone */}
-                        <td className="py-3.5 px-4 whitespace-nowrap font-mono font-semibold text-slate-900">
+                        <td className="py-3 px-4 whitespace-nowrap font-mono font-bold text-slate-900">
                           {customerPhone}
                         </td>
 
-                        {/* Duration */}
-                        <td className="py-3.5 px-4 whitespace-nowrap font-mono font-bold text-slate-700">
+                        <td className="py-3 px-4 whitespace-nowrap font-mono text-slate-600">
                           {formatDuration(c.durationSeconds)}
                         </td>
 
-                        {/* Disposition & Transfer */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <div className="flex flex-col gap-1 items-start">
-                            {c.disposition ? (
-                              <span className="inline-block bg-slate-100 text-slate-800 font-semibold px-2 py-0.5 rounded-md text-[11px] border border-slate-200">
-                                {c.disposition.replace(/_/g, " ")}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 italic text-[11px]">Pending disposition</span>
-                            )}
-                            {c.transferredToExtension && (
-                              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-md text-[10px] border border-amber-200">
-                                <PhoneForwarded className="h-2.5 w-2.5" />
-                                <span>Transferred to Ext {c.transferredToExtension}</span>
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Linked Lead */}
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          {c.leadBookingNumber || c.leadId ? (
-                            <button
-                              onClick={() => c.leadId && onSelectLeadById && onSelectLeadById(c.leadId)}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-mono font-bold text-[11px] border border-indigo-200 transition-colors"
-                            >
-                              <span>Booking #{c.leadBookingNumber || "View"}</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </button>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {c.disposition ? (
+                            <span className="inline-block bg-slate-100 text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">
+                              {c.disposition.replace(/_/g, " ")}
+                            </span>
                           ) : (
-                            <span className="text-slate-400 text-[11px]">Unlinked</span>
+                            <span className="text-slate-400 italic text-[11px]">Inquiry</span>
+                          )}
+                          {c.transferredToExtension && (
+                            <span className="ml-1 inline-flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded font-mono">
+                              <PhoneForwarded className="h-2.5 w-2.5" />
+                              Ext {c.transferredToExtension}
+                            </span>
                           )}
                         </td>
 
-                        {/* Notes */}
-                        <td className="py-3.5 px-4 max-w-xs">
-                          <p className="truncate text-slate-600 text-xs" title={c.notes}>
-                            {c.notes || <span className="text-slate-400 italic">No notes</span>}
-                          </p>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {c.leadBookingNumber || c.leadId ? (
+                            <button
+                              onClick={() => c.leadId && onSelectLeadById && onSelectLeadById(c.leadId)}
+                              className="inline-flex items-center gap-1 font-mono font-bold text-[11px] text-indigo-700 hover:text-indigo-900"
+                            >
+                              <span>#{c.leadBookingNumber || "Lead"}</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </button>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
                         </td>
 
-                        {/* Actions */}
-                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            {onInitiateCall && (
-                              <button
-                                onClick={() => onInitiateCall(customerPhone)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                                title="Redial via RingCentral"
-                              >
-                                <Phone className="h-3.5 w-3.5" />
-                              </button>
-                            )}
-
+                        <td className="py-3 px-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-1">
                             {onOpenDispositionModalForCall && (
                               <button
                                 onClick={() => onOpenDispositionModalForCall(c)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                title="Edit Lead & Call Details"
+                                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                title="Call details & notes"
                               >
                                 <FileText className="h-3.5 w-3.5" />
                               </button>
                             )}
+                            <button
+                              onClick={() => onInitiateCall(customerPhone)}
+                              className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="Call customer"
+                            >
+                              <Phone className="h-3.5 w-3.5" />
+                            </button>
                           </div>
                         </td>
                       </tr>
